@@ -21,6 +21,8 @@
 		6D6AA0CF1C0EC89C0037DA36 /* isdamodel in Sources */ = {isa = PBXBuildFile; fileRef = 6D6AA0CD1C0EC88D0037DA36 /* isdamodel */; };
 		6D6AA0D01C0EC8A20037DA36 /* minizip in Sources */ = {isa = PBXBuildFile; fileRef = 6D6AA0C71C0EC6CA0037DA36 /* minizip */; };
 		6D6AA0D11C0EC8A70037DA36 /* ziparchive in Sources */ = {isa = PBXBuildFile; fileRef = 6D6AA0CB1C0EC7590037DA36 /* ziparchive */; };
+		6D6AA0D31C0EC9860037DA36 /* Classes in Resources */ = {isa = PBXBuildFile; fileRef = 6D6AA0D21C0EC9860037DA36 /* Classes */; };
+		6D6AA0D41C0EC99B0037DA36 /* Classes in Sources */ = {isa = PBXBuildFile; fileRef = 6D6AA0D21C0EC9860037DA36 /* Classes */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -52,6 +54,7 @@
 		6D6AA0C71C0EC6CA0037DA36 /* minizip */ = {isa = PBXFileReference; lastKnownFileType = folder; path = minizip; sourceTree = "<group>"; };
 		6D6AA0CB1C0EC7590037DA36 /* ziparchive */ = {isa = PBXFileReference; lastKnownFileType = folder; path = ziparchive; sourceTree = "<group>"; };
 		6D6AA0CD1C0EC88D0037DA36 /* isdamodel */ = {isa = PBXFileReference; lastKnownFileType = folder; path = isdamodel; sourceTree = "<group>"; };
+		6D6AA0D21C0EC9860037DA36 /* Classes */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Classes; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -93,6 +96,7 @@
 		6D3D616C1C0EC518002D8420 /* icds */ = {
 			isa = PBXGroup;
 			children = (
+				6D6AA0D21C0EC9860037DA36 /* Classes */,
 				6D6AA0CD1C0EC88D0037DA36 /* isdamodel */,
 				6D6AA0CB1C0EC7590037DA36 /* ziparchive */,
 				6D6AA0C71C0EC6CA0037DA36 /* minizip */,
@@ -210,6 +214,7 @@
 			files = (
 				6D3D61801C0EC518002D8420 /* LaunchScreen.storyboard in Resources */,
 				6D6AA0CC1C0EC7590037DA36 /* ziparchive in Resources */,
+				6D6AA0D31C0EC9860037DA36 /* Classes in Resources */,
 				6D3D617D1C0EC518002D8420 /* Assets.xcassets in Resources */,
 				6D3D617B1C0EC518002D8420 /* Main.storyboard in Resources */,
 				6D6AA0C81C0EC6CA0037DA36 /* minizip in Resources */,
@@ -234,6 +239,7 @@
 				6D6AA0D11C0EC8A70037DA36 /* ziparchive in Sources */,
 				6D6AA0D01C0EC8A20037DA36 /* minizip in Sources */,
 				6D6AA0CF1C0EC89C0037DA36 /* isdamodel in Sources */,
+				6D6AA0D41C0EC99B0037DA36 /* Classes in Sources */,
 				6D3D61781C0EC518002D8420 /* SecondViewController.m in Sources */,
 				6D3D61721C0EC518002D8420 /* AppDelegate.m in Sources */,
 				6D3D61751C0EC518002D8420 /* FirstViewController.m in Sources */,
