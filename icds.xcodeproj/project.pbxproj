@@ -15,6 +15,12 @@
 		6D3D617D1C0EC518002D8420 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6D3D617C1C0EC518002D8420 /* Assets.xcassets */; };
 		6D3D61801C0EC518002D8420 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6D3D617E1C0EC518002D8420 /* LaunchScreen.storyboard */; };
 		6D3D618B1C0EC518002D8420 /* icdsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 6D3D618A1C0EC518002D8420 /* icdsTests.m */; };
+		6D6AA0C81C0EC6CA0037DA36 /* minizip in Resources */ = {isa = PBXBuildFile; fileRef = 6D6AA0C71C0EC6CA0037DA36 /* minizip */; };
+		6D6AA0CC1C0EC7590037DA36 /* ziparchive in Resources */ = {isa = PBXBuildFile; fileRef = 6D6AA0CB1C0EC7590037DA36 /* ziparchive */; };
+		6D6AA0CE1C0EC88D0037DA36 /* isdamodel in Resources */ = {isa = PBXBuildFile; fileRef = 6D6AA0CD1C0EC88D0037DA36 /* isdamodel */; };
+		6D6AA0CF1C0EC89C0037DA36 /* isdamodel in Sources */ = {isa = PBXBuildFile; fileRef = 6D6AA0CD1C0EC88D0037DA36 /* isdamodel */; };
+		6D6AA0D01C0EC8A20037DA36 /* minizip in Sources */ = {isa = PBXBuildFile; fileRef = 6D6AA0C71C0EC6CA0037DA36 /* minizip */; };
+		6D6AA0D11C0EC8A70037DA36 /* ziparchive in Sources */ = {isa = PBXBuildFile; fileRef = 6D6AA0CB1C0EC7590037DA36 /* ziparchive */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -43,6 +49,9 @@
 		6D3D61861C0EC518002D8420 /* icdsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = icdsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		6D3D618A1C0EC518002D8420 /* icdsTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = icdsTests.m; sourceTree = "<group>"; };
 		6D3D618C1C0EC518002D8420 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		6D6AA0C71C0EC6CA0037DA36 /* minizip */ = {isa = PBXFileReference; lastKnownFileType = folder; path = minizip; sourceTree = "<group>"; };
+		6D6AA0CB1C0EC7590037DA36 /* ziparchive */ = {isa = PBXFileReference; lastKnownFileType = folder; path = ziparchive; sourceTree = "<group>"; };
+		6D6AA0CD1C0EC88D0037DA36 /* isdamodel */ = {isa = PBXFileReference; lastKnownFileType = folder; path = isdamodel; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -84,6 +93,9 @@
 		6D3D616C1C0EC518002D8420 /* icds */ = {
 			isa = PBXGroup;
 			children = (
+				6D6AA0CD1C0EC88D0037DA36 /* isdamodel */,
+				6D6AA0CB1C0EC7590037DA36 /* ziparchive */,
+				6D6AA0C71C0EC6CA0037DA36 /* minizip */,
 				6D3D61701C0EC518002D8420 /* AppDelegate.h */,
 				6D3D61711C0EC518002D8420 /* AppDelegate.m */,
 				6D3D61731C0EC518002D8420 /* FirstViewController.h */,
@@ -197,8 +209,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				6D3D61801C0EC518002D8420 /* LaunchScreen.storyboard in Resources */,
+				6D6AA0CC1C0EC7590037DA36 /* ziparchive in Resources */,
 				6D3D617D1C0EC518002D8420 /* Assets.xcassets in Resources */,
 				6D3D617B1C0EC518002D8420 /* Main.storyboard in Resources */,
+				6D6AA0C81C0EC6CA0037DA36 /* minizip in Resources */,
+				6D6AA0CE1C0EC88D0037DA36 /* isdamodel in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -216,6 +231,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6D6AA0D11C0EC8A70037DA36 /* ziparchive in Sources */,
+				6D6AA0D01C0EC8A20037DA36 /* minizip in Sources */,
+				6D6AA0CF1C0EC89C0037DA36 /* isdamodel in Sources */,
 				6D3D61781C0EC518002D8420 /* SecondViewController.m in Sources */,
 				6D3D61721C0EC518002D8420 /* AppDelegate.m in Sources */,
 				6D3D61751C0EC518002D8420 /* FirstViewController.m in Sources */,
@@ -408,6 +426,7 @@
 				6D3D61911C0EC518002D8420 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		6D3D61921C0EC518002D8420 /* Build configuration list for PBXNativeTarget "icdsTests" */ = {
 			isa = XCConfigurationList;
@@ -416,6 +435,7 @@
 				6D3D61941C0EC518002D8420 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
