@@ -1,0 +1,272 @@
+//
+//  LiborViewController.m
+//
+
+#import "LiborViewController.h"
+#import "XMLAppDelegate.h"
+#import "CurveInstrumentDetailViewController.h"
+#import "CurveInstrument.h"
+#import "LiborCurve.h"
+//#import "XMLParser.h"
+
+//include the goolge ZipArchive
+//#import "ZipArchive.h"
+
+@implementation LiborViewController
+
+@synthesize idvController_, tenors_, liborCurve_;
+
+/*
+- (void) setTenors:(NSMutableArray *) theTenors
+{
+	tenors_ = theTenors;
+}
+
+- (void) setLibor:(LiborCurve *) theLibor
+{
+	liborCurve_ = theLibor;
+}
+*/
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+    return 1;
+}
+
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    return [self.tenors_ count];
+}
+
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    static NSString *CellIdentifier = @"Cell";
+    
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+    if (cell == nil) {
+        cell = [[[UITableViewCell alloc] initWithFrame:CGRectZero reuseIdentifier:CellIdentifier] autorelease];
+    }
+	
+	/*
+	Book *aBook = [appDelegate.instruments_ objectAtIndex:indexPath.row];
+	
+	cell.text = aBook.title;
+	cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+    */
+
+	CurveInstrument *tmpInstrument = [self.tenors_ objectAtIndex:indexPath.row];
+	cell.text = [[[[tmpInstrument.instrument stringByAppendingString:@" : "] 
+				 stringByAppendingString:tmpInstrument.tenor]
+				 stringByAppendingString:@" : "]
+				 stringByAppendingString:tmpInstrument.parrate]
+				;
+
+//	cell.text = tmpInstrument.tenor;
+	cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+
+    // Set up the cell
+    return cell;
+}
+
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    // Navigation logic -- create and push a new view controller
+	
+	if(idvController_ == nil)
+		idvController_ = [[CurveInstrumentDetailViewController alloc] initWithNibName:@"CurveInstrumentDetailView" bundle:[NSBundle mainBundle]];
+	
+	CurveInstrument *aInstrument = [self.tenors_ objectAtIndex:indexPath.row];
+
+	idvController_.theInstrument = aInstrument;	
+	[self.navigationController pushViewController:idvController_ animated:YES];
+
+
+}
+
+
+
+- (void)viewDidLoad 
+{
+    [super viewDidLoad];
+    // Uncomment the following line to add the Edit button to the navigation bar.
+    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+	
+	//appDelegate = (XMLAppDelegate *)[[UIApplication sharedApplication] delegate];
+	//LiborCurve *theCurve = liborCurve_;	
+	self.title = [@"SNAC Libor Curve : " stringByAppendingString:liborCurve_.effectiveasof];
+
+}
+
+
+
+/*
+// Override to support editing the list
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    if (editingStyle == UITableViewCellEditingStyleDelete) {
+        // Delete the row from the data source
+        [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:YES];
+    }   
+    if (editingStyle == UITableViewCellEditingStyleInsert) {
+        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
+    }   
+}
+*/
+
+
+/*
+// Override to support conditional editing of the list
+- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
+    // Return NO if you do not want the specified item to be editable.
+    return YES;
+}
+*/
+
+
+/*
+// Override to support rearranging the list
+- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath {
+}
+*/
+
+
+/*
+// Override to support conditional rearranging of the list
+- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath {
+    // Return NO if you do not want the item to be re-orderable.
+    return YES;
+}
+*/
+
+/*
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+}
+*/
+/*
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+}
+*/
+/*
+- (void)viewWillDisappear:(BOOL)animated {
+}
+*/
+/*
+- (void)viewDidDisappear:(BOOL)animated {
+}
+*/
+
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+    // Return YES for supported orientations
+    return (interfaceOrientation == UIInterfaceOrientationPortrait);
+}
+
+
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning]; // Releases the view if it doesn't have a superview
+    // Release anything that's not essential, such as cached data
+}
+
+- (void)dealloc {
+	[idvController_ release];
+	//[appDelegate release];
+    [super dealloc];
+}
+
+/*
+@synthesize tenors_, liborCurve_;
+
+
++ (void)initialize
+{
+	//Initialize the array.
+	//tenors_ = [[[NSMutableArray alloc] init] retain];
+	
+	//Initialize the instrument.
+	//liborCurve_ = [[LiborCurve alloc] init];
+	
+	//I want to set the defaults here, can't figure it out
+	NSLog(@"\nXMLAppDelegate initialize\n");
+	
+	NSString *fileName = @"InterestRates_USD_20091204.zip";
+	
+	NSURL *url = [[NSURL alloc] initWithString:@"https://www.markit.com/news/InterestRates_USD_20091204.zip"];
+	
+	//get the Data from the URL
+	NSData *data = [NSData dataWithContentsOfURL:url];
+	//NSData *data = [url resourceDataUsingCache: NO];
+	//NSString *blork = [[NSString alloc] initWithData: data  encoding: NSASCIIStringEncoding];			
+	
+	NSString *path = [NSTemporaryDirectory() stringByAppendingPathComponent:fileName];
+	
+	[data writeToFile:path atomically:YES];
+	
+	printf("%d",[data length]);
+	
+	//how to send an alert
+	/*
+	 UIAlertView *testMessage = [[UIAlertView alloc] initWithTitle: @"From Server: " message: @"test"  delegate: self cancelButtonTitle: @"Ok" otherButtonTitles: nil];
+	 [testMessage show];
+	 [testMessage release];
+	 */
+	
+	NSString *destPath = [NSTemporaryDirectory() stringByAppendingPathComponent:@""];
+	
+	ZipArchive* za = [[ZipArchive alloc] init];
+	if( [za UnzipOpenFile:path] )
+	{
+		BOOL ret = [za UnzipFileTo:destPath overWrite:YES];
+		if( NO==ret )
+		{
+			// error handler here
+		}
+		[za UnzipCloseFile];
+	}
+	//cleanup
+	[za release];
+	
+	NSData *xmlData = [NSData dataWithContentsOfFile: [destPath stringByAppendingPathComponent:@"InterestRates_USD_20091204.xml"]];
+	
+	NSXMLParser *xmlParser = [[NSXMLParser alloc] initWithData:xmlData];
+	
+	//Initialize the delegate.
+	XMLParser *parser = [[XMLParser alloc] initXMLParser:self];
+	
+	//Set delegate
+	[xmlParser setDelegate:parser];
+	
+	//Start parsing the XML file.
+	BOOL success = [xmlParser parse];
+	
+	if(success)
+		NSLog(@"No Errors");
+	else
+		NSLog(@"Error Error Error!!!");
+	
+}
+
+- (void)applicationDidFinishLaunching:(UIApplication *)application {
+	// Configure and show the window
+	//[window addSubview:[navigationController view]];
+	//[window makeKeyAndVisible];
+
+}
+
+
+- (void)applicationWillTerminate:(UIApplication *)application {
+	// Save data if appropriate
+}
+
+
+- (void)dealloc {
+	[tenors_ release];
+	[liborCurve_ release];
+	[idvController_ release];
+	//	[navigationController release];
+	//	[window release];
+	[super dealloc];
+}
+*/
+
+@end
