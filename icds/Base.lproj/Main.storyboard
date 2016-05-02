@@ -24,20 +24,48 @@
                                     <stackView opaque="NO" contentMode="scaleToFill" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="ras-mO-lNG">
                                         <rect key="frame" x="0.0" y="0.0" width="555" height="62"/>
                                         <subviews>
-                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fCf-Vv-UJ7" userLabel="RunningSpreadBtn">
+                                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="4rx-KJ-4tF">
                                                 <rect key="frame" x="0.0" y="0.0" width="179" height="62"/>
-                                                <fontDescription key="fontDescription" type="boldSystem" pointSize="14"/>
-                                                <state key="normal" title="100 bps" backgroundImage="SilverButton">
-                                                    <color key="titleColor" red="1" green="0.50196081400000003" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-                                                </state>
-                                            </button>
-                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1kl-ij-3tB" userLabel="DateBtn">
+                                                <subviews>
+                                                    <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="OFP-xi-zuS">
+                                                        <rect key="frame" x="0.0" y="0.0" width="179" height="33"/>
+                                                        <subviews>
+                                                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="100" borderStyle="roundedRect" textAlignment="right" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="8aK-WS-W9H" userLabel="QuotedSpread">
+                                                                <rect key="frame" x="0.0" y="0.0" width="89" height="33"/>
+                                                                <color key="textColor" red="1" green="0.50196081400000003" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                                <textInputTraits key="textInputTraits" keyboardType="numberPad"/>
+                                                            </textField>
+                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="bps" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="swA-o8-8Al">
+                                                                <rect key="frame" x="89" y="0.0" width="90" height="33"/>
+                                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                                <color key="textColor" red="1" green="0.50196081400000003" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                                                <nil key="highlightedColor"/>
+                                                            </label>
+                                                        </subviews>
+                                                        <constraints>
+                                                            <constraint firstItem="swA-o8-8Al" firstAttribute="width" secondItem="8aK-WS-W9H" secondAttribute="width" id="AFi-xM-CTP"/>
+                                                        </constraints>
+                                                    </stackView>
+                                                    <stepper opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="fill" contentVerticalAlignment="center" maximumValue="100" translatesAutoresizingMaskIntoConstraints="NO" id="hvn-jY-DVf">
+                                                        <rect key="frame" x="0.0" y="33" width="94" height="29"/>
+                                                    </stepper>
+                                                </subviews>
+                                            </stackView>
+                                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="XuA-IB-W69">
                                                 <rect key="frame" x="189" y="0.0" width="178" height="62"/>
-                                                <fontDescription key="fontDescription" type="boldSystem" pointSize="14"/>
-                                                <state key="normal" title="Dec 20" backgroundImage="SilverButton">
-                                                    <color key="titleColor" red="1" green="0.50196081400000003" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-                                                </state>
-                                            </button>
+                                                <subviews>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Dec 20" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="aGi-Nl-5Su" userLabel="TradeDate">
+                                                        <rect key="frame" x="0.0" y="0.0" width="178" height="33"/>
+                                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                        <color key="textColor" red="1" green="0.50196081400000003" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                    <stepper opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" maximumValue="100" translatesAutoresizingMaskIntoConstraints="NO" id="Vuw-lt-ZEp">
+                                                        <rect key="frame" x="0.0" y="33" width="94" height="29"/>
+                                                    </stepper>
+                                                </subviews>
+                                            </stackView>
                                             <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="xBS-Mz-wtK" userLabel="BuySell">
                                                 <rect key="frame" x="377" y="0.0" width="179" height="63"/>
                                                 <segments>
@@ -51,16 +79,17 @@
                                             </segmentedControl>
                                         </subviews>
                                         <constraints>
-                                            <constraint firstItem="xBS-Mz-wtK" firstAttribute="width" secondItem="fCf-Vv-UJ7" secondAttribute="width" id="rD1-pJ-uUV"/>
-                                            <constraint firstItem="1kl-ij-3tB" firstAttribute="width" secondItem="fCf-Vv-UJ7" secondAttribute="width" id="wEp-Qy-xOE"/>
+                                            <constraint firstItem="XuA-IB-W69" firstAttribute="width" secondItem="4rx-KJ-4tF" secondAttribute="width" id="74X-Mo-XVi"/>
+                                            <constraint firstItem="xBS-Mz-wtK" firstAttribute="width" secondItem="4rx-KJ-4tF" secondAttribute="width" id="TtS-tC-wz4"/>
                                         </constraints>
                                     </stackView>
-                                    <segmentedControl opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="iW1-wu-ICy" userLabel="Recovery">
+                                    <segmentedControl opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="iW1-wu-ICy" userLabel="Recovery">
                                         <rect key="frame" x="0.0" y="72" width="555" height="64"/>
                                         <segments>
                                             <segment title="20%"/>
                                             <segment title="25%"/>
                                             <segment title="40%"/>
+                                            <segment title="70%"/>
                                         </segments>
                                         <color key="tintColor" red="0.60000002379999995" green="0.60000002379999995" blue="0.60000002379999995" alpha="1" colorSpace="calibratedRGB"/>
                                     </segmentedControl>
@@ -87,9 +116,11 @@
                                     <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="wff-Ls-qxM" userLabel="SNAC Spread">
                                         <rect key="frame" x="0.0" y="289" width="555" height="63"/>
                                         <segments>
+                                            <segment title="0"/>
                                             <segment title="25"/>
                                             <segment title="100"/>
                                             <segment title="500"/>
+                                            <segment title="750"/>
                                             <segment title="1000"/>
                                         </segments>
                                         <color key="tintColor" red="0.60000002379999995" green="0.60000002379999995" blue="0.60000002379999995" alpha="1" colorSpace="calibratedRGB"/>
@@ -97,21 +128,21 @@
                                     <stackView opaque="NO" contentMode="scaleToFill" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="EqB-lX-hhm" userLabel="Row6">
                                         <rect key="frame" x="0.0" y="361" width="555" height="30"/>
                                         <subviews>
-                                            <textField opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" misplaced="YES" enabled="NO" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="$100,000,000,000" textAlignment="right" minimumFontSize="12" translatesAutoresizingMaskIntoConstraints="NO" id="doG-VZ-nHo" userLabel="UpfrontFee">
-                                                <rect key="frame" x="0.0" y="0.0" width="126" height="30"/>
-                                                <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                                <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                            <textField opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="$100,000,000,000" textAlignment="right" minimumFontSize="12" translatesAutoresizingMaskIntoConstraints="NO" id="doG-VZ-nHo" userLabel="UpfrontFee">
+                                                <rect key="frame" x="0.0" y="0.0" width="176" height="30"/>
+                                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                                <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
                                                 <textInputTraits key="textInputTraits"/>
                                             </textField>
-                                            <button opaque="NO" contentMode="scaleAspectFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="v5U-9u-AvH" userLabel="CurrencyBtn">
-                                                <rect key="frame" x="131" y="0.0" width="210" height="30"/>
+                                            <button opaque="NO" contentMode="scaleAspectFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="v5U-9u-AvH" userLabel="CurrencyBtn">
+                                                <rect key="frame" x="181" y="0.0" width="185" height="30"/>
                                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="14"/>
                                                 <state key="normal" title="USD" backgroundImage="SilverButton">
                                                     <color key="titleColor" red="1" green="0.50196081400000003" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                 </state>
                                             </button>
-                                            <button opaque="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="249" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="DtO-gx-9xF" userLabel="EmailBtn">
-                                                <rect key="frame" x="346" y="0.0" width="210" height="30"/>
+                                            <button opaque="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="249" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="DtO-gx-9xF" userLabel="EmailBtn">
+                                                <rect key="frame" x="371" y="0.0" width="185" height="30"/>
                                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="12"/>
                                                 <state key="normal" title="Email" backgroundImage="SilverButton">
                                                     <color key="titleColor" red="1" green="0.50196081400000003" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
@@ -204,13 +235,13 @@
                                     </stackView>
                                 </subviews>
                                 <constraints>
-                                    <constraint firstItem="c3k-JG-gE4" firstAttribute="height" secondItem="ras-mO-lNG" secondAttribute="height" id="B44-7p-5Fn"/>
-                                    <constraint firstItem="9PO-Iz-JGy" firstAttribute="height" secondItem="ras-mO-lNG" secondAttribute="height" id="Jre-V0-BSO"/>
-                                    <constraint firstItem="QFC-fO-ffR" firstAttribute="height" secondItem="EqB-lX-hhm" secondAttribute="height" id="Veg-Ue-f9V"/>
-                                    <constraint firstItem="mVX-IB-Wch" firstAttribute="height" secondItem="EqB-lX-hhm" secondAttribute="height" id="YBN-Dd-Xda"/>
-                                    <constraint firstItem="iW1-wu-ICy" firstAttribute="height" secondItem="ras-mO-lNG" secondAttribute="height" id="aep-1J-bfg"/>
-                                    <constraint firstItem="wff-Ls-qxM" firstAttribute="height" secondItem="ras-mO-lNG" secondAttribute="height" id="b0M-xW-URj"/>
-                                    <constraint firstItem="XIY-CA-JdA" firstAttribute="height" secondItem="EqB-lX-hhm" secondAttribute="height" id="dgi-rd-uIE"/>
+                                    <constraint firstItem="iW1-wu-ICy" firstAttribute="height" secondItem="ras-mO-lNG" secondAttribute="height" id="9MI-0I-VPN"/>
+                                    <constraint firstItem="wff-Ls-qxM" firstAttribute="height" secondItem="ras-mO-lNG" secondAttribute="height" id="Nja-0X-BPB"/>
+                                    <constraint firstItem="QFC-fO-ffR" firstAttribute="height" secondItem="EqB-lX-hhm" secondAttribute="height" id="UKX-VJ-iMa"/>
+                                    <constraint firstItem="9PO-Iz-JGy" firstAttribute="height" secondItem="ras-mO-lNG" secondAttribute="height" id="dru-XC-29k"/>
+                                    <constraint firstItem="mVX-IB-Wch" firstAttribute="height" secondItem="EqB-lX-hhm" secondAttribute="height" id="iEZ-YS-hPc"/>
+                                    <constraint firstItem="c3k-JG-gE4" firstAttribute="height" secondItem="ras-mO-lNG" secondAttribute="height" id="xxE-Lb-AwD"/>
+                                    <constraint firstItem="XIY-CA-JdA" firstAttribute="height" secondItem="EqB-lX-hhm" secondAttribute="height" id="zw4-Ay-Fvg"/>
                                 </constraints>
                             </stackView>
                         </subviews>
