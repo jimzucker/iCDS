@@ -14,7 +14,7 @@ class FeeViewController: UIViewController {
     //Trading Spread
     @IBOutlet weak var TradeBpLabel: UILabel!
     @IBOutlet weak var TradeBpStepper: UIStepper!
-    
+    @IBOutlet weak var TradeBpSlider: UISlider!
     
     //TradeDate
     @IBOutlet weak var TradeDateLabel: UILabel!
@@ -28,8 +28,12 @@ class FeeViewController: UIViewController {
     //Coupon
     @IBOutlet weak var CpnBpLabel: UILabel!
     @IBOutlet weak var CpnBpStepper: UIStepper!
-    var Coupons = ["0", "25", "100", "500", "1000"]
+    let Coupons = ["0", "25", "100", "500", "1000"]
     
+    @IBOutlet weak var CurrencyLabel: UILabel!
+    @IBOutlet weak var CurrencyStepper: UIStepper!
+    var CurrencyList = ["EUR", "GBP", "USD"]
+
     //Recovery
     @IBOutlet weak var RecoveryControl: UISegmentedControl!
     
@@ -59,13 +63,22 @@ class FeeViewController: UIViewController {
         CpnBpStepper.value = 3
         CpnBpLabel.text = String(Coupons[Int(CpnBpStepper.value)]) + " bp"
 
-        
+        //setup Currency
+        CurrencyStepper.wraps = true
+        CurrencyStepper.autorepeat = true
+        CurrencyStepper.maximumValue = Double(CurrencyList.count)-1
+        CurrencyStepper.value = Double(CurrencyList.count)-1
+        CurrencyLabel.text = String(Coupons[Int(CurrencyStepper.value)])
+
         //setup traded spread
         TradeBpStepper.wraps = false
         TradeBpStepper.autorepeat = true
         TradeBpStepper.maximumValue = 3000
         TradeBpStepper.value = Double(Coupons[Int(CpnBpStepper.value)])!
         TradeBpLabel.text = Coupons[Int(CpnBpStepper.value)] + " bp"
+        
+        //setup the slider
+        TradeBpSliderSetup(Float(CpnBpStepper.value))
         
         //setup trade date stepper
         TradeDateStepper.wraps = false
@@ -74,9 +87,7 @@ class FeeViewController: UIViewController {
         TradeDateStepper.maximumValue = 0
         TradeDateStepper.value = 0
         let today = NSDate()
-        let dateFormatter = NSDateFormatter()
-        dateFormatter.dateFormat = "MMM d"
-        TradeDateLabel.text = dateFormatter.stringFromDate(today)
+        setTradeDate(today)
         
         reCalc()
     }
@@ -102,17 +113,65 @@ class FeeViewController: UIViewController {
         print ("Cpn      : " + CpnBpLabel.text!)
         print ("Recovery : " + String(RecoveryControl.titleForSegmentAtIndex(RecoveryControl.selectedSegmentIndex)) )
         print ("Fee      : " + CalculatedFeeLabel.text!)
-        print ("Currency : " + CurrencyBtn.titleLabel!.text!)
+        print ("Currency : " + CurrencyLabel!.text!)
         print ("----------------------------------------")
     }
 
+    
+    @IBAction func SegmentControllerChange(sender: UISegmentedControl) {
+        reCalc()
+    }
+    
+    
+    @IBAction func CurrencyStepChange(sender: UIStepper) {
+        CurrencyLabel.text = String(CurrencyList[Int(sender.value)])
+        reCalc()
+    }
+    
+    
+    func TradeBpSliderSetup(value: Float)
+    {
+        TradeBpSlider.value = value
+        
+        if value > 500 {
+            TradeBpSlider.minimumValue = value - 501
+
+        } else {
+            TradeBpSlider.minimumValue = 0
+        }
+        
+        TradeBpSlider.maximumValue = value + 500
+    }
+    
     @IBAction func TradeBpStepChange(sender: UIStepper) {
-        TradeBpLabel.text = Int(sender.value).description + " bp"
+
+        //set the label
+        let newQuote = sender.value
+        TradeBpLabel.text = Int(newQuote).description + " bp"
+        
+        //reset the slider
+        TradeBpSliderSetup (Float(newQuote))
+        reCalc()
+    }
+    
+    @IBAction func TradeBpSliderChange(sender: UISlider) {
+        let newQuote = Double(sender.value)
+        TradeBpLabel.text = Int(newQuote).description + " bp"
+
+            //update the stepper
+        TradeBpStepper.value = newQuote
         reCalc()
     }
     
     @IBAction func CpnBpStepChange(sender: UIStepper) {
-        CpnBpLabel.text = Coupons[Int(sender.value)] + " bp"
+            //update the labels
+        let newQuote = sender.value
+        CpnBpLabel.text = Coupons[Int(newQuote)] + " bp"
+        TradeBpLabel.text = CpnBpLabel.text
+        
+        //rest the Controls
+        TradeBpStepper.value = Double(Coupons[Int(newQuote)])!
+        TradeBpSliderSetup (Float(newQuote))
         
         reCalc()
     }
@@ -123,16 +182,17 @@ class FeeViewController: UIViewController {
         let currentCalendar = NSCalendar.currentCalendar()
         tradeDate = currentCalendar.dateByAddingUnit(NSCalendarUnit.Day, value: Int(sender.value), toDate: tradeDate, options: NSCalendarOptions.MatchFirst)!
         
+        setTradeDate(tradeDate)
+        reCalc()
+    }
+    
+    func setTradeDate( tradeDate: NSDate )
+    {
         let dateFormatter = NSDateFormatter()
         dateFormatter.dateFormat = "MMM d"
         TradeDateLabel.text = dateFormatter.stringFromDate(tradeDate)
 
-        reCalc()
     }
-    
-    
-    @IBAction func SegmentControllerChange(sender: UISegmentedControl) {
-        reCalc()
-    }
+
 }
 
