@@ -1,5 +1,5 @@
 //
-//  FirstViewController.swift
+//  LiborViewController.swift
 //  icds
 //
 //  Created by Jim Zucker on 5/10/16.
@@ -8,7 +8,7 @@
 
 import UIKit
 
-class FirstViewController: UIViewController {
+class LiborViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
