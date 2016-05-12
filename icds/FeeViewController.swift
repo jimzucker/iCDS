@@ -73,12 +73,7 @@ class FeeViewController: UIViewController {
         //setup traded spread
         TradeBpStepper.wraps = false
         TradeBpStepper.autorepeat = true
-        TradeBpStepper.maximumValue = 3000
-        TradeBpStepper.value = Double(Coupons[Int(CpnBpStepper.value)])!
-        TradeBpLabel.text = Coupons[Int(CpnBpStepper.value)] + " bp"
-        
-        //setup the slider
-        TradeBpSliderSetup(Float(CpnBpStepper.value))
+        TradeBpStepperSetup()
         
         //setup trade date stepper
         TradeDateStepper.wraps = false
@@ -128,20 +123,29 @@ class FeeViewController: UIViewController {
         reCalc()
     }
     
-    
-    func TradeBpSliderSetup(value: Float)
+    //is based on setting in CpnBpStepper
+    //This sets/resets min/max/value for botht the CpnBp stepper and slider
+    func TradeBpStepperSetup()
     {
-        TradeBpSlider.value = value
+        //This is setup realative to the Coupon Spread selected
+        let couponSpreadIndex = Int(CpnBpStepper.value)
+        let couponSpread = Double(Coupons[couponSpreadIndex])!
         
-        if value > 500 {
-            TradeBpSlider.minimumValue = value - 501
-
+        TradeBpStepper.value = couponSpread
+        if couponSpread > 500 {
+            TradeBpStepper.minimumValue = couponSpread - 500
         } else {
-            TradeBpSlider.minimumValue = 0
+            TradeBpStepper.minimumValue = 0
         }
-        
-        TradeBpSlider.maximumValue = value + 500
+        TradeBpStepper.maximumValue = couponSpread + 500
+        TradeBpLabel.text = couponSpread.description + " bp"
+
+        //setup the slider
+        TradeBpSlider.minimumValue = Float(TradeBpStepper.minimumValue)
+        TradeBpSlider.maximumValue = Float(TradeBpStepper.maximumValue)
+        TradeBpSlider.value = Float(TradeBpStepper.value)
     }
+    
     
     @IBAction func TradeBpStepChange(sender: UIStepper) {
 
@@ -149,8 +153,9 @@ class FeeViewController: UIViewController {
         let newQuote = sender.value
         TradeBpLabel.text = Int(newQuote).description + " bp"
         
-        //reset the slider
-        TradeBpSliderSetup (Float(newQuote))
+        //sync the slider
+        TradeBpSlider.value = Float(TradeBpStepper.value)
+        
         reCalc()
     }
     
@@ -158,7 +163,7 @@ class FeeViewController: UIViewController {
         let newQuote = Double(sender.value)
         TradeBpLabel.text = Int(newQuote).description + " bp"
 
-            //update the stepper
+            //sync the stepper
         TradeBpStepper.value = newQuote
         reCalc()
     }
@@ -169,9 +174,8 @@ class FeeViewController: UIViewController {
         CpnBpLabel.text = Coupons[Int(newQuote)] + " bp"
         TradeBpLabel.text = CpnBpLabel.text
         
-        //rest the Controls
-        TradeBpStepper.value = Double(Coupons[Int(newQuote)])!
-        TradeBpSliderSetup (Float(newQuote))
+        //reset the Controls
+        TradeBpStepperSetup()
         
         reCalc()
     }

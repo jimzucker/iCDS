@@ -155,13 +155,16 @@
                                         </subviews>
                                     </stackView>
                                     <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="caF-Xg-mIa">
+                                        <rect key="frame" x="0.0" y="240" width="555" height="50"/>
+                                    </stackView>
+                                    <stackView opaque="NO" contentMode="scaleToFill" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="BJQ-lt-IDR" userLabel="QuoteView">
                                         <rect key="frame" x="0.0" y="261" width="555" height="55"/>
                                         <subviews>
-                                            <stackView opaque="NO" contentMode="scaleToFill" misplaced="YES" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="3E2-YM-be1" userLabel="TradeBpView">
-                                                <rect key="frame" x="0.0" y="0.0" width="82" height="55"/>
+                                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="3E2-YM-be1" userLabel="TradeBpView">
+                                                <rect key="frame" x="0.0" y="0.0" width="94" height="55"/>
                                                 <subviews>
-                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="500 bp" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LdF-F0-K5s">
-                                                        <rect key="frame" x="0.0" y="0.0" width="82" height="26"/>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="500 bp" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LdF-F0-K5s">
+                                                        <rect key="frame" x="0.0" y="0.0" width="94" height="26"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                         <color key="textColor" red="1" green="0.50196081400000003" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                         <nil key="highlightedColor"/>
@@ -175,8 +178,8 @@
                                                     </stepper>
                                                 </subviews>
                                             </stackView>
-                                            <slider opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="-1000" maxValue="1000" translatesAutoresizingMaskIntoConstraints="NO" id="JBf-OI-Noj">
-                                                <rect key="frame" x="80" y="0.0" width="477" height="56"/>
+                                            <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="-1000" maxValue="1000" translatesAutoresizingMaskIntoConstraints="NO" id="JBf-OI-Noj">
+                                                <rect key="frame" x="102" y="0.0" width="455" height="56"/>
                                                 <connections>
                                                     <action selector="TradeBpSliderChange:" destination="9pv-A4-QxB" eventType="valueChanged" id="IZN-8G-VDY"/>
                                                 </connections>
@@ -184,7 +187,7 @@
                                         </subviews>
                                     </stackView>
                                     <stackView opaque="NO" contentMode="scaleToFill" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="XIY-CA-JdA" userLabel="Labels">
-                                        <rect key="frame" x="0.0" y="326" width="555" height="56"/>
+                                        <rect key="frame" x="0.0" y="326" width="555" height="55"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Start/Settle" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2Wb-Bh-p5k" userLabel="Label1">
                                                 <rect key="frame" x="0.0" y="0.0" width="182" height="56"/>
@@ -199,7 +202,7 @@
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Spread/Upfront" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8e2-VG-nRV" userLabel="Label3">
-                                                <rect key="frame" x="374" y="0.0" width="182" height="56"/>
+                                                <rect key="frame" x="374" y="0.0" width="181" height="56"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                                 <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                 <nil key="highlightedColor"/>
@@ -224,7 +227,7 @@
                                                 <textInputTraits key="textInputTraits"/>
                                             </textField>
                                             <textField opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="0.00" textAlignment="right" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="LGQ-go-Bup" userLabel="Start">
-                                                <rect key="frame" x="374" y="0.0" width="182" height="55"/>
+                                                <rect key="frame" x="374" y="0.0" width="181" height="55"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                                 <textInputTraits key="textInputTraits"/>
                                             </textField>
@@ -244,7 +247,7 @@
                                                 <textInputTraits key="textInputTraits"/>
                                             </textField>
                                             <textField opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="0.00" textAlignment="right" minimumFontSize="12" translatesAutoresizingMaskIntoConstraints="NO" id="S4c-V2-eYV" userLabel="UpFront">
-                                                <rect key="frame" x="374" y="0.0" width="182" height="55"/>
+                                                <rect key="frame" x="374" y="0.0" width="181" height="55"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                                 <textInputTraits key="textInputTraits"/>
                                             </textField>
@@ -255,6 +258,7 @@
                                     <constraint firstItem="qhU-BP-bT3" firstAttribute="width" secondItem="2Wb-Bh-p5k" secondAttribute="width" id="23T-ua-k5t"/>
                                     <constraint firstItem="XIY-CA-JdA" firstAttribute="height" secondItem="79n-7c-ZyK" secondAttribute="height" id="4jf-cI-7Mi"/>
                                     <constraint firstItem="h6x-aU-ou4" firstAttribute="width" secondItem="2Wb-Bh-p5k" secondAttribute="width" id="Obo-7o-QpR"/>
+                                    <constraint firstItem="BJQ-lt-IDR" firstAttribute="height" secondItem="iPW-NQ-0vH" secondAttribute="height" id="S58-t2-Z7H"/>
                                     <constraint firstItem="gUU-fj-vn4" firstAttribute="width" secondItem="2Wb-Bh-p5k" secondAttribute="width" id="e94-oA-IsY"/>
                                     <constraint firstItem="ras-mO-lNG" firstAttribute="height" secondItem="79n-7c-ZyK" secondAttribute="height" id="guG-pl-UtE"/>
                                     <constraint firstItem="ayD-Bi-gWJ" firstAttribute="width" secondItem="2Wb-Bh-p5k" secondAttribute="width" id="hMR-as-508"/>
@@ -267,6 +271,11 @@
                                     <constraint firstItem="eiJ-F5-yH5" firstAttribute="width" secondItem="xBS-Mz-wtK" secondAttribute="width" id="yBY-jB-7la"/>
                                     <constraint firstItem="caF-Xg-mIa" firstAttribute="height" secondItem="iPW-NQ-0vH" secondAttribute="height" id="z4w-O0-dLd"/>
                                 </constraints>
+                                <variation key="default">
+                                    <mask key="subviews">
+                                        <exclude reference="caF-Xg-mIa"/>
+                                    </mask>
+                                </variation>
                             </stackView>
                         </subviews>
                         <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
