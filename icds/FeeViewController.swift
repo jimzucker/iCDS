@@ -10,6 +10,7 @@ import UIKit
 
 class FeeViewController: UIViewController {
 
+    @IBOutlet weak var ContractRegionController: UISegmentedControl!
     
     //Trading Spread
     @IBOutlet weak var TradeBpLabel: UILabel!
@@ -26,9 +27,7 @@ class FeeViewController: UIViewController {
     @IBOutlet weak var MaturityControl: UISegmentedControl!
     
     //Coupon
-    @IBOutlet weak var CpnBpLabel: UILabel!
-    @IBOutlet weak var CpnBpStepper: UIStepper!
-    let Coupons = ["0", "25", "100", "500", "1000"]
+    @IBOutlet weak var CouponControl: UISegmentedControl!
     
     @IBOutlet weak var CurrencyLabel: UILabel!
     @IBOutlet weak var CurrencyStepper: UIStepper!
@@ -56,19 +55,12 @@ class FeeViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
-        //setup Cpn bp
-        CpnBpStepper.wraps = true
-        CpnBpStepper.autorepeat = true
-        CpnBpStepper.maximumValue = Double(Coupons.count)-1
-        CpnBpStepper.value = 3
-        CpnBpLabel.text = String(Coupons[Int(CpnBpStepper.value)]) + " bp"
-
         //setup Currency
         CurrencyStepper.wraps = true
         CurrencyStepper.autorepeat = true
         CurrencyStepper.maximumValue = Double(CurrencyList.count)-1
         CurrencyStepper.value = Double(CurrencyList.count)-1
-        CurrencyLabel.text = String(Coupons[Int(CurrencyStepper.value)])
+        CurrencyLabel.text = String("USD")
 
         //setup traded spread
         TradeBpStepper.wraps = false
@@ -102,16 +94,18 @@ class FeeViewController: UIViewController {
         print ("----------------------------------------")
         print ("Quote    : " + TradeBpLabel.text!)
         print ("TradeDate: " + TradeDateLabel.text!)
-        print ("BuySell  : " + String(BuySellControl.titleForSegmentAtIndex(BuySellControl.selectedSegmentIndex)) )
-        print ("Notional : " + String(NotionalControl.titleForSegmentAtIndex(NotionalControl.selectedSegmentIndex)) )
-        print ("Maturity : " + String(MaturityControl.titleForSegmentAtIndex(MaturityControl.selectedSegmentIndex)) )
-        print ("Cpn      : " + CpnBpLabel.text!)
+        print ("BuySell  : " + BuySellControl.titleForSegmentAtIndex(BuySellControl.selectedSegmentIndex)!)
+        print ("Notional : " + NotionalControl.titleForSegmentAtIndex(NotionalControl.selectedSegmentIndex)!)
+        print ("Maturity : " + MaturityControl.titleForSegmentAtIndex(MaturityControl.selectedSegmentIndex)!)
+        print ("Coupon   : " + CouponControl.titleForSegmentAtIndex(CouponControl.selectedSegmentIndex)!)
         print ("Recovery : " + String(RecoveryControl.titleForSegmentAtIndex(RecoveryControl.selectedSegmentIndex)) )
         print ("Fee      : " + CalculatedFeeLabel.text!)
         print ("Currency : " + CurrencyLabel!.text!)
         print ("----------------------------------------")
     }
 
+    @IBAction func ContractRegionControllerChange(sender: UISegmentedControl) {
+    }
     
     @IBAction func SegmentControllerChange(sender: UISegmentedControl) {
         reCalc()
@@ -128,9 +122,11 @@ class FeeViewController: UIViewController {
     func TradeBpStepperSetup()
     {
         //This is setup realative to the Coupon Spread selected
-        let couponSpreadIndex = Int(CpnBpStepper.value)
-        let couponSpread = Double(Coupons[couponSpreadIndex])!
-        
+        let couponSpread = Double(CouponControl.titleForSegmentAtIndex(CouponControl.selectedSegmentIndex)!)!
+ 
+        //update the labels
+        TradeBpLabel.text = Int(couponSpread).description + " bp"
+
         TradeBpStepper.value = couponSpread
         if couponSpread > 500 {
             TradeBpStepper.minimumValue = couponSpread - 500
@@ -168,11 +164,8 @@ class FeeViewController: UIViewController {
         reCalc()
     }
     
-    @IBAction func CpnBpStepChange(sender: UIStepper) {
-            //update the labels
-        let newQuote = sender.value
-        CpnBpLabel.text = Coupons[Int(newQuote)] + " bp"
-        TradeBpLabel.text = CpnBpLabel.text
+    
+    @IBAction func CouponControllerChange(sender: UISegmentedControl) {
         
         //reset the Controls
         TradeBpStepperSetup()
