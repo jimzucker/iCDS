@@ -15,6 +15,9 @@
 		6D497B241CE2D88E00FACBB2 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6D497B221CE2D88E00FACBB2 /* LaunchScreen.storyboard */; };
 		6D497B2F1CE2D88E00FACBB2 /* icdsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D497B2E1CE2D88E00FACBB2 /* icdsTests.swift */; };
 		6D497B3A1CE2D88E00FACBB2 /* icdsUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D497B391CE2D88E00FACBB2 /* icdsUITests.swift */; };
+		6D6418581DA4535C005E8048 /* contracts.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6D6418571DA4535C005E8048 /* contracts.plist */; };
+		6D64185A1DA45B95005E8048 /* ISDAContract.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D6418591DA45B95005E8048 /* ISDAContract.swift */; };
+		6D64185C1DA47D21005E8048 /* Recovery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D64185B1DA47D21005E8048 /* Recovery.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -49,6 +52,9 @@
 		6D497B351CE2D88E00FACBB2 /* icdsUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = icdsUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		6D497B391CE2D88E00FACBB2 /* icdsUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = icdsUITests.swift; sourceTree = "<group>"; };
 		6D497B3B1CE2D88E00FACBB2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		6D6418571DA4535C005E8048 /* contracts.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = contracts.plist; sourceTree = "<group>"; };
+		6D6418591DA45B95005E8048 /* ISDAContract.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ISDAContract.swift; sourceTree = "<group>"; };
+		6D64185B1DA47D21005E8048 /* Recovery.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Recovery.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -100,7 +106,10 @@
 			isa = PBXGroup;
 			children = (
 				6D497B171CE2D88E00FACBB2 /* AppDelegate.swift */,
+				6D64185B1DA47D21005E8048 /* Recovery.swift */,
+				6D6418571DA4535C005E8048 /* contracts.plist */,
 				6D497B191CE2D88E00FACBB2 /* FeeViewController.swift */,
+				6D6418591DA45B95005E8048 /* ISDAContract.swift */,
 				6D497B1B1CE2D88E00FACBB2 /* LiborViewController.swift */,
 				6D497B1D1CE2D88E00FACBB2 /* Main.storyboard */,
 				6D497B201CE2D88E00FACBB2 /* Assets.xcassets */,
@@ -191,18 +200,21 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0730;
-				LastUpgradeCheck = 0730;
+				LastUpgradeCheck = 0800;
 				ORGANIZATIONNAME = "Strategic Software Engineering LLC";
 				TargetAttributes = {
 					6D497B131CE2D88E00FACBB2 = {
 						CreatedOnToolsVersion = 7.3.1;
+						LastSwiftMigration = 0800;
 					};
 					6D497B291CE2D88E00FACBB2 = {
 						CreatedOnToolsVersion = 7.3.1;
+						LastSwiftMigration = 0800;
 						TestTargetID = 6D497B131CE2D88E00FACBB2;
 					};
 					6D497B341CE2D88E00FACBB2 = {
 						CreatedOnToolsVersion = 7.3.1;
+						LastSwiftMigration = 0800;
 						TestTargetID = 6D497B131CE2D88E00FACBB2;
 					};
 				};
@@ -234,6 +246,7 @@
 			files = (
 				6D497B241CE2D88E00FACBB2 /* LaunchScreen.storyboard in Resources */,
 				6D497B211CE2D88E00FACBB2 /* Assets.xcassets in Resources */,
+				6D6418581DA4535C005E8048 /* contracts.plist in Resources */,
 				6D497B1F1CE2D88E00FACBB2 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -259,9 +272,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6D64185A1DA45B95005E8048 /* ISDAContract.swift in Sources */,
 				6D497B1C1CE2D88E00FACBB2 /* LiborViewController.swift in Sources */,
 				6D497B181CE2D88E00FACBB2 /* AppDelegate.swift in Sources */,
 				6D497B1A1CE2D88E00FACBB2 /* FeeViewController.swift in Sources */,
+				6D64185C1DA47D21005E8048 /* Recovery.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -330,8 +345,10 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -376,8 +393,10 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -396,6 +415,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -409,6 +429,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.ijaz.icds;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
 		};
@@ -420,6 +441,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.ijaz.icds;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
 		};
@@ -431,6 +453,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.ijaz.icdsTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/icds.app/icds";
 			};
 			name = Debug;
@@ -443,6 +466,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.ijaz.icdsTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/icds.app/icds";
 			};
 			name = Release;
@@ -454,6 +478,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.ijaz.icdsUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
 				TEST_TARGET_NAME = icds;
 			};
 			name = Debug;
@@ -465,6 +490,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.ijaz.icdsUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
 				TEST_TARGET_NAME = icds;
 			};
 			name = Release;

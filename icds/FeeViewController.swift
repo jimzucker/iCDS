@@ -31,6 +31,7 @@ class FeeViewController: UIViewController {
     
     @IBOutlet weak var CurrencyLabel: UILabel!
     @IBOutlet weak var CurrencyStepper: UIStepper!
+    let usdCurrency = "USD"
     var CurrencyList = ["EUR", "GBP", "USD"]
 
     //Recovery
@@ -51,16 +52,62 @@ class FeeViewController: UIViewController {
     @IBOutlet weak var PriceField: UITextField!
     @IBOutlet weak var UpfrontBpField: UITextField!
     
+    var isdaContracts : [ISDAContract] =  [ISDAContract]()
+    
+    fileprivate func loadContracts() {
+        isdaContracts = ISDAContract.readFromPlist()
+    }
+    
+    fileprivate func configureRegionTerms(contract: ISDAContract) {
+        //Configure Recovery
+        RecoveryControl.removeAllSegments()
+        var i = 0
+        for recovery in contract.recoveryList {
+            RecoveryControl.insertSegment(withTitle: recovery.subordination, at: i, animated: false)
+            i += 1
+        }
+        RecoveryControl.selectedSegmentIndex = 0
+        
+        //Configure Coupons
+        CouponControl.removeAllSegments()
+        i = 0
+        for cpn in contract.coupons {
+            CouponControl.insertSegment(withTitle: cpn.description, at: i, animated: false)
+            i += 1
+        }
+        CouponControl.selectedSegmentIndex = 0
+        TradeBpStepperSetup()
+    }
+    
+    fileprivate func initRegionSelector() {
+        ContractRegionController.removeAllSegments()
+        var i = 0
+        for contract in isdaContracts {
+            ContractRegionController.insertSegment(withTitle: contract.region, at: i, animated: false)
+            i += 1
+        }
+        ContractRegionController.selectedSegmentIndex = 0
+
+        //configure the screen based on the region
+        configureRegionTerms(contract: isdaContracts[ContractRegionController.selectedSegmentIndex])
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
+        
+        //Load contract defintions
+        loadContracts()
+
+        //setup the Region Select
+        initRegionSelector()
         
         //setup Currency
         CurrencyStepper.wraps = true
         CurrencyStepper.autorepeat = true
         CurrencyStepper.maximumValue = Double(CurrencyList.count)-1
         CurrencyStepper.value = Double(CurrencyList.count)-1
-        CurrencyLabel.text = String("USD")
+        CurrencyLabel.text = usdCurrency
 
         //setup traded spread
         TradeBpStepper.wraps = false
@@ -73,7 +120,7 @@ class FeeViewController: UIViewController {
         TradeDateStepper.minimumValue = -5
         TradeDateStepper.maximumValue = 0
         TradeDateStepper.value = 0
-        let today = NSDate()
+        let today = Date()
         setTradeDate(today)
         
         reCalc()
@@ -87,32 +134,35 @@ class FeeViewController: UIViewController {
     func reCalc()
     {
 
-        let dateFormatter = NSDateFormatter()
+        let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "HH:MM:SS"
-        CalculatedFeeLabel.text = dateFormatter.stringFromDate(NSDate())
+        CalculatedFeeLabel.text = dateFormatter.string(from: Date())
 
         print ("----------------------------------------")
         print ("Quote    : " + TradeBpLabel.text!)
         print ("TradeDate: " + TradeDateLabel.text!)
-        print ("BuySell  : " + BuySellControl.titleForSegmentAtIndex(BuySellControl.selectedSegmentIndex)!)
-        print ("Notional : " + NotionalControl.titleForSegmentAtIndex(NotionalControl.selectedSegmentIndex)!)
-        print ("Maturity : " + MaturityControl.titleForSegmentAtIndex(MaturityControl.selectedSegmentIndex)!)
-        print ("Coupon   : " + CouponControl.titleForSegmentAtIndex(CouponControl.selectedSegmentIndex)!)
-        print ("Recovery : " + String(RecoveryControl.titleForSegmentAtIndex(RecoveryControl.selectedSegmentIndex)) )
+        print ("BuySell  : " + BuySellControl.titleForSegment(at: BuySellControl.selectedSegmentIndex)!)
+        print ("Notional : " + NotionalControl.titleForSegment(at: NotionalControl.selectedSegmentIndex)!)
+        print ("Maturity : " + MaturityControl.titleForSegment(at: MaturityControl.selectedSegmentIndex)!)
+        print ("Coupon   : " + CouponControl.titleForSegment(at: CouponControl.selectedSegmentIndex)!)
+        print ("Recovery : " + String(describing: RecoveryControl.titleForSegment(at: RecoveryControl.selectedSegmentIndex)) )
         print ("Fee      : " + CalculatedFeeLabel.text!)
         print ("Currency : " + CurrencyLabel!.text!)
         print ("----------------------------------------")
     }
 
-    @IBAction func ContractRegionControllerChange(sender: UISegmentedControl) {
+    @IBAction func ContractRegionControllerChange(_ sender: UISegmentedControl) {
+        //configure the screen based on the region
+        configureRegionTerms(contract: isdaContracts[sender.selectedSegmentIndex])
+        reCalc()
     }
     
-    @IBAction func SegmentControllerChange(sender: UISegmentedControl) {
+    @IBAction func SegmentControllerChange(_ sender: UISegmentedControl) {
         reCalc()
     }
     
     
-    @IBAction func CurrencyStepChange(sender: UIStepper) {
+    @IBAction func CurrencyStepChange(_ sender: UIStepper) {
         CurrencyLabel.text = String(CurrencyList[Int(sender.value)])
         reCalc()
     }
@@ -122,11 +172,12 @@ class FeeViewController: UIViewController {
     func TradeBpStepperSetup()
     {
         //This is setup realative to the Coupon Spread selected
-        let couponSpread = Double(CouponControl.titleForSegmentAtIndex(CouponControl.selectedSegmentIndex)!)!
+        let couponSpread = Double(CouponControl.titleForSegment(at: CouponControl.selectedSegmentIndex)!)!
  
         //update the labels
         TradeBpLabel.text = Int(couponSpread).description + " bp"
 
+        //setup the stepper
         TradeBpStepper.value = couponSpread
         if couponSpread > 500 {
             TradeBpStepper.minimumValue = couponSpread - 500
@@ -134,7 +185,6 @@ class FeeViewController: UIViewController {
             TradeBpStepper.minimumValue = 0
         }
         TradeBpStepper.maximumValue = couponSpread + 500
-        TradeBpLabel.text = couponSpread.description + " bp"
 
         //setup the slider
         TradeBpSlider.minimumValue = Float(TradeBpStepper.minimumValue)
@@ -143,7 +193,7 @@ class FeeViewController: UIViewController {
     }
     
     
-    @IBAction func TradeBpStepChange(sender: UIStepper) {
+    @IBAction func TradeBpStepChange(_ sender: UIStepper) {
 
         //set the label
         let newQuote = sender.value
@@ -155,7 +205,7 @@ class FeeViewController: UIViewController {
         reCalc()
     }
     
-    @IBAction func TradeBpSliderChange(sender: UISlider) {
+    @IBAction func TradeBpSliderChange(_ sender: UISlider) {
         let newQuote = Double(sender.value)
         TradeBpLabel.text = Int(newQuote).description + " bp"
 
@@ -165,7 +215,7 @@ class FeeViewController: UIViewController {
     }
     
     
-    @IBAction func CouponControllerChange(sender: UISegmentedControl) {
+    @IBAction func CouponControllerChange(_ sender: UISegmentedControl) {
         
         //reset the Controls
         TradeBpStepperSetup()
@@ -173,21 +223,21 @@ class FeeViewController: UIViewController {
         reCalc()
     }
     
-    @IBAction func TradeDateStepChange(sender: UIStepper) {
-        var tradeDate = NSDate()
+    @IBAction func TradeDateStepChange(_ sender: UIStepper) {
+        var tradeDate = Date()
         
-        let currentCalendar = NSCalendar.currentCalendar()
-        tradeDate = currentCalendar.dateByAddingUnit(NSCalendarUnit.Day, value: Int(sender.value), toDate: tradeDate, options: NSCalendarOptions.MatchFirst)!
+        let currentCalendar = Calendar.current
+        tradeDate = (currentCalendar as NSCalendar).date(byAdding: NSCalendar.Unit.day, value: Int(sender.value), to: tradeDate, options: NSCalendar.Options.matchFirst)!
         
         setTradeDate(tradeDate)
         reCalc()
     }
     
-    func setTradeDate( tradeDate: NSDate )
+    func setTradeDate( _ tradeDate: Date )
     {
-        let dateFormatter = NSDateFormatter()
+        let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "MMM d"
-        TradeDateLabel.text = dateFormatter.stringFromDate(tradeDate)
+        TradeDateLabel.text = dateFormatter.string(from: tradeDate)
 
     }
 
