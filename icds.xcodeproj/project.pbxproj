@@ -106,10 +106,7 @@
 			isa = PBXGroup;
 			children = (
 				6D497B171CE2D88E00FACBB2 /* AppDelegate.swift */,
-				6D64185B1DA47D21005E8048 /* Recovery.swift */,
-				6D6418571DA4535C005E8048 /* contracts.plist */,
-				6D497B191CE2D88E00FACBB2 /* FeeViewController.swift */,
-				6D6418591DA45B95005E8048 /* ISDAContract.swift */,
+				6D7534F61DA5CFAD0061AFA8 /* FeeTab */,
 				6D497B1B1CE2D88E00FACBB2 /* LiborViewController.swift */,
 				6D497B1D1CE2D88E00FACBB2 /* Main.storyboard */,
 				6D497B201CE2D88E00FACBB2 /* Assets.xcassets */,
@@ -135,6 +132,17 @@
 				6D497B3B1CE2D88E00FACBB2 /* Info.plist */,
 			);
 			path = icdsUITests;
+			sourceTree = "<group>";
+		};
+		6D7534F61DA5CFAD0061AFA8 /* FeeTab */ = {
+			isa = PBXGroup;
+			children = (
+				6D64185B1DA47D21005E8048 /* Recovery.swift */,
+				6D6418571DA4535C005E8048 /* contracts.plist */,
+				6D497B191CE2D88E00FACBB2 /* FeeViewController.swift */,
+				6D6418591DA45B95005E8048 /* ISDAContract.swift */,
+			);
+			name = FeeTab;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

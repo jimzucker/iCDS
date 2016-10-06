@@ -13,7 +13,7 @@ class FeeViewController: UIViewController {
     @IBOutlet weak var ContractRegionController: UISegmentedControl!
     
     //Trading Spread
-    @IBOutlet weak var TradeBpLabel: UILabel!
+    @IBOutlet weak var TradeBpLabel: UITextField!
     @IBOutlet weak var TradeBpStepper: UIStepper!
     @IBOutlet weak var TradeBpSlider: UISlider!
     
@@ -38,7 +38,7 @@ class FeeViewController: UIViewController {
     @IBOutlet weak var RecoveryControl: UISegmentedControl!
     
     //UpFront Fee
-    @IBOutlet weak var CalculatedFeeLabel: UILabel!
+    @IBOutlet weak var CalculatedFeeLabel: UITextField!
     
     //Buttons
     @IBOutlet weak var CurrencyBtn: UIButton!
