@@ -184,12 +184,8 @@ class FeeViewController: UIViewController {
 
         //setup the stepper
         TradeBpStepper.value = couponSpread
-        if couponSpread > 500 {
-            TradeBpStepper.minimumValue = couponSpread - 500
-        } else {
-            TradeBpStepper.minimumValue = 0
-        }
-        TradeBpStepper.maximumValue = couponSpread + 500
+        TradeBpStepper.minimumValue = 1
+        TradeBpStepper.maximumValue = couponSpread + 1000
 
         //setup the slider
         TradeBpSlider.minimumValue = Float(TradeBpStepper.minimumValue)
