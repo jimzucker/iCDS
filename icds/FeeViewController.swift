@@ -18,7 +18,7 @@ class FeeViewController: UIViewController {
     @IBOutlet weak var TradeBpSlider: UISlider!
     
     //TradeDate
-    @IBOutlet weak var TradeDateLabel: UILabel!
+    @IBOutlet weak var TradeDateLabel: UITextField!
     @IBOutlet weak var TradeDateStepper: UIStepper!
     
     //Terms
@@ -29,13 +29,14 @@ class FeeViewController: UIViewController {
     //Coupon
     @IBOutlet weak var CouponControl: UISegmentedControl!
     
-    @IBOutlet weak var CurrencyLabel: UILabel!
+    @IBOutlet weak var CurrencyLabel: UITextField!
     @IBOutlet weak var CurrencyStepper: UIStepper!
     let usdCurrency = "USD"
     var CurrencyList = ["EUR", "GBP", "USD"]
 
     //Recovery
     @IBOutlet weak var RecoveryControl: UISegmentedControl!
+    @IBOutlet weak var RecoveryLabel: UITextField!
     
     //UpFront Fee
     @IBOutlet weak var CalculatedFeeLabel: UITextField!
@@ -67,6 +68,7 @@ class FeeViewController: UIViewController {
             i += 1
         }
         RecoveryControl.selectedSegmentIndex = 0
+        RecoveryLabel.text = contract.recoveryList[0].recovery.description + "%";
         
         //Configure Coupons
         CouponControl.removeAllSegments()
@@ -114,12 +116,7 @@ class FeeViewController: UIViewController {
         TradeBpStepper.autorepeat = true
         TradeBpStepperSetup()
         
-        //setup trade date stepper
-        TradeDateStepper.wraps = false
-        TradeDateStepper.autorepeat = true
-        TradeDateStepper.minimumValue = -5
-        TradeDateStepper.maximumValue = 0
-        TradeDateStepper.value = 0
+        //setup trade date
         let today = Date()
         setTradeDate(today)
         
@@ -151,17 +148,25 @@ class FeeViewController: UIViewController {
         print ("----------------------------------------")
     }
 
+    @IBAction func SegmentControllerChange(_ sender: UISegmentedControl) {
+        reCalc()
+    }
+
     @IBAction func ContractRegionControllerChange(_ sender: UISegmentedControl) {
         //configure the screen based on the region
         configureRegionTerms(contract: isdaContracts[sender.selectedSegmentIndex])
         reCalc()
     }
     
-    @IBAction func SegmentControllerChange(_ sender: UISegmentedControl) {
+    
+    @IBAction func RecoveryControllerChange(_ sender: UISegmentedControl) {
+        let contract = isdaContracts[ContractRegionController.selectedSegmentIndex]
+        let recovery = contract.recoveryList[sender.selectedSegmentIndex].recovery
+        RecoveryLabel.text = recovery.description + "%";
         reCalc()
     }
     
-    
+
     @IBAction func CurrencyStepChange(_ sender: UIStepper) {
         CurrencyLabel.text = String(CurrencyList[Int(sender.value)])
         reCalc()
@@ -236,7 +241,7 @@ class FeeViewController: UIViewController {
     func setTradeDate( _ tradeDate: Date )
     {
         let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "MMM d"
+        dateFormatter.dateFormat = "d-MMM"
         TradeDateLabel.text = dateFormatter.string(from: tradeDate)
 
     }
