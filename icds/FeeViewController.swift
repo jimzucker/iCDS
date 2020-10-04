@@ -29,10 +29,8 @@ class FeeViewController: UIViewController {
     //Coupon
     @IBOutlet weak var CouponControl: UISegmentedControl!
     
-    @IBOutlet weak var CurrencyLabel: UITextField!
+    @IBOutlet weak var CurrencyControl: UISegmentedControl!
     @IBOutlet weak var CurrencyStepper: UIStepper!
-    let usdCurrency = "USD"
-    var CurrencyList = ["EUR", "GBP", "USD"]
 
     //Recovery
     @IBOutlet weak var RecoveryControl: UISegmentedControl!
