@@ -1,7 +1,5 @@
-# What does it cost to build an iPhone App?
+# What does it take to build an iphone app? It took me about $2,427 bucks, over 5 months, 134 hours of my time.
 Jim Zucker, September 2009 to Feb 2010
-
-## What does it take to build an iphone app? It took me about $2,427 bucks, over 5 months, 134 hours of my time.
 
 I probably should have started blogging at the start of the project last September (2009), but I am still learning the ins and outs of the wiki site. On the 28th of Jan I submitted the App to the AppStore, so now I am waiting (what I hope is a couple of days) to publish my first app.
 
