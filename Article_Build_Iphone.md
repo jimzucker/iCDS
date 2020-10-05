@@ -1,5 +1,9 @@
-# What does it take to build an iphone app? It took me about $2,427 bucks, over 5 months, 134 hours of my time.
+# What does it take to build an iphone app?
 Jim Zucker, September 2009 to Feb 2010
+
+<img width="225" height="225" align="left" src="https://github.com/jimzucker/iCDS/blob/master/images/512_iCDS_Icon.jpg">
+
+It took me about $2,427 bucks, over 5 months and 134 hours of my time. 
 
 I probably should have started blogging at the start of the project last September (2009), but I am still learning the ins and outs of the wiki site. On the 28th of Jan I submitted the App to the AppStore, so now I am waiting (what I hope is a couple of days) to publish my first app.
 
