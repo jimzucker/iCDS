@@ -4,7 +4,7 @@
 The 1.0 version of the application will implement a SNAC(Standard North American CDS), upfront fee calculator using the ISDA Standard CDS Model, www.cdsmodel.com and based on the functionality found on the MarkIt partners website, www.markit.com/cds. The applications free. Its only objective is for the author to have a non-trivial application in the iPhone AppStore. The approach of the application is to recalculate the upfront fee and intermediate results and display them as the user changes outputs using the quick entry controls or the pickers accessed by pressing the buttons displaying the inputs. Copyright 2009-2015.
 
 ## Background 
-<img width="292" height="5	00" align="right" src="https://github.com/jimzucker/iCDS/blob/master/images/JPEG_iCDSWikiScreenShoot.jpg">
+<img width="292" height="500" align="right" src="https://github.com/jimzucker/iCDS/blob/master/images/JPEG_iCDSWikiScreenShoot.jpg">
 
 I started this project when as a 'former' Mac developer I was swept up by the excitement of the iPhone App phenomenon. This led me to a drive to get a non-trivial application into the App Store. I convinced my family to buy me a MacBookPro for my birthday in Sept, 2009 and about 20 hours of effort latter I had my first GUI prototype running on the simulator.
 
