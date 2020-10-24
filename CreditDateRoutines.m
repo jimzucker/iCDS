@@ -50,7 +50,7 @@
 - (NSDate *) getDateFromComponents:(int)theYear month:(int) theMonth day:(int) theDay
 {
 	//Get the currnet QuarterEnd Date, pStartDate + 3 Months	
-	NSCalendar *gregorian = [[[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar] autorelease];
+    NSCalendar *gregorian = [[[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian] autorelease];
 	NSDateComponents *components = [[[NSDateComponents alloc] init] autorelease];
 	components.month	= theMonth;
 	components.day		= theDay;
@@ -65,7 +65,7 @@
 	//Bump the date as request	
 	
 	//Create a calendar object
-	NSCalendar *gregorian = [[[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar] autorelease];
+    NSCalendar *gregorian = [[[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian] autorelease];
 	
 	//setup the 'bump'
 	NSDateComponents *components = [[[NSDateComponents alloc] init] autorelease];
@@ -82,8 +82,8 @@
 
 - (NSDate *) moveToValidBusinessDate:(NSDate *) theDate rollForward:(BOOL) following
 {
-	NSCalendar *gregorian				= [[[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar] autorelease];
-	NSDateComponents *weekdayComponents = [gregorian components:(NSDayCalendarUnit | NSWeekdayCalendarUnit) fromDate:theDate];
+    NSCalendar *gregorian				= [[[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian] autorelease];
+    NSDateComponents *weekdayComponents = [gregorian components:(NSCalendarUnitDay | NSCalendarUnitWeekday) fromDate:theDate];
 	NSInteger weekday					= [weekdayComponents weekday];
 	
 	//if we are on Sat/Sun move to a Monday
@@ -113,9 +113,9 @@
 
 - (NSDate *) getPeriodStartDate:(NSDate *) theTradeDate
 {
-	NSCalendar			*gregorian			= [[[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar] autorelease];
+    NSCalendar			*gregorian			= [[[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian] autorelease];
 	NSDateComponents	*weekdayComponents	= [gregorian 
-											   components:(NSDayCalendarUnit | NSWeekdayCalendarUnit | NSYearCalendarUnit | NSMonthCalendarUnit) 
+                                               components:(NSCalendarUnitDay | NSCalendarUnitWeekday | NSCalendarUnitYear | NSCalendarUnitMonth) 
 											   fromDate:theTradeDate];
 	
 	NSInteger nDay	= [weekdayComponents day];
@@ -184,11 +184,11 @@
 	NSDate * startDate		= [self getPeriodStartDate:tradeDate];
 	
 	//Get the currnet QuarterEnd Date, pStartDate + 3 Months	
-	NSCalendar *gregorian = [[[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar] autorelease];
+    NSCalendar *gregorian = [[[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian] autorelease];
 	NSDateComponents *components = [[[NSDateComponents alloc] init] autorelease];
 	components.month = 3;
 	NSDate *cpnEndDate = [gregorian dateByAddingComponents:components toDate:startDate options:0];
-	NSDateComponents *cpnEndComponents = [gregorian components:NSYearCalendarUnit | NSMonthCalendarUnit fromDate:cpnEndDate];	
+    NSDateComponents *cpnEndComponents = [gregorian components:NSCalendarUnitYear | NSCalendarUnitMonth fromDate:cpnEndDate];	
 	
 	//we always roll on the 20th of the months
 	cpnEndComponents.day = 20;

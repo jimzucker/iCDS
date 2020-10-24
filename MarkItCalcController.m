@@ -99,12 +99,11 @@ void isda_calcValueAndStepinDate(TDate today
 //Converts an NSDate to a TDate for the Markit Library
 - (TDate) convertToTDate:(NSDate *)theDate
 {
-	NSCalendar *gregorian				= [ [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar] autorelease];
-	NSDateComponents *weekdayComponents = [
-										   gregorian components:(NSDayCalendarUnit | NSWeekdayCalendarUnit | NSYearCalendarUnit | NSMonthCalendarUnit) fromDate:theDate];
-	int nYear	= [weekdayComponents year];
-	int nMonth	= [weekdayComponents month];
-	int nDay	= [weekdayComponents day];
+    NSCalendar *gregorian				= [ [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian] autorelease];
+	NSDateComponents *weekdayComponents = [ gregorian components:(NSCalendarUnitDay | NSCalendarUnitWeekday | NSCalendarUnitYear | NSCalendarUnitMonth) fromDate:theDate];
+	NSInteger nYear	= [weekdayComponents year];
+    NSInteger nMonth	= [weekdayComponents month];
+    NSInteger nDay	= [weekdayComponents day];
 	
 	//NSLog(@"%d %d %d", nYear, nMonth, nDay);
 	return JpmcdsDate(nYear, nMonth, nDay);
@@ -117,7 +116,7 @@ void isda_calcValueAndStepinDate(TDate today
 	
 	JpmcdsDateToMDY( *valueDateTDate, &mdy );
 		
-	return [dateCalc getDateFromComponents:mdy.year month:mdy.month day:mdy.day];
+	return [dateCalc getDateFromComponents:(int)mdy.year month:(int)mdy.month day:(int)mdy.day];
 }
 
 
@@ -596,7 +595,7 @@ void isda_calcValueAndStepinDate(TDate today
 		isErr = 1;
 		
 			//do nothing loading libor failed, we already displayed an alert for that ;)
-		errMsg = [NSString stringWithString:@"LIBOR not available"];
+        errMsg = @"LIBOR not available";
 		
 	}
 	

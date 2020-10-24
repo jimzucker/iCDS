@@ -215,7 +215,7 @@
 	}		
 	else if (currentPicker == maturityPickerView)
 	{
-		NSCalendar *gregorian = [[[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar] autorelease];
+        NSCalendar *gregorian = [[[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian] autorelease];
 		NSDateComponents *components = [[[NSDateComponents alloc] init] autorelease];
 		
 			//month are Quartery so calc the month by the position
@@ -431,7 +431,7 @@
 // return the picker frame based on its size, positioned at the bottom of the page
 - (CGRect)pickerFrameWithSize:(CGSize)size
 {
-	CGRect screenRect = [[UIScreen mainScreen] applicationFrame];
+    CGRect screenRect = [[UIScreen mainScreen] bounds];
 	CGRect pickerRect = CGRectMake(	0.0,
 								   screenRect.size.height - 84.0 - size.height-120,
 								   size.width,
@@ -702,14 +702,14 @@
 	//get the current selection
 	NSString			*maturityString		= [MaturityText titleForState:UIControlStateNormal];
 	NSDate				*maturity			=  [dateCalc convertStringToDate:maturityString];
-	NSCalendar			*gregorian			= [[[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar] autorelease];
+    NSCalendar			*gregorian			= [[[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian] autorelease];
 	NSDateComponents	*weekdayComponents	= [gregorian 
-											   components:(NSDayCalendarUnit | NSWeekdayCalendarUnit | NSYearCalendarUnit | NSMonthCalendarUnit) 
+                                               components:(NSCalendarUnitDay | NSCalendarUnitWeekday | NSCalendarUnitYear | NSCalendarUnitMonth) 
 											   fromDate:maturity];
 	
 		//default the picker to the current selection
-	int year	= [[NSString	stringWithFormat:@"%4d", [weekdayComponents year]] intValue];
-	int month	= [[NSString	stringWithFormat:@"%2d", [weekdayComponents month]] intValue];
+    int year	= [[NSString	stringWithFormat:@"%4ld", (long)[weekdayComponents year]] intValue];
+    int month	= [[NSString	stringWithFormat:@"%2ld", (long)[weekdayComponents month]] intValue];
 	[maturityPickerView selectRow:((month/3)-1) inComponent:0 animated:NO];
 	[maturityPickerView	selectRow:(year-[[maturityYearViewArray objectAtIndex:0] intValue]) inComponent:1 animated:NO];
 	
