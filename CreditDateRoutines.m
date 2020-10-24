@@ -34,14 +34,14 @@
 
 - (NSString *) yyyymmdd: (NSDate *) theDate
 {
-	NSCalendar			*gregorian			= [[[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar] autorelease];
+    NSCalendar			*gregorian			= [[[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian] autorelease];
 	NSDateComponents	*weekdayComponents	= [gregorian 
-											   components:(NSDayCalendarUnit | NSWeekdayCalendarUnit | NSYearCalendarUnit | NSMonthCalendarUnit) 
+                                               components:(NSCalendarUnitDay | NSCalendarUnitWeekday | NSCalendarUnitYear | NSCalendarUnitMonth) 
 											   fromDate:theDate];
 	
-	NSString *year	= [NSString	stringWithFormat:@"%.3d", [weekdayComponents year]];
-	NSString *day	= [NSString	stringWithFormat:@"%.2d", [weekdayComponents day]];
-	NSString *month	= [NSString	stringWithFormat:@"%.2d", [weekdayComponents month]];
+    NSString *year	= [NSString	stringWithFormat:@"%.3ld", (long)[weekdayComponents year]];
+    NSString *day	= [NSString	stringWithFormat:@"%.2ld", (long)[weekdayComponents day]];
+    NSString *month	= [NSString	stringWithFormat:@"%.2ld", (long)[weekdayComponents month]];
 	
 	return [[year stringByAppendingString: month] stringByAppendingString:day];
 }

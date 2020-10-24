@@ -29,7 +29,6 @@
 
 - (NSDate *) getDateFromComponents:(int)theYear month:(int) theMonth day:(int) theDay;
 - (NSDate *) convertStringToDate:(NSString *) theDate;
-- (NSString *) convertDateToString:(NSDate *) theDate;
 
 
 @end

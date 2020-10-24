@@ -1,8 +1,10 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9059" systemVersion="15A284" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="17156" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9049"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17125"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="SNAC ViewController" customClass="SNACViewController">
@@ -37,327 +39,313 @@
                 <userLayoutGuide location="65" affinity="minY"/>
             </userGuides>
             <subviews>
-                <button clearsContextBeforeDrawing="NO" multipleTouchEnabled="YES" contentMode="scaleToFill" selected="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="623">
+                <button clearsContextBeforeDrawing="NO" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" selected="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="623">
                     <rect key="frame" x="102" y="22.5" width="74" height="40"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <animations/>
-                    <color key="backgroundColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="backgroundColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="12"/>
                     <state key="normal" backgroundImage="96_43SilverButton.png">
-                        <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
-                        <color key="titleShadowColor" cocoaTouchSystemColor="darkTextColor"/>
+                        <color key="titleColor" systemColor="darkTextColor"/>
+                        <color key="titleShadowColor" systemColor="darkTextColor"/>
                     </state>
                     <state key="highlighted">
-                        <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </state>
                     <connections>
                         <action selector="dialogTradeDatePicker:" destination="-1" eventType="touchUpInside" id="662"/>
                     </connections>
                 </button>
-                <button clearsContextBeforeDrawing="NO" contentMode="scaleToFill" selected="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" reversesTitleShadowWhenHighlighted="YES" lineBreakMode="middleTruncation" id="617">
+                <button clearsContextBeforeDrawing="NO" contentMode="scaleToFill" fixedFrame="YES" selected="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" reversesTitleShadowWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="617">
                     <rect key="frame" x="20" y="22" width="74" height="40"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <animations/>
-                    <color key="backgroundColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="backgroundColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <rect key="contentStretch" x="0.0" y="0.0" width="0.0" height="0.0"/>
                     <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="12"/>
                     <state key="normal" title="100 bps" backgroundImage="96_43SilverButton.png">
-                        <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
-                        <color key="titleShadowColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                        <color key="titleColor" systemColor="darkTextColor"/>
+                        <color key="titleShadowColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </state>
                     <state key="highlighted">
-                        <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </state>
                     <connections>
                         <action selector="dialogPricePicker:" destination="-1" eventType="touchUpInside" id="622"/>
                     </connections>
                 </button>
-                <button clearsContextBeforeDrawing="NO" contentMode="scaleToFill" selected="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" reversesTitleShadowWhenHighlighted="YES" lineBreakMode="middleTruncation" id="596">
+                <button clearsContextBeforeDrawing="NO" contentMode="scaleToFill" fixedFrame="YES" selected="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" reversesTitleShadowWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="596">
                     <rect key="frame" x="20" y="176" width="74" height="40"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <animations/>
-                    <color key="backgroundColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="backgroundColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="12"/>
                     <state key="normal" backgroundImage="96_43SilverButton.png">
-                        <color key="titleColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                        <color key="titleShadowColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                        <color key="titleColor" red="1" green="0.99997437000274658" blue="0.99999129772186279" alpha="0.84705882352941175" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="titleShadowColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </state>
                     <state key="highlighted">
-                        <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </state>
                     <connections>
                         <action selector="dialogMaturityPicker:" destination="-1" eventType="touchUpInside" id="609"/>
                     </connections>
                 </button>
-                <button clearsContextBeforeDrawing="NO" contentMode="scaleToFill" selected="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" reversesTitleShadowWhenHighlighted="YES" lineBreakMode="middleTruncation" id="591">
+                <button clearsContextBeforeDrawing="NO" contentMode="scaleToFill" fixedFrame="YES" selected="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" reversesTitleShadowWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="591">
                     <rect key="frame" x="187.5" y="280" width="55" height="30"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <animations/>
-                    <color key="backgroundColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="backgroundColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="12"/>
                     <state key="normal" title="USD" backgroundImage="96_43SilverButton.png">
-                        <color key="titleColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                        <color key="titleShadowColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                        <color key="titleColor" red="1" green="0.99997437000274658" blue="0.99999129772186279" alpha="0.84705882352941175" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="titleShadowColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </state>
                     <state key="highlighted">
-                        <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </state>
                     <connections>
                         <action selector="dialogCurrencyPicker:" destination="-1" eventType="touchUpInside" id="608"/>
                     </connections>
                 </button>
-                <segmentedControl opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" id="465">
+                <segmentedControl opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="465">
                     <rect key="frame" x="102" y="123" width="200" height="29"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <animations/>
-                    <color key="backgroundColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="backgroundColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <segments>
                         <segment title="1M"/>
                         <segment title="5M"/>
                         <segment title="10M"/>
                         <segment title="20M"/>
                     </segments>
-                    <color key="tintColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="tintColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <connections>
                         <action selector="ValueChangeNotional:" destination="-1" eventType="valueChanged" id="560"/>
                     </connections>
                 </segmentedControl>
-                <segmentedControl opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="1" id="466">
+                <segmentedControl opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="1" translatesAutoresizingMaskIntoConstraints="NO" id="466">
                     <rect key="frame" x="20" y="225" width="282" height="29"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <animations/>
-                    <color key="backgroundColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="backgroundColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <segments>
                         <segment title="25"/>
                         <segment title="100"/>
                         <segment title="500"/>
                         <segment title="1000"/>
                     </segments>
-                    <color key="tintColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="tintColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <connections>
                         <action selector="ValueChangeStandardCoupon:" destination="-1" eventType="valueChanged" id="550"/>
                     </connections>
                 </segmentedControl>
-                <segmentedControl opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="1" id="467">
+                <segmentedControl opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="1" translatesAutoresizingMaskIntoConstraints="NO" id="467">
                     <rect key="frame" x="102" y="174" width="200" height="29"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <animations/>
-                    <color key="backgroundColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="backgroundColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <segments>
                         <segment title="1Y"/>
                         <segment title="5Y"/>
                         <segment title="7Y"/>
                         <segment title="10Y"/>
                     </segments>
-                    <color key="tintColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="tintColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <connections>
                         <action selector="ValueChangeMaturity:" destination="-1" eventType="valueChanged" id="533"/>
                     </connections>
                 </segmentedControl>
-                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" text="Start/Settle" textAlignment="center" lineBreakMode="tailTruncation" minimumFontSize="10" id="475">
+                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" fixedFrame="YES" text="Start/Settle" textAlignment="center" lineBreakMode="tailTruncation" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="475">
                     <rect key="frame" x="20" y="318" width="91" height="22"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <animations/>
-                    <color key="backgroundColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="backgroundColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <fontDescription key="fontDescription" name="Helvetica-Bold" family="Helvetica" pointSize="11"/>
-                    <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <nil key="highlightedColor"/>
                 </label>
-                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" text="Accrual/Price" textAlignment="center" lineBreakMode="tailTruncation" minimumFontSize="10" id="477">
+                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" fixedFrame="YES" text="Accrual/Price" textAlignment="center" lineBreakMode="tailTruncation" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="477">
                     <rect key="frame" x="116" y="318" width="91" height="22"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <animations/>
-                    <color key="backgroundColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="backgroundColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <fontDescription key="fontDescription" name="Helvetica-Bold" family="Helvetica" pointSize="11"/>
-                    <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <nil key="highlightedColor"/>
                 </label>
-                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" text="Spread/UpFront" textAlignment="center" lineBreakMode="tailTruncation" minimumFontSize="10" id="479">
+                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" fixedFrame="YES" text="Spread/UpFront" textAlignment="center" lineBreakMode="tailTruncation" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="479">
                     <rect key="frame" x="211" y="318" width="91" height="22"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <animations/>
-                    <color key="backgroundColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="backgroundColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <fontDescription key="fontDescription" name="Helvetica-Bold" family="Helvetica" pointSize="11"/>
-                    <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <nil key="highlightedColor"/>
                 </label>
-                <segmentedControl opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" id="581">
+                <segmentedControl opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="581">
                     <rect key="frame" x="183" y="21" width="119" height="29"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <animations/>
-                    <color key="backgroundColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="backgroundColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <segments>
                         <segment title="Buy"/>
                         <segment title="Sell"/>
                     </segments>
-                    <color key="tintColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="tintColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <connections>
                         <action selector="CalcFee:" destination="-1" eventType="valueChanged" id="582"/>
                     </connections>
                 </segmentedControl>
-                <button clearsContextBeforeDrawing="NO" contentMode="scaleToFill" selected="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" reversesTitleShadowWhenHighlighted="YES" lineBreakMode="middleTruncation" id="602">
+                <button clearsContextBeforeDrawing="NO" contentMode="scaleToFill" fixedFrame="YES" selected="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" reversesTitleShadowWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="602">
                     <rect key="frame" x="20" y="125" width="74" height="40"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <animations/>
-                    <color key="backgroundColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="backgroundColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="12"/>
                     <state key="normal" title="1M" backgroundImage="96_43SilverButton.png">
-                        <color key="titleColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                        <color key="titleShadowColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                        <color key="titleColor" red="1" green="0.99997437000274658" blue="0.99999129772186279" alpha="0.84705882352941175" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="titleShadowColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </state>
                     <state key="highlighted">
-                        <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </state>
                     <connections>
                         <action selector="dialogNotionalPicker:" destination="-1" eventType="touchUpInside" id="610"/>
                     </connections>
                 </button>
-                <button clearsContextBeforeDrawing="NO" contentMode="scaleToFill" selected="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" reversesTitleShadowWhenHighlighted="YES" lineBreakMode="middleTruncation" id="611">
+                <button clearsContextBeforeDrawing="NO" contentMode="scaleToFill" fixedFrame="YES" selected="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" reversesTitleShadowWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="611">
                     <rect key="frame" x="20" y="73" width="74" height="40"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <animations/>
-                    <color key="backgroundColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="backgroundColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="12"/>
                     <state key="normal" title="40%" backgroundImage="96_43SilverButton.png">
-                        <color key="titleColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                        <color key="titleShadowColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                        <color key="titleColor" red="1" green="0.99997437000274658" blue="0.99999129772186279" alpha="0.84705882352941175" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="titleShadowColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </state>
                     <state key="highlighted">
-                        <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </state>
                     <connections>
                         <action selector="dialogRecoveryPicker:" destination="-1" eventType="touchUpInside" id="616"/>
                     </connections>
                 </button>
-                <button clearsContextBeforeDrawing="NO" multipleTouchEnabled="YES" contentMode="scaleToFill" enabled="NO" selected="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="643">
+                <button clearsContextBeforeDrawing="NO" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" enabled="NO" selected="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="643">
                     <rect key="frame" x="57" y="284" width="127" height="22"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <animations/>
-                    <color key="backgroundColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="backgroundColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <fontDescription key="fontDescription" name="Helvetica-Bold" family="Helvetica" pointSize="12"/>
                     <state key="normal">
-                        <color key="titleColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                        <color key="titleShadowColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                        <color key="titleColor" red="1" green="0.99997437000274658" blue="0.99999129772186279" alpha="0.84705882352941175" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="titleShadowColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </state>
                     <connections>
                         <action selector="debugInfoAlert:" destination="-1" eventType="touchDownRepeat" id="647"/>
                     </connections>
                 </button>
-                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" text="Fee" textAlignment="center" lineBreakMode="tailTruncation" minimumFontSize="10" id="645">
+                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" fixedFrame="YES" text="Fee" textAlignment="center" lineBreakMode="tailTruncation" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="645">
                     <rect key="frame" x="20" y="284" width="38" height="22"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <animations/>
-                    <color key="backgroundColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="backgroundColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <fontDescription key="fontDescription" name="Helvetica-Bold" family="Helvetica" pointSize="12"/>
-                    <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <nil key="highlightedColor"/>
                 </label>
-                <button clearsContextBeforeDrawing="NO" multipleTouchEnabled="YES" contentMode="scaleToFill" enabled="NO" selected="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" reversesTitleShadowWhenHighlighted="YES" lineBreakMode="middleTruncation" id="648">
+                <button clearsContextBeforeDrawing="NO" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" enabled="NO" selected="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" reversesTitleShadowWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="648">
                     <rect key="frame" x="20" y="343" width="91" height="22"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <animations/>
-                    <color key="backgroundColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="backgroundColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="12"/>
                     <state key="normal">
-                        <color key="titleColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                        <color key="titleShadowColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                        <color key="titleColor" red="1" green="0.99997437000274658" blue="0.99999129772186279" alpha="0.84705882352941175" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="titleShadowColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </state>
                 </button>
-                <button clearsContextBeforeDrawing="NO" multipleTouchEnabled="YES" contentMode="scaleToFill" enabled="NO" selected="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" reversesTitleShadowWhenHighlighted="YES" lineBreakMode="middleTruncation" id="651">
+                <button clearsContextBeforeDrawing="NO" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" enabled="NO" selected="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" reversesTitleShadowWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="651">
                     <rect key="frame" x="116" y="343" width="91" height="22"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <animations/>
-                    <color key="backgroundColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="backgroundColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="12"/>
                     <state key="normal">
-                        <color key="titleColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                        <color key="titleShadowColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                        <color key="titleColor" red="1" green="0.99997437000274658" blue="0.99999129772186279" alpha="0.84705882352941175" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="titleShadowColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </state>
                 </button>
-                <button clearsContextBeforeDrawing="NO" multipleTouchEnabled="YES" contentMode="scaleToFill" enabled="NO" selected="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" reversesTitleShadowWhenHighlighted="YES" lineBreakMode="middleTruncation" id="653">
+                <button clearsContextBeforeDrawing="NO" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" enabled="NO" selected="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" reversesTitleShadowWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="653">
                     <rect key="frame" x="20" y="372" width="91" height="22"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <animations/>
-                    <color key="backgroundColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="backgroundColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="12"/>
                     <state key="normal">
-                        <color key="titleColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                        <color key="titleShadowColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                        <color key="titleColor" red="1" green="0.99997437000274658" blue="0.99999129772186279" alpha="0.84705882352941175" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="titleShadowColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </state>
                 </button>
-                <button clearsContextBeforeDrawing="NO" multipleTouchEnabled="YES" contentMode="scaleToFill" enabled="NO" selected="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" reversesTitleShadowWhenHighlighted="YES" lineBreakMode="middleTruncation" id="656">
+                <button clearsContextBeforeDrawing="NO" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" enabled="NO" selected="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" reversesTitleShadowWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="656">
                     <rect key="frame" x="211" y="343" width="91" height="22"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <animations/>
-                    <color key="backgroundColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="backgroundColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="12"/>
                     <state key="normal">
-                        <color key="titleColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                        <color key="titleShadowColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                        <color key="titleColor" red="1" green="0.99997437000274658" blue="0.99999129772186279" alpha="0.84705882352941175" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="titleShadowColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </state>
                 </button>
-                <button clearsContextBeforeDrawing="NO" multipleTouchEnabled="YES" contentMode="scaleToFill" enabled="NO" selected="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" reversesTitleShadowWhenHighlighted="YES" lineBreakMode="middleTruncation" id="663">
+                <button clearsContextBeforeDrawing="NO" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" enabled="NO" selected="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" reversesTitleShadowWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="663">
                     <rect key="frame" x="211" y="372" width="91" height="22"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <animations/>
-                    <color key="backgroundColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="backgroundColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="12"/>
                     <state key="normal">
-                        <color key="titleColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                        <color key="titleShadowColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                        <color key="titleColor" red="1" green="0.99997437000274658" blue="0.99999129772186279" alpha="0.84705882352941175" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="titleShadowColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </state>
                 </button>
-                <button clearsContextBeforeDrawing="NO" multipleTouchEnabled="YES" contentMode="scaleToFill" enabled="NO" selected="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" reversesTitleShadowWhenHighlighted="YES" lineBreakMode="middleTruncation" id="659">
+                <button clearsContextBeforeDrawing="NO" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" enabled="NO" selected="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" reversesTitleShadowWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="659">
                     <rect key="frame" x="116" y="372" width="91" height="22"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <animations/>
-                    <color key="backgroundColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="backgroundColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="12"/>
                     <state key="normal">
-                        <color key="titleColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                        <color key="titleShadowColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                        <color key="titleColor" red="1" green="0.99997437000274658" blue="0.99999129772186279" alpha="0.84705882352941175" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="titleShadowColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </state>
                 </button>
-                <segmentedControl opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="2" id="471">
+                <segmentedControl opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="2" translatesAutoresizingMaskIntoConstraints="NO" id="471">
                     <rect key="frame" x="102" y="71.5" width="200" height="29"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <animations/>
-                    <color key="backgroundColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="backgroundColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <segments>
                         <segment title="20%"/>
                         <segment title="25%"/>
                         <segment title="40%"/>
                     </segments>
-                    <color key="tintColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="tintColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <connections>
                         <action selector="ValueChangeRecovery:" destination="-1" eventType="valueChanged" id="538"/>
                     </connections>
                 </segmentedControl>
-                <button clearsContextBeforeDrawing="NO" contentMode="scaleToFill" selected="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" reversesTitleShadowWhenHighlighted="YES" lineBreakMode="middleTruncation" id="669">
+                <button clearsContextBeforeDrawing="NO" contentMode="scaleToFill" fixedFrame="YES" selected="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" reversesTitleShadowWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="669">
                     <rect key="frame" x="246.5" y="280" width="55" height="30"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <animations/>
-                    <color key="backgroundColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="backgroundColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="12"/>
                     <state key="normal" title="Email" backgroundImage="96_43SilverButton.png">
-                        <color key="titleColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                        <color key="titleShadowColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                        <color key="titleColor" red="1" green="0.99997437000274658" blue="0.99999129772186279" alpha="0.84705882352941175" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="titleShadowColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </state>
                     <state key="highlighted">
-                        <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </state>
                     <connections>
                         <action selector="email:" destination="-1" eventType="touchUpInside" id="671"/>
                     </connections>
                 </button>
             </subviews>
-            <animations/>
-            <color key="backgroundColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="1" colorSpace="calibratedRGB"/>
+            <color key="backgroundColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <simulatedTabBarMetrics key="simulatedBottomBarMetrics"/>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <point key="canvasLocation" x="139" y="69"/>
         </view>
     </objects>
     <resources>
         <image name="96_43SilverButton.png" width="96" height="43"/>
+        <systemColor name="darkTextColor">
+            <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="darkTextColor">
+            <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="darkTextColor">
+            <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
     </resources>
 </document>

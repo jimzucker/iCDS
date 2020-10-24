@@ -18,6 +18,23 @@
 #pragma mark -
 #pragma mark Compose Mail
 
+- (void)showMessage:(NSString *)title message:(NSString *)message
+{
+    //display an alert and ignore the users selection
+    UIAlertController * alert = [UIAlertController
+                    alertControllerWithTitle: title
+                                     message: message
+                              preferredStyle:UIAlertControllerStyleAlert];
+    
+    UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action){
+        //do something when click button
+    }];
+    [alert addAction:okAction];
+    UIViewController *vc = [[[[UIApplication sharedApplication] delegate] window] rootViewController];
+    [vc presentViewController:alert animated:YES completion:nil];
+
+}
+
 	// Displays an email composition interface inside the application. Populates all the Mail fields. 
 - (IBAction)email:(id)sender
 {
@@ -61,8 +78,8 @@
 				// Fill out the email body text
 			NSString *emailBody = [NSString stringWithFormat: @"<BR><FONT FACE=\"Courier\" SIZE=\"-1\"> \
 	<BR><B>iCDS IPhone Upfront Fee Calculator Results </B>     \
-	<BR><BR><B><U>Inputs</U></B>\
-	<BR>&nbsp; Trade Type:%@					\ 
+	<BR><BR><B><U>Inputs</U></B>                \
+	<BR>&nbsp; Trade Type:%@					\
 	<BR>&nbsp; Trade Date:%@					\
 	<BR>&nbsp; Maturity:%@						\
 	<BR>&nbsp; Recovery:%@						\
@@ -92,7 +109,7 @@
 
 								   , [NSString stringWithFormat:@"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;%@", [outUpFrontFee titleForState:UIControlStateNormal]]							   
 								   , [NSString stringWithFormat:@"&nbsp;&nbsp;&nbsp;%@ bps", [outSpread titleForState:UIControlStateNormal]]
-								   , [NSString stringWithFormat:@"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;%@ %", [outFeeQuote titleForState:UIControlStateNormal]]
+								   , [NSString stringWithFormat:@"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;%@", [outFeeQuote titleForState:UIControlStateNormal]]
 								   , [NSString stringWithFormat:@"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;%@", [outPrice titleForState:UIControlStateNormal]]
 								   , [NSString stringWithFormat:@"&nbsp;&nbsp;%@", [outAccrued titleForState:UIControlStateNormal]]
 								   , [NSString stringWithFormat:@"&nbsp;&nbsp;&nbsp;&nbsp;%@", daysAcrrued]
@@ -103,34 +120,20 @@
 			
 			[emailController setMessageBody:emailBody isHTML:YES];
 			
-			[self presentModalViewController:emailController animated:YES];
+            [self presentViewController:emailController animated:YES completion:nil];
 			[emailController release];
 
 		}
 		else 
 		{
 			//display an alert and ignore the users selection
-			UIAlertView *errorAlert = [[UIAlertView alloc]
-									   initWithTitle:@"Error"
-									   message: [NSString stringWithFormat:@"Email not supported on this device."]
-									   delegate:self
-									   cancelButtonTitle:@"Continue"
-									   otherButtonTitles:nil];
-			[errorAlert show];
-			[errorAlert release];
+            [self showMessage: @"Error" message:@"Email not supported on this device." ];
 		}//canSendEmail
 	}
 	else 
 	{
 		//display an alert and ignore the users selection
-		UIAlertView *errorAlert = [[UIAlertView alloc]
-								   initWithTitle:@"Error"
-								   message: [NSString stringWithFormat:@"Email cannot be sent while WIFI is not available."]
-								   delegate:self
-								   cancelButtonTitle:@"Continue"
-								   otherButtonTitles:nil];
-		[errorAlert show];
-		[errorAlert release];
+        [self showMessage: @"Error" message:@"Email cannot be sent while WIFI is not available." ];
 	}
 
 }
@@ -206,14 +209,7 @@
 			else 
 			{
 				//display an alert and ignore the users selection
-				UIAlertView *errorAlert = [[UIAlertView alloc]
-										   initWithTitle:@"Error"
-										   message: [NSString stringWithFormat:@"Could not set Currency to: %@", currency]
-										   delegate:self
-										   cancelButtonTitle:@"Continue"
-										   otherButtonTitles:nil];
-				[errorAlert show];
-				[errorAlert release];
+                [self showMessage: @"Error" message:[NSString stringWithFormat:@"Could not set Currency to: %@", currency] ];
 			}
 		}
 	}		
@@ -269,14 +265,7 @@
 		{
 			//maturity date is invalid, in cannot be in the past
 			//display an alert and ignore the users selection
-			UIAlertView *errorAlert = [[UIAlertView alloc]
-									   initWithTitle:@"Error"
-									   message: [NSString stringWithFormat:@"Maturity date cannot be in the past: %@", maturity]
-									   delegate:self
-									   cancelButtonTitle:@"Continue"
-									   otherButtonTitles:nil];
-			[errorAlert show];
-			[errorAlert release];
+            [self showMessage: @"Error" message:[NSString stringWithFormat:@"Maturity date cannot be in the past: %@", maturity] ];
 		}
 
 	}
@@ -376,14 +365,7 @@
 			{
 				//recover is invalid, in cannot be >100%
 				//display an alert and ignore the users selection
-				UIAlertView *errorAlert = [[UIAlertView alloc]
-										   initWithTitle:@"Error"
-										   message: [NSString stringWithFormat:@"Recovery cannot be >100%: %d%@", recoveryAmount,@"%"]
-										   delegate:self
-										   cancelButtonTitle:@"Continue"
-										   otherButtonTitles:nil];
-				[errorAlert show];
-				[errorAlert release];				
+                [self showMessage: @"Error" message:[NSString stringWithFormat:@"Recovery cannot be >100%: %d%@", recoveryAmount,@"%"] ];
 			}
 
 		}
@@ -435,14 +417,7 @@
 			else 
 			{
 				//display an alert and ignore the users selection
-				UIAlertView *errorAlert = [[UIAlertView alloc]
-										   initWithTitle:@"Error retrieving LIBOR Curve"
-										   message: [NSString stringWithFormat:@"Could not set Trade Date to: %@", newDate]
-										   delegate:self
-										   cancelButtonTitle:@"Continue"
-										   otherButtonTitles:nil];
-				[errorAlert show];
-				[errorAlert release];
+                [self showMessage: @"Error retrieving LIBOR Curve" message:[NSString stringWithFormat:@"Could not set Trade Date to: %@", newDate] ];
 			}
 		}
 	
@@ -1022,18 +997,7 @@
 {
 	NSString *theMessage = [self debugInfo];
 	
-	UIAlertView *debugAlert = [[UIAlertView alloc]
-							   initWithTitle:@"Debug Info"
-							   message:theMessage
-							   delegate:self
-							   cancelButtonTitle:@"Continue"
-							   otherButtonTitles:nil];	
-
-//	UITextView *theText = [debugAlert valueForKey:@"_bodyTextLabel"]; 
-//	theText.font = [UIFont fontWithName:@"Courier" size: 8]; 
-	
-	[debugAlert show];
-	[debugAlert release];
+    [self showMessage: @"Debug Info" message:theMessage ];
 }
 
 #pragma mark -

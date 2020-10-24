@@ -110,13 +110,13 @@
 	switch(section)
 	{
 		case 0:
-			sectionName = [NSString stringWithString:@"Instrument"];
+            sectionName = @"Instrument";
 			break;
 		case 1:
-			sectionName = [NSString stringWithString:@"Tenor"];
+            sectionName = @"Tenor";
 			break;
 		case 2:
-			sectionName = [NSString stringWithString:@"Par Rate"];
+            sectionName = @"Par Rate";
 			break;
 			/*
 		case 3:
