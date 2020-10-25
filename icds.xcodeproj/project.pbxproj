@@ -231,7 +231,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 6D497B0F1CE2D88E00FACBB2 /* Build configuration list for PBXProject "icds" */;
+			buildConfigurationList = 6D497B0F1CE2D88E00FACBB2 /* Build configuration list for PBXProject "iCDS" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -460,6 +460,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = 583XUQ99J6;
 				INFOPLIST_FILE = icds/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.ijaz.icds;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -475,6 +476,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = 583XUQ99J6;
 				INFOPLIST_FILE = icds/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.ijaz.icds;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -541,7 +543,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		6D497B0F1CE2D88E00FACBB2 /* Build configuration list for PBXProject "icds" */ = {
+		6D497B0F1CE2D88E00FACBB2 /* Build configuration list for PBXProject "iCDS" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				6D497B3C1CE2D88E00FACBB2 /* Debug */,
