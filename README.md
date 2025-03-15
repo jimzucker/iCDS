@@ -10,7 +10,7 @@ I started this project when as a 'former' Mac developer I was swept up by the ex
 
 Along the way I have learned a lot about the rich environment of information sharing now happening in the development community. I was re-introduced to the Apple Development Tools (XCode) and the Snow Leopard OS. Not having touched MPW(Macintosh Programmers Workshop) in over 15 years, it was like I never left home with the added power of the underlying LINUX environment that I am well versed in using every day at work. I then was introduced to new resources including ITunes U, blogs and code.google.com.
 
-##Feedback 
+## Feedback 
 Please post feedback to ITunes!
 For support please create a ticket at: https://github.com/jimzucker/iCDS/issues
 
