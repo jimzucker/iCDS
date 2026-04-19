@@ -733,6 +733,11 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/icds/isdamodel/include/isda",
+					"$(SRCROOT)/icds/isdamodel/include",
+					"$(SRCROOT)/icds/isdamodel/src",
+				);
 				INFOPLIST_FILE = icdsTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -751,6 +756,11 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/icds/isdamodel/include/isda",
+					"$(SRCROOT)/icds/isdamodel/include",
+					"$(SRCROOT)/icds/isdamodel/src",
+				);
 				INFOPLIST_FILE = icdsTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
