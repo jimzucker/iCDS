@@ -3,10 +3,35 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		01670032C20A2085CA6A02F9 /* lintrp1.c in Sources */ = {isa = PBXBuildFile; fileRef = 028ADC4143E42D38E9FC4523 /* lintrp1.c */; };
+		08FB39060F3EBB855560AD01 /* cxzerocurve.c in Sources */ = {isa = PBXBuildFile; fileRef = B70979ADB9022E9318D8D530 /* cxzerocurve.c */; };
+		0A6376921A1AB6E66E70D4D8 /* zcswutil.c in Sources */ = {isa = PBXBuildFile; fileRef = 4FEF7354A4A3BC937D32BBED /* zcswutil.c */; };
+		0B53FCDE877F6EC89E799A7F /* fltrate.c in Sources */ = {isa = PBXBuildFile; fileRef = 0EA66C787E7379A208D3F0A2 /* fltrate.c */; };
+		0B948222350B0BCAAB4906A0 /* tcurve.c in Sources */ = {isa = PBXBuildFile; fileRef = 15C67FCF3F6E04053E0C8B45 /* tcurve.c */; };
+		10CC4ADA2D4B7626F2B77E56 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 922FF00CAF17D7684FEC557C /* main.c */; };
+		1279209354AD3FE53BA5812F /* interpc.c in Sources */ = {isa = PBXBuildFile; fileRef = 1F478F36DB5C345F892BFF70 /* interpc.c */; };
+		133E8D17207002B01D0658E6 /* zerocurve.c in Sources */ = {isa = PBXBuildFile; fileRef = 43FB3C581DAC7C0F59BEEEBA /* zerocurve.c */; };
+		140CAB2AADA45FB296996153 /* version.c in Sources */ = {isa = PBXBuildFile; fileRef = 044943888A14FB56F6AF35DB /* version.c */; };
+		1C0C108A27DA79612D8651F3 /* buscache.c in Sources */ = {isa = PBXBuildFile; fileRef = C5338A857EA11FD2E9D66231 /* buscache.c */; };
+		1DCA5DA057BEAEBCEFF22942 /* rtbrent.c in Sources */ = {isa = PBXBuildFile; fileRef = 1CB1C28FB2E019EE8CA62C04 /* rtbrent.c */; };
+		1DD2B69F791469D3ED54F906 /* strutil.c in Sources */ = {isa = PBXBuildFile; fileRef = 2CA6ECC25C206C2179084FF9 /* strutil.c */; };
+		1F6AB5E43F04B474112DDE7B /* cdsbootstrap.c in Sources */ = {isa = PBXBuildFile; fileRef = 7F6D3F3D3BD8C81FE4B7AE68 /* cdsbootstrap.c */; };
+		215C1F4A9ECCAD9D0A6FF555 /* date_sup.c in Sources */ = {isa = PBXBuildFile; fileRef = 96379F9C42DD3DACEFE2AE82 /* date_sup.c */; };
+		223B5DE6CB1E231B888302CF /* dateconv.c in Sources */ = {isa = PBXBuildFile; fileRef = 4CA550BC4EB1C92D551B21E8 /* dateconv.c */; };
+		251D2CF93D8B580107875620 /* dateadj.c in Sources */ = {isa = PBXBuildFile; fileRef = 9F715F83D9308EE75B0705CF /* dateadj.c */; };
+		2672FF7B30F9A2A640FF0814 /* bsearch.c in Sources */ = {isa = PBXBuildFile; fileRef = B6CC92E0905F60865FD0403D /* bsearch.c */; };
+		28F2357EA2198F3D0E7F7E47 /* yearfrac.c in Sources */ = {isa = PBXBuildFile; fileRef = 23B2146C8D612F40E3972D80 /* yearfrac.c */; };
+		2E3D9E79CAF822E698EDB0A6 /* zcswdate.c in Sources */ = {isa = PBXBuildFile; fileRef = 0E26415E6D948A30AEB59BE1 /* zcswdate.c */; };
+		2F86BB846B18FAA295BAC22E /* timeline.c in Sources */ = {isa = PBXBuildFile; fileRef = 3D364DA3592F4FB6014BBA10 /* timeline.c */; };
+		30048073EE2D758B9045895F /* badday.c in Sources */ = {isa = PBXBuildFile; fileRef = 4FD6605195C501374B979EB0 /* badday.c */; };
+		50C2810CC8F2DD80CCA6C0F2 /* cx.c in Sources */ = {isa = PBXBuildFile; fileRef = 392E35EE73954B8002E83A27 /* cx.c */; };
+		5317F43DBD4961F596BFF2E9 /* cds.c in Sources */ = {isa = PBXBuildFile; fileRef = 7F4137ABAC884F48B86FAB46 /* cds.c */; };
+		5E93DF3200D649859C864FE9 /* zr2fwd.c in Sources */ = {isa = PBXBuildFile; fileRef = 8A4C7D9A4FA1CC3D607406A8 /* zr2fwd.c */; };
+		67FA209731D6D21E6EA7BC85 /* cerror.c in Sources */ = {isa = PBXBuildFile; fileRef = A5B4CA813F57EE951C81A593 /* cerror.c */; };
 		6D0524C71DA7FC780029FE1B /* InfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D0524C61DA7FC780029FE1B /* InfoViewController.swift */; };
 		6D497B181CE2D88E00FACBB2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D497B171CE2D88E00FACBB2 /* AppDelegate.swift */; };
 		6D497B1A1CE2D88E00FACBB2 /* FeeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D497B191CE2D88E00FACBB2 /* FeeViewController.swift */; };
@@ -19,6 +44,32 @@
 		6D6418581DA4535C005E8048 /* contracts.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6D6418571DA4535C005E8048 /* contracts.plist */; };
 		6D64185A1DA45B95005E8048 /* ISDAContract.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D6418591DA45B95005E8048 /* ISDAContract.swift */; };
 		6D64185C1DA47D21005E8048 /* Recovery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D64185B1DA47D21005E8048 /* Recovery.swift */; };
+		6EBDEC145B3C1B100AD65CF4 /* dtlist.c in Sources */ = {isa = PBXBuildFile; fileRef = F5AE6950814005F282917D15 /* dtlist.c */; };
+		749DF057C726420F444E9641 /* convert.c in Sources */ = {isa = PBXBuildFile; fileRef = 36F9DE496BFCF872CB882868 /* convert.c */; };
+		784E93D38BE20CC16879AB7B /* feeleg.c in Sources */ = {isa = PBXBuildFile; fileRef = B7272A8FAD7F518E5A1D1CE6 /* feeleg.c */; };
+		78803D9C6895C6F4DB0F2636 /* schedule.c in Sources */ = {isa = PBXBuildFile; fileRef = EE6A77C3421DF95ACA028CF6 /* schedule.c */; };
+		813C2579C31558A8266062C0 /* contingentleg.c in Sources */ = {isa = PBXBuildFile; fileRef = 84A09E7781E95717C4B3F5CF /* contingentleg.c */; };
+		8DF22F4C501AE0535CB74F6D /* cxdatelist.c in Sources */ = {isa = PBXBuildFile; fileRef = B3EC5FDCF94F3CEAB715322D /* cxdatelist.c */; };
+		8F78A10BF3F48672084BF347 /* cdsone.c in Sources */ = {isa = PBXBuildFile; fileRef = A5461EAEB109ABD031560473 /* cdsone.c */; };
+		900F3152D2CE5629EA26189D /* streamcf.c in Sources */ = {isa = PBXBuildFile; fileRef = 0C214EAE9D3602B80679EEC5 /* streamcf.c */; };
+		A4245F8AB8EEEFA44220685F /* cashflow.c in Sources */ = {isa = PBXBuildFile; fileRef = BC08473BEA11610C9F3B87B4 /* cashflow.c */; };
+		A75AF97B879901578265E976 /* busday.c in Sources */ = {isa = PBXBuildFile; fileRef = 88ABD66E79B64BF9C7721B74 /* busday.c */; };
+		A765D1DF4F78599E21920CCC /* ldate.c in Sources */ = {isa = PBXBuildFile; fileRef = 15866111AB26D1D335E80F64 /* ldate.c */; };
+		AA000001000000000000PRIV /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = AA000002000000000000PRIV /* PrivacyInfo.xcprivacy */; };
+		B16904CB3D6731FEFCBA9977 /* datelist.c in Sources */ = {isa = PBXBuildFile; fileRef = E20D859F64A5E31A849C5055 /* datelist.c */; };
+		BE2B4ACD4CE7008AF52A4B31 /* cmemory.c in Sources */ = {isa = PBXBuildFile; fileRef = C8CCAB1B8A743942125FA101 /* cmemory.c */; };
+		BF6F9A47D247AD9DA127369B /* stub.c in Sources */ = {isa = PBXBuildFile; fileRef = 8362B2590A4C6A2473223449 /* stub.c */; };
+		C014DAFB4C86702F3C673356 /* lprintf.c in Sources */ = {isa = PBXBuildFile; fileRef = 01B4FC6060C545E1A5F50052 /* lprintf.c */; };
+		C264948CC52E528F3C13251F /* gtozc.c in Sources */ = {isa = PBXBuildFile; fileRef = 56823F4FC4B6E57BBA7AD041 /* gtozc.c */; };
+		C9D39AD95BCB885AC1888C32 /* linterpc.c in Sources */ = {isa = PBXBuildFile; fileRef = 65EB12469120E37B3A5A68D2 /* linterpc.c */; };
+		CCB5332F754E6C3B73E1A725 /* cfileio.c in Sources */ = {isa = PBXBuildFile; fileRef = DC075B77E3D1BC99CDCB2013 /* cfileio.c */; };
+		D3EEA8172B13245822EB72E1 /* zcswap.c in Sources */ = {isa = PBXBuildFile; fileRef = 1A489950E0B1FCD50CDDD342 /* zcswap.c */; };
+		DF2220694499CC32DFDA69BE /* cxbsearch.c in Sources */ = {isa = PBXBuildFile; fileRef = 65C11F58336A3ED4C36AC17A /* cxbsearch.c */; };
+		ED9A1F2B71B87B1AFDE62908 /* zr2coup.c in Sources */ = {isa = PBXBuildFile; fileRef = 0B5058BD5B81005E684857BC /* zr2coup.c */; };
+		EFEB6858B04DFB48FB6D16BC /* lscanf.c in Sources */ = {isa = PBXBuildFile; fileRef = 93B2190D28AC35E5A214E146 /* lscanf.c */; };
+		F68C948E92F8BB8EA4660180 /* zcall.c in Sources */ = {isa = PBXBuildFile; fileRef = B6E3671B194E4DC86E2B8201 /* zcall.c */; };
+		E6DD8830A019DA6BFB39948D /* cfinanci.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A698E9567CCAAC860E870C5A /* cfinanci.cpp */; };
+		015C1A8BA366DDF95B691808 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CA3A5795DC151BA635B0909 /* SceneDelegate.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -39,6 +90,31 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		01B4FC6060C545E1A5F50052 /* lprintf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = lprintf.c; sourceTree = "<group>"; };
+		028ADC4143E42D38E9FC4523 /* lintrp1.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = lintrp1.c; sourceTree = "<group>"; };
+		044943888A14FB56F6AF35DB /* version.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = version.c; sourceTree = "<group>"; };
+		0B5058BD5B81005E684857BC /* zr2coup.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = zr2coup.c; sourceTree = "<group>"; };
+		0C214EAE9D3602B80679EEC5 /* streamcf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = streamcf.c; sourceTree = "<group>"; };
+		0E26415E6D948A30AEB59BE1 /* zcswdate.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = zcswdate.c; sourceTree = "<group>"; };
+		0EA66C787E7379A208D3F0A2 /* fltrate.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = fltrate.c; sourceTree = "<group>"; };
+		15866111AB26D1D335E80F64 /* ldate.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ldate.c; sourceTree = "<group>"; };
+		15C67FCF3F6E04053E0C8B45 /* tcurve.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = tcurve.c; sourceTree = "<group>"; };
+		1A489950E0B1FCD50CDDD342 /* zcswap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = zcswap.c; sourceTree = "<group>"; };
+		1CB1C28FB2E019EE8CA62C04 /* rtbrent.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = rtbrent.c; sourceTree = "<group>"; };
+		1F478F36DB5C345F892BFF70 /* interpc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = interpc.c; sourceTree = "<group>"; };
+		23B2146C8D612F40E3972D80 /* yearfrac.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = yearfrac.c; sourceTree = "<group>"; };
+		2CA6ECC25C206C2179084FF9 /* strutil.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = strutil.c; sourceTree = "<group>"; };
+		36F9DE496BFCF872CB882868 /* convert.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = convert.c; sourceTree = "<group>"; };
+		392E35EE73954B8002E83A27 /* cx.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cx.c; sourceTree = "<group>"; };
+		3D364DA3592F4FB6014BBA10 /* timeline.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = timeline.c; sourceTree = "<group>"; };
+		4271C9982F9535C5004B4AC3 /* icds.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = icds.xctestplan; sourceTree = "<group>"; };
+		43FB3C581DAC7C0F59BEEEBA /* zerocurve.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = zerocurve.c; sourceTree = "<group>"; };
+		4CA550BC4EB1C92D551B21E8 /* dateconv.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = dateconv.c; sourceTree = "<group>"; };
+		4FD6605195C501374B979EB0 /* badday.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = badday.c; sourceTree = "<group>"; };
+		4FEF7354A4A3BC937D32BBED /* zcswutil.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = zcswutil.c; sourceTree = "<group>"; };
+		56823F4FC4B6E57BBA7AD041 /* gtozc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = gtozc.c; sourceTree = "<group>"; };
+		65C11F58336A3ED4C36AC17A /* cxbsearch.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cxbsearch.c; sourceTree = "<group>"; };
+		65EB12469120E37B3A5A68D2 /* linterpc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = linterpc.c; sourceTree = "<group>"; };
 		6D0524C61DA7FC780029FE1B /* InfoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InfoViewController.swift; sourceTree = "<group>"; };
 		6D497B141CE2D88E00FACBB2 /* icds.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = icds.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6D497B171CE2D88E00FACBB2 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -57,6 +133,33 @@
 		6D6418571DA4535C005E8048 /* contracts.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = contracts.plist; sourceTree = "<group>"; };
 		6D6418591DA45B95005E8048 /* ISDAContract.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ISDAContract.swift; sourceTree = "<group>"; };
 		6D64185B1DA47D21005E8048 /* Recovery.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Recovery.swift; sourceTree = "<group>"; };
+		7F4137ABAC884F48B86FAB46 /* cds.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cds.c; sourceTree = "<group>"; };
+		7F6D3F3D3BD8C81FE4B7AE68 /* cdsbootstrap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cdsbootstrap.c; sourceTree = "<group>"; };
+		8362B2590A4C6A2473223449 /* stub.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = stub.c; sourceTree = "<group>"; };
+		84A09E7781E95717C4B3F5CF /* contingentleg.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = contingentleg.c; sourceTree = "<group>"; };
+		88ABD66E79B64BF9C7721B74 /* busday.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = busday.c; sourceTree = "<group>"; };
+		8A4C7D9A4FA1CC3D607406A8 /* zr2fwd.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = zr2fwd.c; sourceTree = "<group>"; };
+		922FF00CAF17D7684FEC557C /* main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
+		93B2190D28AC35E5A214E146 /* lscanf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = lscanf.c; sourceTree = "<group>"; };
+		96379F9C42DD3DACEFE2AE82 /* date_sup.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = date_sup.c; sourceTree = "<group>"; };
+		9F715F83D9308EE75B0705CF /* dateadj.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = dateadj.c; sourceTree = "<group>"; };
+		A5461EAEB109ABD031560473 /* cdsone.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cdsone.c; sourceTree = "<group>"; };
+		A5B4CA813F57EE951C81A593 /* cerror.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cerror.c; sourceTree = "<group>"; };
+		AA000002000000000000PRIV /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		B3EC5FDCF94F3CEAB715322D /* cxdatelist.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cxdatelist.c; sourceTree = "<group>"; };
+		B6CC92E0905F60865FD0403D /* bsearch.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = bsearch.c; sourceTree = "<group>"; };
+		B6E3671B194E4DC86E2B8201 /* zcall.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = zcall.c; sourceTree = "<group>"; };
+		B70979ADB9022E9318D8D530 /* cxzerocurve.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cxzerocurve.c; sourceTree = "<group>"; };
+		B7272A8FAD7F518E5A1D1CE6 /* feeleg.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = feeleg.c; sourceTree = "<group>"; };
+		BC08473BEA11610C9F3B87B4 /* cashflow.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cashflow.c; sourceTree = "<group>"; };
+		C5338A857EA11FD2E9D66231 /* buscache.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = buscache.c; sourceTree = "<group>"; };
+		C8CCAB1B8A743942125FA101 /* cmemory.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cmemory.c; sourceTree = "<group>"; };
+		DC075B77E3D1BC99CDCB2013 /* cfileio.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cfileio.c; sourceTree = "<group>"; };
+		E20D859F64A5E31A849C5055 /* datelist.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = datelist.c; sourceTree = "<group>"; };
+		EE6A77C3421DF95ACA028CF6 /* schedule.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = schedule.c; sourceTree = "<group>"; };
+		F5AE6950814005F282917D15 /* dtlist.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = dtlist.c; sourceTree = "<group>"; };
+		A698E9567CCAAC860E870C5A /* cfinanci.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cfinanci.cpp; sourceTree = "<group>"; };
+		3CA3A5795DC151BA635B0909 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -87,6 +190,7 @@
 		6D497B0B1CE2D88E00FACBB2 = {
 			isa = PBXGroup;
 			children = (
+				4271C9982F9535C5004B4AC3 /* icds.xctestplan */,
 				6D497B161CE2D88E00FACBB2 /* icds */,
 				6D497B2D1CE2D88E00FACBB2 /* icdsTests */,
 				6D497B381CE2D88E00FACBB2 /* icdsUITests */,
@@ -108,6 +212,8 @@
 			isa = PBXGroup;
 			children = (
 				6D497B171CE2D88E00FACBB2 /* AppDelegate.swift */,
+				3CA3A5795DC151BA635B0909 /* SceneDelegate.swift */,
+				AABB000000000000ISDASRC0 /* isdamodel_src */,
 				6D7534F61DA5CFAD0061AFA8 /* FeeTab */,
 				6D497B1B1CE2D88E00FACBB2 /* LiborViewController.swift */,
 				6D497B1D1CE2D88E00FACBB2 /* Main.storyboard */,
@@ -115,6 +221,7 @@
 				6D497B221CE2D88E00FACBB2 /* LaunchScreen.storyboard */,
 				6D497B251CE2D88E00FACBB2 /* Info.plist */,
 				6D0524C61DA7FC780029FE1B /* InfoViewController.swift */,
+				AA000002000000000000PRIV /* PrivacyInfo.xcprivacy */,
 			);
 			path = icds;
 			sourceTree = "<group>";
@@ -146,6 +253,63 @@
 				6D6418591DA45B95005E8048 /* ISDAContract.swift */,
 			);
 			name = FeeTab;
+			sourceTree = "<group>";
+		};
+		AABB000000000000ISDASRC0 /* isdamodel_src */ = {
+			isa = PBXGroup;
+			children = (
+				4FD6605195C501374B979EB0 /* badday.c */,
+				B6CC92E0905F60865FD0403D /* bsearch.c */,
+				C5338A857EA11FD2E9D66231 /* buscache.c */,
+				88ABD66E79B64BF9C7721B74 /* busday.c */,
+				BC08473BEA11610C9F3B87B4 /* cashflow.c */,
+				7F4137ABAC884F48B86FAB46 /* cds.c */,
+				7F6D3F3D3BD8C81FE4B7AE68 /* cdsbootstrap.c */,
+				A5461EAEB109ABD031560473 /* cdsone.c */,
+				A5B4CA813F57EE951C81A593 /* cerror.c */,
+				DC075B77E3D1BC99CDCB2013 /* cfileio.c */,
+				C8CCAB1B8A743942125FA101 /* cmemory.c */,
+				84A09E7781E95717C4B3F5CF /* contingentleg.c */,
+				36F9DE496BFCF872CB882868 /* convert.c */,
+				392E35EE73954B8002E83A27 /* cx.c */,
+				65C11F58336A3ED4C36AC17A /* cxbsearch.c */,
+				B3EC5FDCF94F3CEAB715322D /* cxdatelist.c */,
+				B70979ADB9022E9318D8D530 /* cxzerocurve.c */,
+				96379F9C42DD3DACEFE2AE82 /* date_sup.c */,
+				9F715F83D9308EE75B0705CF /* dateadj.c */,
+				4CA550BC4EB1C92D551B21E8 /* dateconv.c */,
+				E20D859F64A5E31A849C5055 /* datelist.c */,
+				F5AE6950814005F282917D15 /* dtlist.c */,
+				B7272A8FAD7F518E5A1D1CE6 /* feeleg.c */,
+				0EA66C787E7379A208D3F0A2 /* fltrate.c */,
+				56823F4FC4B6E57BBA7AD041 /* gtozc.c */,
+				1F478F36DB5C345F892BFF70 /* interpc.c */,
+				15866111AB26D1D335E80F64 /* ldate.c */,
+				65EB12469120E37B3A5A68D2 /* linterpc.c */,
+				028ADC4143E42D38E9FC4523 /* lintrp1.c */,
+				01B4FC6060C545E1A5F50052 /* lprintf.c */,
+				93B2190D28AC35E5A214E146 /* lscanf.c */,
+				922FF00CAF17D7684FEC557C /* main.c */,
+				1CB1C28FB2E019EE8CA62C04 /* rtbrent.c */,
+				EE6A77C3421DF95ACA028CF6 /* schedule.c */,
+				0C214EAE9D3602B80679EEC5 /* streamcf.c */,
+				2CA6ECC25C206C2179084FF9 /* strutil.c */,
+				8362B2590A4C6A2473223449 /* stub.c */,
+				15C67FCF3F6E04053E0C8B45 /* tcurve.c */,
+				3D364DA3592F4FB6014BBA10 /* timeline.c */,
+				044943888A14FB56F6AF35DB /* version.c */,
+				23B2146C8D612F40E3972D80 /* yearfrac.c */,
+				B6E3671B194E4DC86E2B8201 /* zcall.c */,
+				1A489950E0B1FCD50CDDD342 /* zcswap.c */,
+				0E26415E6D948A30AEB59BE1 /* zcswdate.c */,
+				4FEF7354A4A3BC937D32BBED /* zcswutil.c */,
+				43FB3C581DAC7C0F59BEEEBA /* zerocurve.c */,
+				0B5058BD5B81005E684857BC /* zr2coup.c */,
+				8A4C7D9A4FA1CC3D607406A8 /* zr2fwd.c */,
+				A698E9567CCAAC860E870C5A /* cfinanci.cpp */,
+			);
+			name = isdamodel_src;
+			path = isdamodel/src;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -210,8 +374,9 @@
 		6D497B0C1CE2D88E00FACBB2 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				BuildIndependentTargetsInParallel = YES;
 				LastSwiftUpdateCheck = 0730;
-				LastUpgradeCheck = 1200;
+				LastUpgradeCheck = 2640;
 				ORGANIZATIONNAME = "Strategic Software Engineering LLC";
 				TargetAttributes = {
 					6D497B131CE2D88E00FACBB2 = {
@@ -260,6 +425,7 @@
 				6D497B211CE2D88E00FACBB2 /* Assets.xcassets in Resources */,
 				6D6418581DA4535C005E8048 /* contracts.plist in Resources */,
 				6D497B1F1CE2D88E00FACBB2 /* Main.storyboard in Resources */,
+				AA000001000000000000PRIV /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -287,9 +453,59 @@
 				6D64185A1DA45B95005E8048 /* ISDAContract.swift in Sources */,
 				6D497B1C1CE2D88E00FACBB2 /* LiborViewController.swift in Sources */,
 				6D497B181CE2D88E00FACBB2 /* AppDelegate.swift in Sources */,
+				015C1A8BA366DDF95B691808 /* SceneDelegate.swift in Sources */,
 				6D497B1A1CE2D88E00FACBB2 /* FeeViewController.swift in Sources */,
 				6D0524C71DA7FC780029FE1B /* InfoViewController.swift in Sources */,
 				6D64185C1DA47D21005E8048 /* Recovery.swift in Sources */,
+				30048073EE2D758B9045895F /* badday.c in Sources */,
+				2672FF7B30F9A2A640FF0814 /* bsearch.c in Sources */,
+				1C0C108A27DA79612D8651F3 /* buscache.c in Sources */,
+				A75AF97B879901578265E976 /* busday.c in Sources */,
+				A4245F8AB8EEEFA44220685F /* cashflow.c in Sources */,
+				5317F43DBD4961F596BFF2E9 /* cds.c in Sources */,
+				1F6AB5E43F04B474112DDE7B /* cdsbootstrap.c in Sources */,
+				8F78A10BF3F48672084BF347 /* cdsone.c in Sources */,
+				67FA209731D6D21E6EA7BC85 /* cerror.c in Sources */,
+				CCB5332F754E6C3B73E1A725 /* cfileio.c in Sources */,
+				BE2B4ACD4CE7008AF52A4B31 /* cmemory.c in Sources */,
+				813C2579C31558A8266062C0 /* contingentleg.c in Sources */,
+				749DF057C726420F444E9641 /* convert.c in Sources */,
+				50C2810CC8F2DD80CCA6C0F2 /* cx.c in Sources */,
+				DF2220694499CC32DFDA69BE /* cxbsearch.c in Sources */,
+				8DF22F4C501AE0535CB74F6D /* cxdatelist.c in Sources */,
+				08FB39060F3EBB855560AD01 /* cxzerocurve.c in Sources */,
+				215C1F4A9ECCAD9D0A6FF555 /* date_sup.c in Sources */,
+				251D2CF93D8B580107875620 /* dateadj.c in Sources */,
+				223B5DE6CB1E231B888302CF /* dateconv.c in Sources */,
+				B16904CB3D6731FEFCBA9977 /* datelist.c in Sources */,
+				6EBDEC145B3C1B100AD65CF4 /* dtlist.c in Sources */,
+				784E93D38BE20CC16879AB7B /* feeleg.c in Sources */,
+				0B53FCDE877F6EC89E799A7F /* fltrate.c in Sources */,
+				C264948CC52E528F3C13251F /* gtozc.c in Sources */,
+				1279209354AD3FE53BA5812F /* interpc.c in Sources */,
+				A765D1DF4F78599E21920CCC /* ldate.c in Sources */,
+				C9D39AD95BCB885AC1888C32 /* linterpc.c in Sources */,
+				01670032C20A2085CA6A02F9 /* lintrp1.c in Sources */,
+				C014DAFB4C86702F3C673356 /* lprintf.c in Sources */,
+				EFEB6858B04DFB48FB6D16BC /* lscanf.c in Sources */,
+				10CC4ADA2D4B7626F2B77E56 /* main.c in Sources */,
+				1DCA5DA057BEAEBCEFF22942 /* rtbrent.c in Sources */,
+				78803D9C6895C6F4DB0F2636 /* schedule.c in Sources */,
+				900F3152D2CE5629EA26189D /* streamcf.c in Sources */,
+				1DD2B69F791469D3ED54F906 /* strutil.c in Sources */,
+				BF6F9A47D247AD9DA127369B /* stub.c in Sources */,
+				0B948222350B0BCAAB4906A0 /* tcurve.c in Sources */,
+				2F86BB846B18FAA295BAC22E /* timeline.c in Sources */,
+				140CAB2AADA45FB296996153 /* version.c in Sources */,
+				28F2357EA2198F3D0E7F7E47 /* yearfrac.c in Sources */,
+				F68C948E92F8BB8EA4660180 /* zcall.c in Sources */,
+				D3EEA8172B13245822EB72E1 /* zcswap.c in Sources */,
+				2E3D9E79CAF822E698EDB0A6 /* zcswdate.c in Sources */,
+				0A6376921A1AB6E66E70D4D8 /* zcswutil.c in Sources */,
+				133E8D17207002B01D0658E6 /* zerocurve.c in Sources */,
+				ED9A1F2B71B87B1AFDE62908 /* zr2coup.c in Sources */,
+				5E93DF3200D649859C864FE9 /* zr2fwd.c in Sources */,
+				E6DD8830A019DA6BFB39948D /* cfinanci.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -379,6 +595,7 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -393,10 +610,11 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -437,6 +655,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -445,10 +664,12 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
-				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -459,10 +680,22 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = 583XUQ99J6;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/icds/isdamodel/include/isda",
+					"$(SRCROOT)/icds/isdamodel/include",
+					"$(SRCROOT)/icds/isdamodel/src",
+				);
 				INFOPLIST_FILE = icds/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.business";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.ijaz.icds;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				OTHER_CFLAGS = "-w";
+				OTHER_CPLUSPLUSFLAGS = "-w";
+				SWIFT_OBJC_BRIDGING_HEADER = "icds/icds-Bridging-Header.h";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -474,10 +707,22 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = 583XUQ99J6;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/icds/isdamodel/include/isda",
+					"$(SRCROOT)/icds/isdamodel/include",
+					"$(SRCROOT)/icds/isdamodel/src",
+				);
 				INFOPLIST_FILE = icds/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.business";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.ijaz.icds;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				OTHER_CFLAGS = "-w";
+				OTHER_CPLUSPLUSFLAGS = "-w";
+				SWIFT_OBJC_BRIDGING_HEADER = "icds/icds-Bridging-Header.h";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -489,7 +734,11 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				INFOPLIST_FILE = icdsTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.ijaz.icdsTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
@@ -503,7 +752,11 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				INFOPLIST_FILE = icdsTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.ijaz.icdsTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
@@ -516,7 +769,11 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				INFOPLIST_FILE = icdsUITests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.ijaz.icdsUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
@@ -529,7 +786,11 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				INFOPLIST_FILE = icdsUITests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.ijaz.icdsUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Default;

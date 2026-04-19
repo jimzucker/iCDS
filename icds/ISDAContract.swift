@@ -39,18 +39,13 @@ class ISDAContract {
     }
     
     class func readFromPlist() -> [ISDAContract] {
-        
-        var array = [ISDAContract]()
-        let dataPath = Bundle.main.path(forResource: "contracts", ofType: "plist")
-        
-        let plist = NSArray(contentsOfFile: dataPath!)
-        
-        for line in plist as! [Dictionary<String, NSObject>] {
-            let contract = ISDAContract(dataDictionary: line)
-            array.append(contract)
+        guard let url = Bundle.main.url(forResource: "contracts", withExtension: "plist"),
+              let data = try? Data(contentsOf: url),
+              let plist = try? PropertyListSerialization.propertyList(from: data, format: nil),
+              let entries = plist as? [Dictionary<String, NSObject>] else {
+            return []
         }
-        
-        return array
+        return entries.map { ISDAContract(dataDictionary: $0) }
     }
     
     
