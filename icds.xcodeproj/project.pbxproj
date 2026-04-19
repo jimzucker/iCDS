@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		015C1A8BA366DDF95B691808 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CA3A5795DC151BA635B0909 /* SceneDelegate.swift */; };
 		01670032C20A2085CA6A02F9 /* lintrp1.c in Sources */ = {isa = PBXBuildFile; fileRef = 028ADC4143E42D38E9FC4523 /* lintrp1.c */; };
 		08FB39060F3EBB855560AD01 /* cxzerocurve.c in Sources */ = {isa = PBXBuildFile; fileRef = B70979ADB9022E9318D8D530 /* cxzerocurve.c */; };
 		0A6376921A1AB6E66E70D4D8 /* zcswutil.c in Sources */ = {isa = PBXBuildFile; fileRef = 4FEF7354A4A3BC937D32BBED /* zcswutil.c */; };
@@ -28,6 +29,7 @@
 		2E3D9E79CAF822E698EDB0A6 /* zcswdate.c in Sources */ = {isa = PBXBuildFile; fileRef = 0E26415E6D948A30AEB59BE1 /* zcswdate.c */; };
 		2F86BB846B18FAA295BAC22E /* timeline.c in Sources */ = {isa = PBXBuildFile; fileRef = 3D364DA3592F4FB6014BBA10 /* timeline.c */; };
 		30048073EE2D758B9045895F /* badday.c in Sources */ = {isa = PBXBuildFile; fileRef = 4FD6605195C501374B979EB0 /* badday.c */; };
+		4760CCD747B9A575209A2F60 /* CDSReferenceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A32A6343EBA78C51BE2DE3C3 /* CDSReferenceTests.swift */; };
 		50C2810CC8F2DD80CCA6C0F2 /* cx.c in Sources */ = {isa = PBXBuildFile; fileRef = 392E35EE73954B8002E83A27 /* cx.c */; };
 		5317F43DBD4961F596BFF2E9 /* cds.c in Sources */ = {isa = PBXBuildFile; fileRef = 7F4137ABAC884F48B86FAB46 /* cds.c */; };
 		5E93DF3200D649859C864FE9 /* zr2fwd.c in Sources */ = {isa = PBXBuildFile; fileRef = 8A4C7D9A4FA1CC3D607406A8 /* zr2fwd.c */; };
@@ -52,6 +54,7 @@
 		8DF22F4C501AE0535CB74F6D /* cxdatelist.c in Sources */ = {isa = PBXBuildFile; fileRef = B3EC5FDCF94F3CEAB715322D /* cxdatelist.c */; };
 		8F78A10BF3F48672084BF347 /* cdsone.c in Sources */ = {isa = PBXBuildFile; fileRef = A5461EAEB109ABD031560473 /* cdsone.c */; };
 		900F3152D2CE5629EA26189D /* streamcf.c in Sources */ = {isa = PBXBuildFile; fileRef = 0C214EAE9D3602B80679EEC5 /* streamcf.c */; };
+		9F7CA5ACC9FB3AA3C35DA978 /* CDSCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D4361BD00D76E89B5561B0E /* CDSCalculator.swift */; };
 		A4245F8AB8EEEFA44220685F /* cashflow.c in Sources */ = {isa = PBXBuildFile; fileRef = BC08473BEA11610C9F3B87B4 /* cashflow.c */; };
 		A75AF97B879901578265E976 /* busday.c in Sources */ = {isa = PBXBuildFile; fileRef = 88ABD66E79B64BF9C7721B74 /* busday.c */; };
 		A765D1DF4F78599E21920CCC /* ldate.c in Sources */ = {isa = PBXBuildFile; fileRef = 15866111AB26D1D335E80F64 /* ldate.c */; };
@@ -65,12 +68,10 @@
 		CCB5332F754E6C3B73E1A725 /* cfileio.c in Sources */ = {isa = PBXBuildFile; fileRef = DC075B77E3D1BC99CDCB2013 /* cfileio.c */; };
 		D3EEA8172B13245822EB72E1 /* zcswap.c in Sources */ = {isa = PBXBuildFile; fileRef = 1A489950E0B1FCD50CDDD342 /* zcswap.c */; };
 		DF2220694499CC32DFDA69BE /* cxbsearch.c in Sources */ = {isa = PBXBuildFile; fileRef = 65C11F58336A3ED4C36AC17A /* cxbsearch.c */; };
+		E6DD8830A019DA6BFB39948D /* cfinanci.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A698E9567CCAAC860E870C5A /* cfinanci.cpp */; };
 		ED9A1F2B71B87B1AFDE62908 /* zr2coup.c in Sources */ = {isa = PBXBuildFile; fileRef = 0B5058BD5B81005E684857BC /* zr2coup.c */; };
 		EFEB6858B04DFB48FB6D16BC /* lscanf.c in Sources */ = {isa = PBXBuildFile; fileRef = 93B2190D28AC35E5A214E146 /* lscanf.c */; };
 		F68C948E92F8BB8EA4660180 /* zcall.c in Sources */ = {isa = PBXBuildFile; fileRef = B6E3671B194E4DC86E2B8201 /* zcall.c */; };
-		E6DD8830A019DA6BFB39948D /* cfinanci.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A698E9567CCAAC860E870C5A /* cfinanci.cpp */; };
-		015C1A8BA366DDF95B691808 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CA3A5795DC151BA635B0909 /* SceneDelegate.swift */; };
-		9F7CA5ACC9FB3AA3C35DA978 /* CDSCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D4361BD00D76E89B5561B0E /* CDSCalculator.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -107,10 +108,12 @@
 		2CA6ECC25C206C2179084FF9 /* strutil.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = strutil.c; sourceTree = "<group>"; };
 		36F9DE496BFCF872CB882868 /* convert.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = convert.c; sourceTree = "<group>"; };
 		392E35EE73954B8002E83A27 /* cx.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cx.c; sourceTree = "<group>"; };
+		3CA3A5795DC151BA635B0909 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		3D364DA3592F4FB6014BBA10 /* timeline.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = timeline.c; sourceTree = "<group>"; };
 		4271C9982F9535C5004B4AC3 /* icds.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = icds.xctestplan; sourceTree = "<group>"; };
 		43FB3C581DAC7C0F59BEEEBA /* zerocurve.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = zerocurve.c; sourceTree = "<group>"; };
 		4CA550BC4EB1C92D551B21E8 /* dateconv.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = dateconv.c; sourceTree = "<group>"; };
+		4D4361BD00D76E89B5561B0E /* CDSCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CDSCalculator.swift; sourceTree = "<group>"; };
 		4FD6605195C501374B979EB0 /* badday.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = badday.c; sourceTree = "<group>"; };
 		4FEF7354A4A3BC937D32BBED /* zcswutil.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = zcswutil.c; sourceTree = "<group>"; };
 		56823F4FC4B6E57BBA7AD041 /* gtozc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = gtozc.c; sourceTree = "<group>"; };
@@ -144,8 +147,10 @@
 		93B2190D28AC35E5A214E146 /* lscanf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = lscanf.c; sourceTree = "<group>"; };
 		96379F9C42DD3DACEFE2AE82 /* date_sup.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = date_sup.c; sourceTree = "<group>"; };
 		9F715F83D9308EE75B0705CF /* dateadj.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = dateadj.c; sourceTree = "<group>"; };
+		A32A6343EBA78C51BE2DE3C3 /* CDSReferenceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CDSReferenceTests.swift; sourceTree = "<group>"; };
 		A5461EAEB109ABD031560473 /* cdsone.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cdsone.c; sourceTree = "<group>"; };
 		A5B4CA813F57EE951C81A593 /* cerror.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cerror.c; sourceTree = "<group>"; };
+		A698E9567CCAAC860E870C5A /* cfinanci.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cfinanci.cpp; sourceTree = "<group>"; };
 		AA000002000000000000PRIV /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		B3EC5FDCF94F3CEAB715322D /* cxdatelist.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cxdatelist.c; sourceTree = "<group>"; };
 		B6CC92E0905F60865FD0403D /* bsearch.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = bsearch.c; sourceTree = "<group>"; };
@@ -159,9 +164,6 @@
 		E20D859F64A5E31A849C5055 /* datelist.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = datelist.c; sourceTree = "<group>"; };
 		EE6A77C3421DF95ACA028CF6 /* schedule.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = schedule.c; sourceTree = "<group>"; };
 		F5AE6950814005F282917D15 /* dtlist.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = dtlist.c; sourceTree = "<group>"; };
-		A698E9567CCAAC860E870C5A /* cfinanci.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cfinanci.cpp; sourceTree = "<group>"; };
-		3CA3A5795DC151BA635B0909 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		4D4361BD00D76E89B5561B0E /* CDSCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CDSCalculator.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -233,6 +235,7 @@
 			isa = PBXGroup;
 			children = (
 				6D497B2E1CE2D88E00FACBB2 /* icdsTests.swift */,
+				A32A6343EBA78C51BE2DE3C3 /* CDSReferenceTests.swift */,
 				6D497B301CE2D88E00FACBB2 /* Info.plist */,
 			);
 			path = icdsTests;
@@ -384,7 +387,6 @@
 				TargetAttributes = {
 					6D497B131CE2D88E00FACBB2 = {
 						CreatedOnToolsVersion = 7.3.1;
-						DevelopmentTeam = 583XUQ99J6;
 						LastSwiftMigration = 1130;
 					};
 					6D497B291CE2D88E00FACBB2 = {
@@ -518,6 +520,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				6D497B2F1CE2D88E00FACBB2 /* icdsTests.swift in Sources */,
+				4760CCD747B9A575209A2F60 /* CDSReferenceTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -683,6 +686,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 583XUQ99J6;
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/icds/isdamodel/include/isda",
@@ -695,10 +700,11 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.ijaz.icds;
-				PRODUCT_NAME = "$(TARGET_NAME)";
 				OTHER_CFLAGS = "-w";
 				OTHER_CPLUSPLUSFLAGS = "-w";
+				PRODUCT_BUNDLE_IDENTIFIER = com.ijaz.icds;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "icds/icds-Bridging-Header.h";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
 				SWIFT_VERSION = 5.0;
@@ -710,6 +716,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 583XUQ99J6;
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/icds/isdamodel/include/isda",
@@ -722,10 +730,11 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.ijaz.icds;
-				PRODUCT_NAME = "$(TARGET_NAME)";
 				OTHER_CFLAGS = "-w";
 				OTHER_CPLUSPLUSFLAGS = "-w";
+				PRODUCT_BUNDLE_IDENTIFIER = com.ijaz.icds;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "icds/icds-Bridging-Header.h";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
 				SWIFT_VERSION = 5.0;
