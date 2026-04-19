@@ -108,21 +108,19 @@ struct FeeView: View {
 
     private var tradeDateCurrencyRow: some View {
         HStack(spacing: 16) {
-            HStack {
+            VStack(alignment: .leading, spacing: 4) {
                 label("Trade Date")
-                Spacer()
-                Text(vm.tradeDateLabel)
-                    .foregroundColor(orange)
-                    .font(.system(.body, design: .monospaced))
-                Stepper("", value: $vm.tradeDateOffset, in: -30...30)
-                    .labelsHidden()
-                    .frame(width: 80)
+                HStack {
+                    Text(vm.tradeDateLabel)
+                        .foregroundColor(orange)
+                        .font(.system(.body, design: .monospaced))
+                    Stepper("", value: $vm.tradeDateOffset, in: -30...30)
+                        .labelsHidden()
+                }
             }
-            HStack {
+            VStack(alignment: .leading, spacing: 4) {
                 label("Currency")
-                Spacer()
                 segPicker(vm.currencies, selection: $vm.currencyIndex)
-                    .frame(maxWidth: 140)
             }
         }
     }
