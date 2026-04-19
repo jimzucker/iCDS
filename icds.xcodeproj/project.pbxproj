@@ -70,6 +70,7 @@
 		F68C948E92F8BB8EA4660180 /* zcall.c in Sources */ = {isa = PBXBuildFile; fileRef = B6E3671B194E4DC86E2B8201 /* zcall.c */; };
 		E6DD8830A019DA6BFB39948D /* cfinanci.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A698E9567CCAAC860E870C5A /* cfinanci.cpp */; };
 		015C1A8BA366DDF95B691808 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CA3A5795DC151BA635B0909 /* SceneDelegate.swift */; };
+		9F7CA5ACC9FB3AA3C35DA978 /* CDSCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D4361BD00D76E89B5561B0E /* CDSCalculator.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -160,6 +161,7 @@
 		F5AE6950814005F282917D15 /* dtlist.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = dtlist.c; sourceTree = "<group>"; };
 		A698E9567CCAAC860E870C5A /* cfinanci.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cfinanci.cpp; sourceTree = "<group>"; };
 		3CA3A5795DC151BA635B0909 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
+		4D4361BD00D76E89B5561B0E /* CDSCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CDSCalculator.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -212,6 +214,7 @@
 			isa = PBXGroup;
 			children = (
 				6D497B171CE2D88E00FACBB2 /* AppDelegate.swift */,
+				4D4361BD00D76E89B5561B0E /* CDSCalculator.swift */,
 				3CA3A5795DC151BA635B0909 /* SceneDelegate.swift */,
 				AABB000000000000ISDASRC0 /* isdamodel_src */,
 				6D7534F61DA5CFAD0061AFA8 /* FeeTab */,
@@ -453,6 +456,7 @@
 				6D64185A1DA45B95005E8048 /* ISDAContract.swift in Sources */,
 				6D497B1C1CE2D88E00FACBB2 /* LiborViewController.swift in Sources */,
 				6D497B181CE2D88E00FACBB2 /* AppDelegate.swift in Sources */,
+				9F7CA5ACC9FB3AA3C35DA978 /* CDSCalculator.swift in Sources */,
 				015C1A8BA366DDF95B691808 /* SceneDelegate.swift in Sources */,
 				6D497B1A1CE2D88E00FACBB2 /* FeeViewController.swift in Sources */,
 				6D0524C71DA7FC780029FE1B /* InfoViewController.swift in Sources */,
