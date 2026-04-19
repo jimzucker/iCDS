@@ -2,233 +2,185 @@
 //  FeeView.swift
 //  icds
 //
+//  Adapted from version2b storyboard layout.
 //  Copyright © 2016-2026 James A. Zucker All rights reserved.
 //
 
 import SwiftUI
 
-private let orange = Color(red: 1, green: 0.502, blue: 0)
+private let orange    = Color(red: 1, green: 0.502, blue: 0)
+private let grayCtrl  = Color(white: 0.667)
+private let yellow    = Color(red: 1, green: 0.999, blue: 0.398)
 
 struct FeeView: View {
     @StateObject private var vm = FeeViewModel()
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 12) {
-                regionRow
-                termRows
-                spreadRow
-                tradeDateCurrencyRow
-                resultBox
-                outputGrid
+        VStack(spacing: 10) {
+            // 1. Region
+            regionRow
+
+            // 2. Buy/Sell | Notional
+            HStack(spacing: 8) {
+                segPicker(["Buy", "Sell"], selection: $vm.buySellIndex)
+                segPicker(vm.notionalLabels, selection: $vm.notionalIndex)
             }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 8)
+
+            // 3. Recovery | Coupon
+            if let contract = vm.contract {
+                HStack(spacing: 8) {
+                    segPicker(contract.recoveryList.map(\.subordination), selection: $vm.recoveryIndex)
+                        .onChange(of: vm.recoveryIndex) { _ in vm.recalc() }
+                    segPicker(contract.coupons.map(\.description), selection: $vm.couponIndex)
+                        .onChange(of: vm.couponIndex) { _ in vm.resetSpreadToCoupon() }
+                }
+            }
+
+            // 4. Currency (label + stepper) | Maturity
+            HStack(spacing: 8) {
+                HStack(spacing: 4) {
+                    Text(vm.currency)
+                        .font(.system(size: 15))
+                        .foregroundColor(.black)
+                        .frame(minWidth: 44)
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 5)
+                        .background(grayCtrl)
+                        .cornerRadius(6)
+                    Stepper("", value: $vm.currencyIndex, in: 0...(vm.currencies.count - 1))
+                        .labelsHidden()
+                        .tint(grayCtrl)
+                }
+                segPicker(vm.tenorLabels, selection: $vm.maturityIndex)
+            }
+
+            // 5. Trade Bp (label + stepper) | Yellow fee result box
+            HStack(spacing: 8) {
+                HStack(spacing: 4) {
+                    Text("\(Int(vm.spreadBp)) bp")
+                        .font(.system(size: 15))
+                        .foregroundColor(.black)
+                        .frame(minWidth: 60)
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 5)
+                        .background(grayCtrl)
+                        .cornerRadius(6)
+                    Stepper("", value: $vm.spreadBp, in: 1...(vm.couponBp + 1000), step: 1)
+                        .labelsHidden()
+                        .tint(grayCtrl)
+                }
+                feeBox
+            }
+
+            // 6. Slider
+            Slider(value: $vm.spreadBp,
+                   in: 1...(vm.couponBp + 1000), step: 1)
+                .tint(grayCtrl)
+
+            // 7. Results row 1: Recovery | Trade | Settle | Start
+            resultRow1
+
+            // 8. Results row 2: Accrual | Spread | Price | Upfront
+            resultRow2
         }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
         .background(Color.black)
-        .navigationTitle("iCDS")
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
     // MARK: - Region
 
     private var regionRow: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            label("Region")
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 6) {
-                    ForEach(vm.contracts.indices, id: \.self) { i in
-                        segButton(vm.contracts[i].region, selected: vm.regionIndex == i) {
-                            vm.regionIndex = i
-                            vm.onRegionChanged()
-                        }
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 6) {
+                ForEach(vm.contracts.indices, id: \.self) { i in
+                    Button(vm.contracts[i].region) {
+                        vm.regionIndex = i
+                        vm.onRegionChanged()
                     }
+                    .font(.system(size: 13))
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 6)
+                    .background(vm.regionIndex == i ? grayCtrl : Color(white: 0.18))
+                    .foregroundColor(vm.regionIndex == i ? .black : .white)
+                    .cornerRadius(6)
                 }
             }
         }
     }
 
-    // MARK: - Terms
+    // MARK: - Fee result box
 
-    private var termRows: some View {
-        VStack(spacing: 8) {
-            HStack(spacing: 8) {
-                VStack(alignment: .leading, spacing: 4) {
-                    label("Buy / Sell")
-                    segPicker(["Buy", "Sell"], selection: $vm.buySellIndex)
-                }
-                VStack(alignment: .leading, spacing: 4) {
-                    label("Notional")
-                    segPicker(vm.notionalLabels, selection: $vm.notionalIndex)
-                }
-            }
-            HStack(spacing: 8) {
-                VStack(alignment: .leading, spacing: 4) {
-                    label("Maturity")
-                    segPicker(vm.tenorLabels, selection: $vm.maturityIndex)
-                }
-            }
-            if let contract = vm.contract {
-                HStack(spacing: 8) {
-                    VStack(alignment: .leading, spacing: 4) {
-                        label("Coupon (bp)")
-                        segPicker(contract.coupons.map(\.description), selection: $vm.couponIndex)
-                            .onChange(of: vm.couponIndex) { _ in vm.resetSpreadToCoupon() }
-                    }
-                    VStack(alignment: .leading, spacing: 4) {
-                        label("Recovery  \(vm.recoveryLabel)")
-                        segPicker(contract.recoveryList.map(\.subordination), selection: $vm.recoveryIndex)
-                    }
-                }
-            }
+    private var feeBox: some View {
+        let fmt = NumberFormatter()
+        fmt.numberStyle = .currency
+        fmt.currencyCode = vm.currency
+        fmt.maximumFractionDigits = 0
+        let text = vm.result.flatMap { fmt.string(from: NSNumber(value: $0.upfrontDollars)) }
+                   ?? "---"
+        return Text(text)
+            .font(.system(size: 20, weight: .bold, design: .monospaced))
+            .foregroundColor(.black)
+            .frame(maxWidth: .infinity, minHeight: 36)
+            .padding(.horizontal, 8)
+            .background(yellow)
+            .cornerRadius(6)
+    }
+
+    // MARK: - Result rows
+
+    private var resultRow1: some View {
+        HStack(spacing: 4) {
+            resultCell("Recovery", vm.recoveryLabel)
+            resultCell("Trade",    vm.tradeDateLabel)
+            resultCell("Settle",   vm.result.map { formatTDate($0.valueDate) } ?? "---")
+            resultCell("Start",    vm.result.map { formatTDate($0.startDate) } ?? "---")
         }
     }
 
-    // MARK: - Spread
-
-    private var spreadRow: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            HStack {
-                label("Quoted Spread")
-                Spacer()
-                Text("\(Int(vm.spreadBp)) bp")
-                    .font(.system(.body, design: .monospaced))
-                    .foregroundColor(orange)
-                Stepper("", value: $vm.spreadBp, in: 1...(vm.couponBp + 1000), step: 1)
-                    .labelsHidden()
-                    .frame(width: 80)
-            }
-            Slider(value: $vm.spreadBp,
-                   in: 1...(vm.couponBp + 1000),
-                   step: 1)
-                .accentColor(orange)
-        }
-    }
-
-    // MARK: - Trade date & currency
-
-    private var tradeDateCurrencyRow: some View {
-        HStack(spacing: 16) {
-            HStack {
-                label("Trade Date")
-                Spacer()
-                Text(vm.tradeDateLabel)
-                    .foregroundColor(orange)
-                    .font(.system(.body, design: .monospaced))
-                Stepper("", value: $vm.tradeDateOffset, in: -30...30)
-                    .labelsHidden()
-                    .frame(width: 80)
-            }
-            HStack {
-                label("Currency")
-                Spacer()
-                segPicker(vm.currencies, selection: $vm.currencyIndex)
-                    .frame(maxWidth: 140)
-            }
-        }
-    }
-
-    // MARK: - Result box
-
-    private var resultBox: some View {
-        Group {
-            if let r = vm.result {
-                let fmt = currencyFormatter(vm.currency)
-                Text(fmt.string(from: NSNumber(value: r.upfrontDollars)) ?? String(format: "%.0f", r.upfrontDollars))
-                    .font(.system(size: 28, weight: .bold, design: .monospaced))
-                    .foregroundColor(.black)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 14)
-                    .background(Color(red: 1, green: 0.999, blue: 0.397))
-                    .cornerRadius(8)
-            } else {
-                Text("Calculating…")
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 14)
-                    .background(Color(red: 1, green: 0.999, blue: 0.397))
-                    .cornerRadius(8)
-            }
-        }
-    }
-
-    // MARK: - Output grid
-
-    private var outputGrid: some View {
-        Group {
-            if let r = vm.result {
-                let fmt = currencyFormatter(vm.currency)
-                VStack(spacing: 6) {
-                    HStack {
-                        outputCell("Par Spread",  String(format: "%.0f bp", r.parSpreadBp))
-                        outputCell("Upfront",     String(format: "%.1f bp", r.upfrontBp))
-                    }
-                    HStack {
-                        outputCell("Accrued", fmt.string(from: NSNumber(value: r.accrued)) ?? "")
-                        outputCell("Price",   String(format: "%.4f", r.price))
-                    }
-                    HStack {
-                        outputCell("Start",   formatTDate(r.startDate))
-                        outputCell("Settle",  formatTDate(r.valueDate))
-                    }
-                }
-            }
+    private var resultRow2: some View {
+        let fmt = NumberFormatter()
+        fmt.numberStyle = .currency; fmt.currencyCode = vm.currency; fmt.maximumFractionDigits = 0
+        return HStack(spacing: 4) {
+            resultCell("Accrual", vm.result.flatMap { fmt.string(from: NSNumber(value: $0.accrued)) } ?? "---")
+            resultCell("Spread",  vm.result.map { String(format: "%.0f", $0.parSpreadBp) } ?? "---")
+            resultCell("Price",   vm.result.map { String(format: "%.4f", $0.price) } ?? "---")
+            resultCell("Upfront", vm.result.map { String(format: "%.1f", $0.upfrontBp) } ?? "---")
         }
     }
 
     // MARK: - Helpers
 
-    private func label(_ text: String) -> some View {
-        Text(text)
-            .font(.caption)
-            .foregroundColor(Color(white: 0.65))
-    }
-
-    private func segButton(_ title: String, selected: Bool, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            Text(title)
-                .font(.caption)
-                .padding(.horizontal, 10)
-                .padding(.vertical, 6)
-                .background(selected ? orange : Color(white: 0.18))
-                .foregroundColor(selected ? .black : .white)
-                .cornerRadius(6)
-        }
-    }
-
-    private func segPicker(_ options: [String], selection: Binding<Int>) -> some View {
+    private func segPicker(_ opts: [String], selection: Binding<Int>) -> some View {
         Picker("", selection: selection) {
-            ForEach(options.indices, id: \.self) { i in
-                Text(options[i]).tag(i)
-            }
+            ForEach(opts.indices, id: \.self) { Text(opts[$0]).tag($0) }
         }
         .pickerStyle(.segmented)
     }
 
-    private func outputCell(_ label: String, _ value: String) -> some View {
-        VStack(alignment: .leading, spacing: 2) {
-            Text(label)
-                .font(.caption2)
-                .foregroundColor(Color(white: 0.55))
+    private func resultCell(_ header: String, _ value: String) -> some View {
+        VStack(alignment: .trailing, spacing: 2) {
+            Text(header)
+                .font(.system(size: 11))
+                .foregroundColor(.white)
+                .frame(maxWidth: .infinity, alignment: .trailing)
             Text(value)
-                .font(.system(.callout, design: .monospaced))
+                .font(.system(size: 13, design: .monospaced).italic())
                 .foregroundColor(orange)
+                .frame(maxWidth: .infinity, alignment: .trailing)
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(8)
-        .background(Color(white: 0.07))
-        .cornerRadius(6)
-    }
-
-    private func currencyFormatter(_ code: String) -> NumberFormatter {
-        let f = NumberFormatter()
-        f.numberStyle = .currency
-        f.currencyCode = code
-        f.maximumFractionDigits = 0
-        return f
+        .frame(maxWidth: .infinity)
+        .padding(.horizontal, 4)
+        .padding(.vertical, 4)
+        .background(Color.black)
     }
 
     private func formatTDate(_ tdate: TDate) -> String {
         var mdy = TMonthDayYear()
         JpmcdsDateToMDY(tdate, &mdy)
-        return String(format: "%02d-%02d-%04d", mdy.month, mdy.day, mdy.year)
+        return String(format: "%d-%02d", mdy.day, mdy.month)
     }
 }

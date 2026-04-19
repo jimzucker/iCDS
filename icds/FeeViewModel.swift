@@ -86,6 +86,8 @@ final class FeeViewModel: ObservableObject {
         spreadBp = couponBp
     }
 
+    func recalc() { recalculate() }
+
     private func recalculate() {
         result = CDSCalculator.calculate(
             tradeDate:    tradeDate,
