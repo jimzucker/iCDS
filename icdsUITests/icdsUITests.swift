@@ -3,7 +3,7 @@
 //  icdsUITests
 //
 //  Created by Jim Zucker on 5/10/16.
-//  Copyright © 2016 Strategic Software Engineering LLC. All rights reserved.
+//  Copyright © 2016-2026 James A. Zucker All rights reserved.
 //
 
 import XCTest

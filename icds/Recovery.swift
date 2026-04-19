@@ -3,7 +3,7 @@
 //  icds
 //
 //  Created by Jim Zucker on 10/4/16.
-//  Copyright © 2016 Strategic Software Engineering LLC. All rights reserved.
+//  Copyright © 2016-2026 James A. Zucker All rights reserved.
 //
 
 import Foundation

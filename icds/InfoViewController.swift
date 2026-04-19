@@ -3,7 +3,7 @@
 //  icds
 //
 //  Created by Jim Zucker on 10/7/16.
-//  Copyright © 2016 Strategic Software Engineering LLC. All rights reserved.
+//  Copyright © 2016-2026 James A. Zucker All rights reserved.
 //
 
 import UIKit
@@ -49,6 +49,6 @@ class InfoViewController: UIViewController {
         stack.addArrangedSubview(makeLabel("Based on the ISDA Standard CDS Model", size: 13, color: .lightGray))
         stack.addArrangedSubview(makeLabel("www.cdsmodel.com", size: 13, color: orange))
         stack.setCustomSpacing(32, after: stack.arrangedSubviews[4])
-        stack.addArrangedSubview(makeLabel("© Strategic Software Engineering LLC", size: 12, color: .darkGray))
+        stack.addArrangedSubview(makeLabel("© James A Zucker", size: 12, color: .darkGray))
     }
 }

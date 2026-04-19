@@ -2,7 +2,7 @@
 //  SceneDelegate.swift
 //  icds
 //
-//  Copyright © 2024 Strategic Software Engineering LLC. All rights reserved.
+//  Copyright © 2024-2026 James A Zucker All rights reserved.
 //
 
 import UIKit
