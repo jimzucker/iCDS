@@ -1,3 +1,13 @@
-.claude/
-icds.xcodeproj
 .DS_Store
+.claude/
+
+# Xcode user-specific data (do NOT ignore the project file itself)
+icds.xcodeproj/xcuserdata/
+icds.xcodeproj/project.xcworkspace/xcuserdata/
+icds.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist
+
+# Build artifacts
+build/
+DerivedData/
+*.ipa
+*.xcarchive
