@@ -153,7 +153,9 @@ struct FeeView: View {
         Group {
             if let r = vm.result {
                 let fmt = currencyFormatter(vm.currency)
-                Text(fmt.string(from: NSNumber(value: r.upfrontDollars)) ?? String(format: "%.0f", r.upfrontDollars))
+                // Avoid "-$0" when upfront is a tiny negative value that rounds to zero
+                let display = abs(r.upfrontDollars) < 0.5 ? 0.0 : r.upfrontDollars
+                Text(fmt.string(from: NSNumber(value: display)) ?? String(format: "%.0f", display))
                     .font(.system(size: 28, weight: .bold, design: .monospaced))
                     .foregroundColor(.black)
                     .frame(maxWidth: .infinity)
