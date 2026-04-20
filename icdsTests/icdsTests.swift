@@ -574,6 +574,102 @@ class icdsTests: XCTestCase {
         return fmt.string(from: date)
     }
 
+    // MARK: - Settle Date: Full Calendar Accuracy
+    // These tests verify that addBusinessDays and calculate() use the full
+    // holiday calendar (not just weekends) for settle date computation.
+
+    func testSettleDateSkipsNYFedMemorialDay() {
+        // May 23 2025 (Fri) + T+1 nyFed: weekends-only → May 26 (Memorial Day, wrong)
+        //                                 full calendar  → May 27 (correct)
+        XCTAssertEqual(isoDay(CDSCalculator.addBusinessDays(1, to: d(2025,5,23), calendarName: "nyFed")),
+                       "2025-05-27", "T+1 settle should skip Memorial Day May 26")
+    }
+
+    func testSettleDateSkipsTARGETGoodFridayAndEasterMonday() {
+        // Thu Apr 17 2025 + T+1 TARGET: Apr 18=Good Friday, Apr 21=Easter Monday → Apr 22
+        XCTAssertEqual(isoDay(CDSCalculator.addBusinessDays(1, to: d(2025,4,17), calendarName: "target")),
+                       "2025-04-22", "T+1 TARGET settle should skip Good Friday and Easter Monday")
+    }
+
+    func testSettleDateT3ForEM() {
+        // Mon Apr 14 2025 + T+3 nyFed → April 17 (Thu)
+        XCTAssertEqual(isoDay(CDSCalculator.addBusinessDays(3, to: d(2025,4,14), calendarName: "nyFed")),
+                       "2025-04-17")
+    }
+
+    func testCalculateValueDateReflectsHolidayCalendar() {
+        // End-to-end: CDSResult.valueDate must skip Memorial Day May 26 2025
+        let r = CDSCalculator.calculate(tradeDate: d(2025,5,23), tenorYears: 5,
+                                         parSpreadBp: 100, couponBp: 100,
+                                         recoveryRate: 0.40, notional: 10_000_000,
+                                         isBuy: true, settleDays: 1,
+                                         calendarName: "nyFed")!
+        var mdy = TMonthDayYear()
+        JpmcdsDateToMDY(r.valueDate, &mdy)
+        XCTAssertEqual(mdy.month, 5)
+        XCTAssertEqual(mdy.day,   27)   // skips Sat, Sun, Memorial Day
+        XCTAssertEqual(mdy.year,  2025)
+    }
+
+    func testCalculateValueDateTARGETSkipsEasterCluster() {
+        // End-to-end for EU: settle on Thursday before Easter skips 4 days
+        let r = CDSCalculator.calculate(tradeDate: d(2025,4,17), tenorYears: 5,
+                                         parSpreadBp: 100, couponBp: 100,
+                                         recoveryRate: 0.40, notional: 10_000_000,
+                                         isBuy: true, settleDays: 1,
+                                         calendarName: "target")!
+        var mdy = TMonthDayYear()
+        JpmcdsDateToMDY(r.valueDate, &mdy)
+        XCTAssertEqual(mdy.month, 4)
+        XCTAssertEqual(mdy.day,   22)   // skips Good Fri, Sat, Sun, Easter Mon
+        XCTAssertEqual(mdy.year,  2025)
+    }
+
+    // MARK: - FeeViewModel Async Init Flow
+
+    @MainActor
+    func testFeeViewModelResultIsNilBeforeAsyncInit() {
+        let vm = FeeViewModel()
+        XCTAssertNil(vm.result, "result must be nil until the @MainActor Task completes")
+    }
+
+    @MainActor
+    func testFeeViewModelResultNonNilAfterAsyncInit() async throws {
+        let vm = FeeViewModel()
+        XCTAssertNil(vm.result, "result starts nil")
+        // 1s covers prewarm (~50-200ms) + calendar snap + recalculate
+        try await Task.sleep(nanoseconds: 1_000_000_000)
+        XCTAssertNotNil(vm.result, "result should be available after async init task")
+    }
+
+    @MainActor
+    func testFeeViewModelTradeDateIsBusinessDay() async throws {
+        let vm = FeeViewModel()
+        // Allow the trade-date snap Task to run
+        try await Task.sleep(nanoseconds: 500_000_000)
+        let region = vm.contract?.calendarName ?? "nyFed"
+        XCTAssertTrue(CDSHolidayCalendar.isBusinessDay(vm.tradeDate, calendarName: region),
+                      "FeeViewModel trade date must be a valid business day after async init")
+    }
+
+    @MainActor
+    func testFeeViewModelResultUpdatesAfterSOFRFetch() async throws {
+        let vm = FeeViewModel()
+        try await Task.sleep(nanoseconds: 1_000_000_000)  // let init Task complete
+        guard let r1 = vm.result else { XCTFail("No initial result"); return }
+
+        // Trigger a new SOFR fetch; result should remain valid (may update if live rate differs)
+        SOFRRateStore.shared.updateForTradeDate(vm.tradeDate)
+        try await Task.sleep(nanoseconds: 1_000_000_000)  // allow fetch + recalculate
+
+        XCTAssertNotNil(vm.result, "result should remain non-nil after SOFR refresh")
+        // Price should always be in a sane range regardless of rate
+        XCTAssertGreaterThan(vm.result!.price, 50.0)
+        XCTAssertLessThan(vm.result!.price, 120.0)
+        // par spread should approximately equal the input spread
+        XCTAssertEqual(vm.result!.parSpreadBp, r1.parSpreadBp, accuracy: 2.0)
+    }
+
     // MARK: - Performance
 
     func testCalculationPerformance() {

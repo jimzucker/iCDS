@@ -71,9 +71,11 @@ final class SOFRRateStore: ObservableObject {
     @Published private(set) var status: SOFRDataStatus = .loading
 
     private init() {
-        Task { @MainActor in
-            await refresh(for: Date())
-        }
+        // No auto-fetch here. FeeViewModel's async Task calls updateForTradeDate
+        // with the already-snapped trade date (e.g. Friday when today is Sunday),
+        // so the first fetch targets the correct date rather than wall-clock today.
+        // Removing the auto-fetch also eliminates the race between two concurrent
+        // fetches that could let the wall-clock fetch overwrite the snapped-date fetch.
     }
 
     func updateForTradeDate(_ date: Date) {
