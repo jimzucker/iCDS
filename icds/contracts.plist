@@ -3,118 +3,93 @@
 <plist version="1.0">
 <array>
 	<dict>
-		<key>Region</key>
-		<string>NA</string>
-		<key>Recovery</key>
-		<dict>
-			<key>SEN</key>
-			<integer>40</integer>
-			<key>SUB</key>
-			<integer>20</integer>
+		<key>Region</key><string>NA</string>
+		<key>Currency</key><string>USD</string>
+		<key>Calendar</key><string>nyFed</string>
+		<key>SettleDays</key><integer>1</integer>
+		<key>Recovery</key><dict>
+			<key>SEN</key><integer>40</integer>
+			<key>SUB</key><integer>20</integer>
 		</dict>
-		<key>Coupons</key>
-		<array>
-			<integer>100</integer>
-			<integer>500</integer>
+		<key>Coupons</key><array>
+			<integer>100</integer><integer>500</integer>
 		</array>
 	</dict>
 	<dict>
-		<key>Region</key>
-		<string>EU</string>
-		<key>Recovery</key>
-		<dict>
-			<key>SEN</key>
-			<integer>40</integer>
-			<key>SUB</key>
-			<integer>20</integer>
+		<key>Region</key><string>EU</string>
+		<key>Currency</key><string>EUR</string>
+		<key>Calendar</key><string>target</string>
+		<key>SettleDays</key><integer>1</integer>
+		<key>Recovery</key><dict>
+			<key>SEN</key><integer>40</integer>
+			<key>SUB</key><integer>20</integer>
 		</dict>
-		<key>Coupons</key>
-		<array>
-			<integer>25</integer>
-			<integer>100</integer>
-			<integer>500</integer>
-			<integer>1000</integer>
+		<key>Coupons</key><array>
+			<integer>25</integer><integer>100</integer><integer>500</integer>
 		</array>
 	</dict>
 	<dict>
-		<key>Region</key>
-		<string>EM</string>
-		<key>Recovery</key>
-		<dict>
-			<key>SEN</key>
-			<integer>25</integer>
-			<key>SUB</key>
-			<integer>25</integer>
+		<key>Region</key><string>EM</string>
+		<key>Currency</key><string>USD</string>
+		<key>Calendar</key><string>nyFed</string>
+		<key>SettleDays</key><integer>3</integer>
+		<key>Recovery</key><dict>
+			<key>SEN</key><integer>25</integer>
+			<key>SUB</key><integer>25</integer>
 		</dict>
-		<key>Coupons</key>
-		<array>
-			<integer>100</integer>
-			<integer>500</integer>
+		<key>Coupons</key><array>
+			<integer>100</integer><integer>500</integer>
 		</array>
 	</dict>
 	<dict>
-		<key>Region</key>
-		<string>Asia</string>
-		<key>Recovery</key>
-		<dict>
-			<key>SEN</key>
-			<integer>40</integer>
-			<key>SUB</key>
-			<integer>20</integer>
+		<key>Region</key><string>Asia</string>
+		<key>Currency</key><string>USD</string>
+		<key>Calendar</key><string>nyFed</string>
+		<key>SettleDays</key><integer>1</integer>
+		<key>Recovery</key><dict>
+			<key>SEN</key><integer>40</integer>
+			<key>SUB</key><integer>20</integer>
 		</dict>
-		<key>Coupons</key>
-		<array>
-			<integer>100</integer>
-			<integer>500</integer>
+		<key>Coupons</key><array>
+			<integer>100</integer><integer>500</integer>
 		</array>
 	</dict>
 	<dict>
-		<key>Region</key>
-		<string>Japan</string>
-		<key>Recovery</key>
-		<dict>
-			<key>SEN</key>
-			<integer>35</integer>
-			<key>SUB</key>
-			<integer>15</integer>
+		<key>Region</key><string>Japan</string>
+		<key>Currency</key><string>JPY</string>
+		<key>Calendar</key><string>tokyo</string>
+		<key>SettleDays</key><integer>1</integer>
+		<key>Recovery</key><dict>
+			<key>SEN</key><integer>35</integer>
+			<key>SUB</key><integer>35</integer>
 		</dict>
-		<key>Coupons</key>
-		<array>
-			<integer>25</integer>
-			<integer>100</integer>
-			<integer>500</integer>
+		<key>Coupons</key><array>
+			<integer>25</integer><integer>100</integer>
 		</array>
 	</dict>
 	<dict>
-		<key>Region</key>
-		<string>AUS</string>
-		<key>Recovery</key>
-		<dict>
-			<key>SEN</key>
-			<integer>40</integer>
-			<key>SUB</key>
-			<integer>20</integer>
+		<key>Region</key><string>AUS</string>
+		<key>Currency</key><string>AUD</string>
+		<key>Calendar</key><string>sydney</string>
+		<key>SettleDays</key><integer>1</integer>
+		<key>Recovery</key><dict>
+			<key>SEN</key><integer>40</integer>
+			<key>SUB</key><integer>20</integer>
 		</dict>
-		<key>Coupons</key>
-		<array>
-			<integer>100</integer>
-			<integer>500</integer>
+		<key>Coupons</key><array>
+			<integer>25</integer><integer>100</integer><integer>500</integer>
 		</array>
 	</dict>
 	<dict>
-		<key>Region</key>
-		<string>LCDS</string>
-		<key>Recovery</key>
-		<dict>
-			<key>SEN</key>
-			<integer>70</integer>
+		<key>Region</key><string>LCDS</string>
+		<key>Currency</key><string>USD</string>
+		<key>Calendar</key><string>nyFed</string>
+		<key>SettleDays</key><integer>1</integer>
+		<key>Recovery</key><dict>
+			<key>SEN</key><integer>70</integer>
 		</dict>
-		<key>Coupons</key>
-		<array>
-			<integer>0</integer>
-			<integer>100</integer>
-			<integer>250</integer>
-			<integer>500</integer>
+		<key>Coupons</key><array>
+			<integer>100</integer><integer>250</integer><integer>500</integer>
 		</array>
 	</dict>
 </array>

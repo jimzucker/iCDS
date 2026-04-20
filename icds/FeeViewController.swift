@@ -54,6 +54,9 @@ class FeeViewController: UIViewController {
     @IBOutlet weak var UpfrontBpField: UITextField!
     
     var isdaContracts : [ISDAContract] =  [ISDAContract]()
+
+    private var sofrRate: Double = SOFRFetcher.fallbackRate
+    private var sofrEffectiveDate: String = "fallback"
     
     fileprivate func loadContracts() {
         isdaContracts = ISDAContract.readFromPlist()
@@ -123,6 +126,14 @@ class FeeViewController: UIViewController {
         CalculatedFeeLabel.textColor = .black
 
         reCalc()
+
+        Task { @MainActor in
+            let (rate, date) = await SOFRFetcher.fetchLatest()
+            sofrRate = rate
+            sofrEffectiveDate = date
+            print("SOFR: \(String(format: "%.4f%%", rate * 100)) as of \(date)")
+            reCalc()
+        }
     }
 
     private func formatDate(_ tdate: TDate) -> String {
@@ -151,7 +162,7 @@ class FeeViewController: UIViewController {
         guard let r = CDSCalculator.calculate(tradeDate: tradeDate, tenorYears: tenorYears,
                                               parSpreadBp: parSpreadBp, couponBp: couponBp,
                                               recoveryRate: recovery, notional: notional,
-                                              isBuy: isBuy) else {
+                                              isBuy: isBuy, discountRate: sofrRate) else {
             CalculatedFeeLabel.text = "Calc Err"
             return
         }

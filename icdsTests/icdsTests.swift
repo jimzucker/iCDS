@@ -235,6 +235,121 @@ class icdsTests: XCTestCase {
         }
     }
 
+    // MARK: - ISDA Standard: 500bp Coupon (NA Distressed)
+
+    func testAtParSpread500bpCouponUpfrontNearZero() {
+        // NA distressed standard uses 500bp fixed coupon; at-par spread → upfront ≈ 0
+        let r = CDSCalculator.calculate(tradeDate: refDate, tenorYears: 5,
+                                        parSpreadBp: 500, couponBp: 500,
+                                        recoveryRate: 0.40, notional: 10_000_000, isBuy: true)!
+        XCTAssertEqual(r.upfrontFraction, 0.0, accuracy: 0.005)
+    }
+
+    func testSpreadAbove500bpCouponBuyerPays() {
+        let r = CDSCalculator.calculate(tradeDate: refDate, tenorYears: 5,
+                                        parSpreadBp: 1000, couponBp: 500,
+                                        recoveryRate: 0.40, notional: 10_000_000, isBuy: true)!
+        XCTAssertGreaterThan(r.upfrontFraction, 0)
+    }
+
+    func testSpreadBelow500bpCouponBuyerReceives() {
+        let r = CDSCalculator.calculate(tradeDate: refDate, tenorYears: 5,
+                                        parSpreadBp: 100, couponBp: 500,
+                                        recoveryRate: 0.40, notional: 10_000_000, isBuy: true)!
+        XCTAssertLessThan(r.upfrontFraction, 0)
+    }
+
+    func testBuySellSymmetry500bpCoupon() {
+        let buy  = CDSCalculator.calculate(tradeDate: refDate, tenorYears: 5,
+                                           parSpreadBp: 800, couponBp: 500,
+                                           recoveryRate: 0.40, notional: 10_000_000, isBuy: true)!
+        let sell = CDSCalculator.calculate(tradeDate: refDate, tenorYears: 5,
+                                           parSpreadBp: 800, couponBp: 500,
+                                           recoveryRate: 0.40, notional: 10_000_000, isBuy: false)!
+        XCTAssertEqual(buy.upfrontDollars, -sell.upfrontDollars, accuracy: 1.0)
+    }
+
+    func testCouponLevelAffectsUpfront() {
+        // Same par spread (300bp); 100bp coupon → buyer pays; 500bp coupon → buyer receives
+        let r100 = CDSCalculator.calculate(tradeDate: refDate, tenorYears: 5,
+                                           parSpreadBp: 300, couponBp: 100,
+                                           recoveryRate: 0.40, notional: 10_000_000, isBuy: true)!
+        let r500 = CDSCalculator.calculate(tradeDate: refDate, tenorYears: 5,
+                                           parSpreadBp: 300, couponBp: 500,
+                                           recoveryRate: 0.40, notional: 10_000_000, isBuy: true)!
+        XCTAssertGreaterThan(r100.upfrontFraction, r500.upfrontFraction)
+    }
+
+    func testParSpreadRoundTrip500bpCoupon() {
+        let r = CDSCalculator.calculate(tradeDate: refDate, tenorYears: 5,
+                                        parSpreadBp: 600, couponBp: 500,
+                                        recoveryRate: 0.40, notional: 10_000_000, isBuy: true)!
+        XCTAssertEqual(r.parSpreadBp, 600.0, accuracy: 1.0)
+    }
+
+    // MARK: - ISDA Standard: Edge Cases
+
+    func testVeryHighSpreadProducesResult() {
+        let r = CDSCalculator.calculate(tradeDate: refDate, tenorYears: 5,
+                                        parSpreadBp: 2000, couponBp: 500,
+                                        recoveryRate: 0.40, notional: 10_000_000, isBuy: true)
+        XCTAssertNotNil(r, "2000bp distressed spread should produce a result")
+    }
+
+    func testNearZeroSpreadProducesResult() {
+        let r = CDSCalculator.calculate(tradeDate: refDate, tenorYears: 5,
+                                        parSpreadBp: 1, couponBp: 100,
+                                        recoveryRate: 0.40, notional: 10_000_000, isBuy: true)
+        XCTAssertNotNil(r)
+    }
+
+    func testAccruedInterestIsNonNegative() {
+        let r = CDSCalculator.calculate(tradeDate: refDate, tenorYears: 5,
+                                        parSpreadBp: 200, couponBp: 100,
+                                        recoveryRate: 0.40, notional: 10_000_000, isBuy: true)!
+        XCTAssertGreaterThanOrEqual(r.accrued, 0)
+    }
+
+    func testPriceRangeReasonable() {
+        for spread in [50.0, 100.0, 200.0, 500.0, 1000.0] {
+            let r = CDSCalculator.calculate(tradeDate: refDate, tenorYears: 5,
+                                            parSpreadBp: spread, couponBp: 100,
+                                            recoveryRate: 0.40, notional: 10_000_000, isBuy: true)!
+            XCTAssertGreaterThan(r.price, 50.0, "price sanity low bound at \(spread)bp")
+            XCTAssertLessThan(r.price,   120.0, "price sanity high bound at \(spread)bp")
+        }
+    }
+
+    // MARK: - Region Contract Validation
+
+    func testEUContractHasCoupons() {
+        let eu = ISDAContract.readFromPlist().first { $0.region == "EU" }!
+        XCTAssertFalse(eu.coupons.isEmpty)
+    }
+
+    func testEMContractHasRecovery() {
+        let em = ISDAContract.readFromPlist().first { $0.region == "EM" }!
+        XCTAssertFalse(em.recoveryList.isEmpty)
+    }
+
+    func testAllRegionsAtParCouponNearZeroUpfront() {
+        // For every region × coupon combination, at-par spread → upfront ≈ 0
+        let contracts = ISDAContract.readFromPlist()
+        for contract in contracts {
+            let recovery = Double(contract.recoveryList.first?.recovery ?? 40) / 100.0
+            for coupon in contract.coupons {
+                let r = CDSCalculator.calculate(tradeDate: refDate, tenorYears: 5,
+                                                parSpreadBp: Double(coupon),
+                                                couponBp: Double(coupon),
+                                                recoveryRate: recovery,
+                                                notional: 10_000_000, isBuy: true)
+                XCTAssertNotNil(r, "\(contract.region) coupon=\(coupon)bp at-par failed")
+                XCTAssertEqual(r!.upfrontFraction, 0.0, accuracy: 0.005,
+                               "\(contract.region) coupon=\(coupon)bp at-par upfront should be ~0")
+            }
+        }
+    }
+
     // MARK: - Performance
 
     func testCalculationPerformance() {

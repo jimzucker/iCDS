@@ -19,14 +19,14 @@ final class FeeViewModel: ObservableObject {
     @Published var recoveryIndex: Int = 0
     @Published var spreadBp:      Double = 100
     @Published var tradeDateOffset: Int = 0    // days from today
-    @Published var currencyIndex: Int = 2       // USD
+    @Published var currencyIndex: Int = 4       // USD
 
     // MARK: - Static option lists
     let notionalLabels = ["1M", "5M", "10M", "20M"]
     let notionalValues = [1_000_000.0, 5_000_000.0, 10_000_000.0, 20_000_000.0]
     let tenorLabels    = ["1Y", "5Y", "7Y", "10Y"]
     let tenorYears     = [1, 5, 7, 10]
-    let currencies     = ["EUR", "GBP", "USD"]
+    let currencies     = ["AUD", "EUR", "GBP", "JPY", "USD"]
 
     // MARK: - Derived
     @Published private(set) var contracts: [ISDAContract] = []
@@ -45,8 +45,10 @@ final class FeeViewModel: ObservableObject {
     }
     var recoveryLabel: String { "\(recoveryPct)%" }
     var currency: String { currencies[currencyIndex] }
+    // Raw date from stepper offset, snapped to the last valid business day for the region
     var tradeDate: Date {
-        Calendar.current.date(byAdding: .day, value: tradeDateOffset, to: Date()) ?? Date()
+        let raw = Calendar.current.date(byAdding: .day, value: tradeDateOffset, to: Date()) ?? Date()
+        return CDSCalculator.lastValidTradeDate(on: raw, calendarName: contract?.calendarName ?? "nyFed")
     }
     var tradeDateLabel: String {
         let fmt = DateFormatter(); fmt.dateFormat = "d-MMM"
@@ -57,6 +59,10 @@ final class FeeViewModel: ObservableObject {
 
     init() {
         contracts = ISDAContract.readFromPlist()
+        // Snap initial trade date to last business day for the default region
+        let region = contracts.first?.calendarName ?? "nyFed"
+        let lastBiz = CDSCalculator.lastValidTradeDate(on: Date(), calendarName: region)
+        tradeDateOffset = Calendar.current.dateComponents([.day], from: Date(), to: lastBiz).day ?? 0
         recalculate()
 
         // Recalculate whenever any input changes
@@ -74,12 +80,33 @@ final class FeeViewModel: ObservableObject {
         .debounce(for: .milliseconds(50), scheduler: RunLoop.main)
         .sink { [weak self] in self?.recalculate() }
         .store(in: &cancellables)
+
+        // Re-fetch SOFR when trade date changes (use curve as of trade date)
+        $tradeDateOffset
+            .dropFirst()
+            .debounce(for: .milliseconds(400), scheduler: RunLoop.main)
+            .sink { [weak self] _ in
+                guard let self = self else { return }
+                SOFRRateStore.shared.updateForTradeDate(self.tradeDate)
+            }
+            .store(in: &cancellables)
+
+        // Recalculate when the live SOFR rate arrives or refreshes
+        SOFRRateStore.shared.$rate
+            .dropFirst()
+            .receive(on: RunLoop.main)
+            .sink { [weak self] _ in self?.recalculate() }
+            .store(in: &cancellables)
     }
 
     func onRegionChanged() {
         couponIndex   = 0
         recoveryIndex = 0
         resetSpreadToCoupon()
+        if let regionCurrency = contract?.currency,
+           let idx = currencies.firstIndex(of: regionCurrency) {
+            currencyIndex = idx
+        }
     }
 
     func resetSpreadToCoupon() {
@@ -94,7 +121,10 @@ final class FeeViewModel: ObservableObject {
             couponBp:     couponBp,
             recoveryRate: Double(recoveryPct) / 100.0,
             notional:     notionalValues[notionalIndex],
-            isBuy:        buySellIndex == 0
+            isBuy:        buySellIndex == 0,
+            settleDays:   contract?.settleDays   ?? 1,
+            calendarName: contract?.calendarName ?? "nyFed",
+            discountRate: SOFRRateStore.shared.rate
         )
     }
 }
