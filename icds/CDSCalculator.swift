@@ -86,9 +86,10 @@ struct CDSCalculator {
         let cal        = Calendar.current
         let today      = tdate(from: tradeDate)
         let valueDate  = tdate(from: addBusinessDays(settleDays, to: tradeDate, calendarName: calendarName))
-        let stepinDate = today + 1          // always T+1 calendar day
-        let benchStart = today
-        let startDate  = today
+        let stepinDate = today + 1                                         // T+1 calendar day
+        let benchStart = today                                             // benchmark quoted today
+        let prevIMM    = prevIMMDate(before: tradeDate)
+        let startDate  = tdate(from: prevIMM)                              // SNAC: coupon accrues from previous IMM
 
         guard let matDate = cal.date(byAdding: .year, value: tenorYears, to: tradeDate) else { return nil }
         let endDate = nextIMMDate(after: matDate)
@@ -122,7 +123,7 @@ struct CDSCalculator {
             JPMCDS_ACT_360, Int(UInt8(ascii: "F")),
             cal_str, discCurve,
             parSpreadBp / 10000.0,
-            recoveryRate, 0,
+            recoveryRate, 1,                                               // isPriceClean=1 (ex-accrued)
             &upfrontFraction
         )
         guard status == SUCCESS else { return nil }
@@ -132,11 +133,11 @@ struct CDSCalculator {
         let bp           = signed * 10_000.0
         let price        = (1.0 - signed) * 100.0
 
-        let prevIMM      = prevIMMDate(before: tradeDate)
-        let accrualDays  = Double(today - tdate(from: prevIMM))
+        // Accrued shown separately: days from previous IMM to trade date × coupon
+        let accrualDays  = Double(today - startDate)
         let accrued      = (couponBp / 10_000.0) * (accrualDays / 360.0) * notional
 
-        // Back-calculate par spread from the actual upfront → round-trip of input spread
+        // Back-calculate par spread from the actual clean upfront → round-trip of input spread
         var parOut = 0.0
         JpmcdsCdsoneSpread(
             today, valueDate, benchStart, stepinDate,
@@ -144,7 +145,7 @@ struct CDSCalculator {
             couponBp / 10000.0, 1, &ivl, &stub,
             JPMCDS_ACT_360, Int(UInt8(ascii: "F")),
             cal_str, discCurve,
-            upfrontFraction, recoveryRate, 0,
+            upfrontFraction, recoveryRate, 1,                              // isPriceClean=1
             &parOut
         )
 
