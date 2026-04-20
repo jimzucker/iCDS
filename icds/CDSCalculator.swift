@@ -81,7 +81,7 @@ struct CDSCalculator {
                           isBuy: Bool,
                           settleDays: Int = 1,
                           calendarName: String = "nyFed",
-                          discountRate: Double = 0.045) -> CDSResult? {
+                          discountRate: Double = SOFRFetcher.fallbackRate) -> CDSResult? {
 
         let cal        = Calendar.current
         let today      = tdate(from: tradeDate)
