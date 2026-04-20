@@ -72,18 +72,6 @@ struct CDSCalculator {
         CDSHolidayCalendar.addBusinessDays(n, to: date, calendarName: calendarName)
     }
 
-    // Weekends-only business day advance — no Calendar stack init, safe on main thread
-    private static func addWeekendOnlyBusinessDays(_ n: Int, to date: Date) -> Date {
-        var result = date
-        var count  = 0
-        let cal    = Calendar.current
-        while count < n {
-            result = cal.date(byAdding: .day, value: 1, to: result)!
-            if !cal.isDateInWeekend(result) { count += 1 }
-        }
-        return result
-    }
-
     static func calculate(tradeDate: Date,
                           tenorYears: Int,
                           parSpreadBp: Double,
@@ -92,14 +80,12 @@ struct CDSCalculator {
                           notional: Double,
                           isBuy: Bool,
                           settleDays: Int = 1,
+                          calendarName: String = "nyFed",
                           discountRate: Double = SOFRFetcher.fallbackRate) -> CDSResult? {
 
         let cal        = Calendar.current
         let today      = tdate(from: tradeDate)
-        // Settle date: weekends-only business day skip (holiday effect on
-        // a 1–3 day settle window is < 0.01% on pricing; full calendar used
-        // only for trade date defaulting via lastValidTradeDate)
-        let valueDate  = tdate(from: addWeekendOnlyBusinessDays(settleDays, to: tradeDate))
+        let valueDate  = tdate(from: addBusinessDays(settleDays, to: tradeDate, calendarName: calendarName))
         let stepinDate = today + 1          // always T+1 calendar day
         let benchStart = today
         let startDate  = today

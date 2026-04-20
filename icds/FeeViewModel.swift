@@ -59,22 +59,23 @@ final class FeeViewModel: ObservableObject {
 
     init() {
         contracts = ISDAContract.readFromPlist()
-        recalculate()
+        // result stays nil here → FeeView shows "Calculating…" for one frame
 
-        // Pre-warm all holiday calendar sets in the background so they are
-        // ready before the user changes region. Done detached to avoid
-        // blocking the main thread on first-time Calendar stack initialisation.
-        Task.detached(priority: .utility) { CDSHolidayCalendar.prewarmAll() }
+        // Pre-warm all holiday calendar sets at high priority so they are
+        // likely ready before the @MainActor Task below needs them.
+        Task.detached(priority: .userInitiated) { CDSHolidayCalendar.prewarmAll() }
 
-        // Snap trade date to last valid business day and fetch SOFR for that
-        // date. Done in a Task so CDSHolidayCalendar's static sets initialise
-        // after the UI is up rather than blocking the launch critical path.
+        // Snap trade date to last valid business day, run first calculation
+        // with correct settle date, then fetch live SOFR for that date.
+        // Done in a Task so CDSHolidayCalendar static initialisation happens
+        // after launch rather than blocking the launch screen transition.
         Task { @MainActor in
             let region  = self.contract?.calendarName ?? "nyFed"
             let lastBiz = CDSCalculator.lastValidTradeDate(on: Date(), calendarName: region)
             let offset  = Calendar.current.dateComponents([.day], from: Date(), to: lastBiz).day ?? 0
             if self.tradeDateOffset != offset { self.tradeDateOffset = offset }
-            SOFRRateStore.shared.updateForTradeDate(self.tradeDate)
+            self.recalculate()                                   // first result, fallback SOFR rate
+            SOFRRateStore.shared.updateForTradeDate(self.tradeDate) // live rate triggers another recalc
         }
 
         // Recalculate whenever any input changes
@@ -134,7 +135,8 @@ final class FeeViewModel: ObservableObject {
             recoveryRate: Double(recoveryPct) / 100.0,
             notional:     notionalValues[notionalIndex],
             isBuy:        buySellIndex == 0,
-            settleDays:   contract?.settleDays ?? 1,
+            settleDays:   contract?.settleDays   ?? 1,
+            calendarName: contract?.calendarName ?? "nyFed",
             discountRate: SOFRRateStore.shared.rate
         )
     }
