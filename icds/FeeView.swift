@@ -153,8 +153,7 @@ struct FeeView: View {
         Group {
             if let r = vm.result {
                 let fmt = currencyFormatter(vm.currency)
-                // Avoid "-$0" when upfront is a tiny negative value that rounds to zero
-                let display = abs(r.upfrontDollars) < 0.5 ? 0.0 : r.upfrontDollars
+                let display = noNegZero(r.upfrontDollars, eps: 0.5)
                 Text(fmt.string(from: NSNumber(value: display)) ?? String(format: "%.0f", display))
                     .font(.system(size: 28, weight: .bold, design: .monospaced))
                     .foregroundColor(.black)
@@ -180,8 +179,8 @@ struct FeeView: View {
                 let fmt = currencyFormatter(vm.currency)
                 VStack(spacing: 6) {
                     HStack {
-                        outputCell("Par Spread",  String(format: "%.0f bp", r.parSpreadBp))
-                        outputCell("Upfront",     String(format: "%.1f bp", r.upfrontBp))
+                        outputCell("Par Spread",  String(format: "%.0f bp", noNegZero(r.parSpreadBp, eps: 0.5)))
+                        outputCell("Upfront",     String(format: "%.1f bp", noNegZero(r.upfrontBp, eps: 0.05)))
                     }
                     HStack {
                         outputCell("Accrued", fmt.string(from: NSNumber(value: r.accrued)) ?? "")
@@ -246,6 +245,11 @@ struct FeeView: View {
         f.currencyCode = code
         f.maximumFractionDigits = 0
         return f
+    }
+
+    // Normalize tiny values that would format as "-0" to positive zero
+    private func noNegZero(_ value: Double, eps: Double) -> Double {
+        abs(value) < eps ? 0.0 : value
     }
 
     private func formatTDate(_ tdate: TDate) -> String {

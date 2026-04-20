@@ -5,7 +5,7 @@
 //  Fetches the latest SOFR overnight rate from the NY Fed public API.
 //  Falls back to a hardcoded rate if the network is unavailable.
 //
-//  Copyright © 2026 Strategic Software Engineering LLC. All rights reserved.
+//  Copyright © 2016-2026 James A. Zucker. All rights reserved.
 //
 
 import Foundation
