@@ -350,6 +350,230 @@ class icdsTests: XCTestCase {
         }
     }
 
+    // MARK: - Holiday Calendar: nyFed (US Federal Reserve)
+
+    func testNYFedMLKDayIsHoliday() {
+        // 3rd Monday January 2025 = Jan 20
+        XCTAssertFalse(CDSHolidayCalendar.isBusinessDay(d(2025,1,20), calendarName: "nyFed"))
+    }
+
+    func testNYFedMemorialDayIsHoliday() {
+        // Last Monday May 2025 = May 26
+        XCTAssertFalse(CDSHolidayCalendar.isBusinessDay(d(2025,5,26), calendarName: "nyFed"))
+    }
+
+    func testNYFedIndependenceDayIsHoliday() {
+        XCTAssertFalse(CDSHolidayCalendar.isBusinessDay(d(2025,7,4), calendarName: "nyFed"))
+    }
+
+    func testNYFedThanksgivingIsHoliday() {
+        // 4th Thursday November 2025 = Nov 27
+        XCTAssertFalse(CDSHolidayCalendar.isBusinessDay(d(2025,11,27), calendarName: "nyFed"))
+    }
+
+    func testNYFedGoodFridayIsNOTHoliday() {
+        // Good Friday is NYSE but NOT Federal Reserve — key CDS convention distinction
+        XCTAssertTrue(CDSHolidayCalendar.isBusinessDay(d(2025,4,18), calendarName: "nyFed"))
+    }
+
+    func testNYFedRegularWednesdayIsBusinessDay() {
+        XCTAssertTrue(CDSHolidayCalendar.isBusinessDay(d(2025,3,12), calendarName: "nyFed"))
+    }
+
+    // MARK: - Holiday Calendar: TARGET (ECB)
+
+    func testTargetGoodFridayIsHoliday() {
+        XCTAssertFalse(CDSHolidayCalendar.isBusinessDay(d(2025,4,18), calendarName: "target"))
+    }
+
+    func testTargetEasterMondayIsHoliday() {
+        // Easter 2025 = April 20; Easter Monday = April 21
+        XCTAssertFalse(CDSHolidayCalendar.isBusinessDay(d(2025,4,21), calendarName: "target"))
+    }
+
+    func testTargetMayDayIsHoliday() {
+        XCTAssertFalse(CDSHolidayCalendar.isBusinessDay(d(2025,5,1), calendarName: "target"))
+    }
+
+    func testTargetBoxingDayIsHoliday() {
+        XCTAssertFalse(CDSHolidayCalendar.isBusinessDay(d(2025,12,26), calendarName: "target"))
+    }
+
+    func testGoodFridayDiffersAcrossCalendars() {
+        // Good Friday Apr 18 2025: TARGET holiday, nyFed is open — key EU vs NA difference
+        XCTAssertFalse(CDSHolidayCalendar.isBusinessDay(d(2025,4,18), calendarName: "target"))
+        XCTAssertTrue( CDSHolidayCalendar.isBusinessDay(d(2025,4,18), calendarName: "nyFed"))
+    }
+
+    // MARK: - Holiday Calendar: Tokyo (TSE)
+
+    func testTokyoComingOfAgeDayIsHoliday() {
+        // 2nd Monday January 2025 = Jan 13
+        XCTAssertFalse(CDSHolidayCalendar.isBusinessDay(d(2025,1,13), calendarName: "tokyo"))
+    }
+
+    func testTokyoGoldenWeekIsHoliday() {
+        XCTAssertFalse(CDSHolidayCalendar.isBusinessDay(d(2025,5,3), calendarName: "tokyo"))
+        XCTAssertFalse(CDSHolidayCalendar.isBusinessDay(d(2025,5,5), calendarName: "tokyo"))
+    }
+
+    func testTokyoYearEndIsHoliday() {
+        XCTAssertFalse(CDSHolidayCalendar.isBusinessDay(d(2025,12,31), calendarName: "tokyo"))
+    }
+
+    func testTokyoRegularDayIsBusinessDay() {
+        XCTAssertTrue(CDSHolidayCalendar.isBusinessDay(d(2025,3,12), calendarName: "tokyo"))
+    }
+
+    // MARK: - Holiday Calendar: Sydney (ASX/NSW)
+
+    func testSydneyAustraliaDayObservedMonday() {
+        // Jan 26 2025 is Sunday → observed Monday Jan 27 is the public holiday
+        XCTAssertFalse(CDSHolidayCalendar.isBusinessDay(d(2025,1,27), calendarName: "sydney"))
+        XCTAssertTrue( CDSHolidayCalendar.isBusinessDay(d(2025,1,28), calendarName: "sydney"))
+    }
+
+    func testSydneyGoodFridayIsHoliday() {
+        XCTAssertFalse(CDSHolidayCalendar.isBusinessDay(d(2025,4,18), calendarName: "sydney"))
+    }
+
+    func testSydneyANZACDayIsHoliday() {
+        // Apr 25 2025 = Friday
+        XCTAssertFalse(CDSHolidayCalendar.isBusinessDay(d(2025,4,25), calendarName: "sydney"))
+    }
+
+    // MARK: - Last Valid Trade Date
+
+    func testLastValidTradeDateSaturdaySnapsToFriday() {
+        let last = CDSCalculator.lastValidTradeDate(on: d(2025,4,5), calendarName: "nyFed")
+        XCTAssertEqual(isoDay(last), "2025-04-04")
+    }
+
+    func testLastValidTradeDateSundaySnapsToFriday() {
+        let last = CDSCalculator.lastValidTradeDate(on: d(2025,4,6), calendarName: "nyFed")
+        XCTAssertEqual(isoDay(last), "2025-04-04")
+    }
+
+    func testLastValidTradeDateNYFedHolidaySnapsBack() {
+        // MLK Day Jan 20 2025 (Monday) → last valid = Friday Jan 17
+        let last = CDSCalculator.lastValidTradeDate(on: d(2025,1,20), calendarName: "nyFed")
+        XCTAssertEqual(isoDay(last), "2025-01-17")
+    }
+
+    func testLastValidTradeDateTargetGoodFridaySnapsToThursday() {
+        // Good Friday Apr 18 2025 is TARGET holiday → last valid = Thursday Apr 17
+        let last = CDSCalculator.lastValidTradeDate(on: d(2025,4,18), calendarName: "target")
+        XCTAssertEqual(isoDay(last), "2025-04-17")
+    }
+
+    func testLastValidTradeDateRegularDayUnchanged() {
+        let last = CDSCalculator.lastValidTradeDate(on: d(2025,3,12), calendarName: "nyFed")
+        XCTAssertEqual(isoDay(last), "2025-03-12")
+    }
+
+    func testLastValidTradeDateNYFedOpenOnGoodFriday() {
+        // Good Friday is NOT a nyFed holiday → trade date stays Apr 18
+        let last = CDSCalculator.lastValidTradeDate(on: d(2025,4,18), calendarName: "nyFed")
+        XCTAssertEqual(isoDay(last), "2025-04-18")
+    }
+
+    // MARK: - Discount Rate Effect on Calculation
+
+    func testHigherDiscountRateReducesUpfrontAboveCoupon() {
+        // Higher discount rate → lower risky annuity → lower (spread−coupon)×annuity → lower upfront
+        let lo = CDSCalculator.calculate(tradeDate: refDate, tenorYears: 5,
+                                         parSpreadBp: 300, couponBp: 100,
+                                         recoveryRate: 0.40, notional: 10_000_000,
+                                         isBuy: true, discountRate: 0.02)!
+        let hi = CDSCalculator.calculate(tradeDate: refDate, tenorYears: 5,
+                                         parSpreadBp: 300, couponBp: 100,
+                                         recoveryRate: 0.40, notional: 10_000_000,
+                                         isBuy: true, discountRate: 0.08)!
+        XCTAssertGreaterThan(lo.upfrontDollars, hi.upfrontDollars)
+    }
+
+    func testAtParSpreadUpfrontNearZeroRegardlessOfDiscountRate() {
+        // Discount rate affects the risky annuity but hazard rate re-calibrates to match; upfront stays ~0
+        let lo = CDSCalculator.calculate(tradeDate: refDate, tenorYears: 5,
+                                         parSpreadBp: 100, couponBp: 100,
+                                         recoveryRate: 0.40, notional: 10_000_000,
+                                         isBuy: true, discountRate: 0.02)!
+        let hi = CDSCalculator.calculate(tradeDate: refDate, tenorYears: 5,
+                                         parSpreadBp: 100, couponBp: 100,
+                                         recoveryRate: 0.40, notional: 10_000_000,
+                                         isBuy: true, discountRate: 0.08)!
+        XCTAssertEqual(lo.upfrontFraction, 0.0, accuracy: 0.005)
+        XCTAssertEqual(hi.upfrontFraction, 0.0, accuracy: 0.005)
+    }
+
+    func testDiscountRateImpactSignificantFor10YTenor() {
+        // 10Y: 1% vs 10% discount rate should produce > 1% upfront difference
+        let lo = CDSCalculator.calculate(tradeDate: refDate, tenorYears: 10,
+                                         parSpreadBp: 200, couponBp: 100,
+                                         recoveryRate: 0.40, notional: 10_000_000,
+                                         isBuy: true, discountRate: 0.01)!
+        let hi = CDSCalculator.calculate(tradeDate: refDate, tenorYears: 10,
+                                         parSpreadBp: 200, couponBp: 100,
+                                         recoveryRate: 0.40, notional: 10_000_000,
+                                         isBuy: true, discountRate: 0.10)!
+        XCTAssertGreaterThan(abs(lo.upfrontFraction - hi.upfrontFraction), 0.01)
+    }
+
+    // MARK: - SOFR Network (live — skipped gracefully if offline)
+
+    func testSOFRFetchLatestReturnsPlausibleRate() async {
+        let (rate, date) = await SOFRFetcher.fetchLatest()
+        guard date != "unavailable" else { return }
+        XCTAssertGreaterThan(rate, 0.001, "SOFR should be > 0.1%")
+        XCTAssertLessThan(rate, 0.20,    "SOFR should be < 20%")
+    }
+
+    func testSOFRFetchLatestDateFormatIsISO() async {
+        let (_, effectiveDate) = await SOFRFetcher.fetchLatest()
+        guard effectiveDate != "unavailable" else { return }
+        let parts = effectiveDate.split(separator: "-")
+        XCTAssertEqual(parts.count, 3)
+        XCTAssertEqual(parts[0].count, 4, "Year should be 4 digits")
+        XCTAssertEqual(parts[1].count, 2, "Month should be 2 digits")
+        XCTAssertEqual(parts[2].count, 2, "Day should be 2 digits")
+    }
+
+    func testSOFRFetchForDateOnOrBeforeTarget() async {
+        let today = Date()
+        let (rate, effectiveDate) = await SOFRFetcher.fetchForDate(today)
+        guard effectiveDate != "unavailable" else { return }
+        XCTAssertGreaterThan(rate, 0.001)
+        XCTAssertLessThanOrEqual(effectiveDate, isoDay(today),
+                                  "Returned SOFR date must be on or before requested date")
+    }
+
+    func testSOFRFetchForRecentWeekendReturnsPriorBusinessDay() async {
+        // Find the most recent Saturday and verify SOFR date is before it
+        let cal = Calendar.current
+        var sat = Date()
+        while cal.component(.weekday, from: sat) != 7 {
+            sat = cal.date(byAdding: .day, value: -1, to: sat)!
+        }
+        let (_, effectiveDate) = await SOFRFetcher.fetchForDate(sat)
+        guard effectiveDate != "unavailable" else { return }
+        XCTAssertLessThan(effectiveDate, isoDay(sat),
+                           "Weekend fetch should return a prior weekday SOFR date")
+    }
+
+    // MARK: - Helpers
+
+    private func d(_ year: Int, _ month: Int, _ day: Int) -> Date {
+        var c = DateComponents(); c.year = year; c.month = month; c.day = day
+        return Calendar.current.date(from: c)!
+    }
+
+    private func isoDay(_ date: Date) -> String {
+        let fmt = DateFormatter()
+        fmt.dateFormat = "yyyy-MM-dd"
+        fmt.locale = Locale(identifier: "en_US_POSIX")
+        return fmt.string(from: date)
+    }
+
     // MARK: - Performance
 
     func testCalculationPerformance() {
