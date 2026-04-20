@@ -87,9 +87,9 @@ struct CDSCalculator {
         let today      = tdate(from: tradeDate)
         let valueDate  = tdate(from: addBusinessDays(settleDays, to: tradeDate, calendarName: calendarName))
         let stepinDate = today + 1                                         // T+1 calendar day
-        let benchStart = today                                             // benchmark quoted today
         let prevIMM    = prevIMMDate(before: tradeDate)
         let startDate  = tdate(from: prevIMM)                              // SNAC: coupon accrues from previous IMM
+        let benchStart = startDate                                         // benchmark uses same start as contract (SNAC)
 
         guard let matDate = cal.date(byAdding: .year, value: tenorYears, to: tradeDate) else { return nil }
         let endDate = nextIMMDate(after: matDate)
