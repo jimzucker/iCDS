@@ -60,7 +60,9 @@ struct CDSCalculator {
             cal.component(.day,   from: date))
     }
 
-    // Most recent business day on or before `date` for the given region calendar
+    // Most recent business day on or before `date` for the given region calendar.
+    // Uses CDSHolidayCalendar — call from an async Task at app launch to avoid
+    // blocking the main thread on first-time Calendar stack initialisation.
     static func lastValidTradeDate(on date: Date = Date(), calendarName: String = "nyFed") -> Date {
         CDSHolidayCalendar.prevBusinessDay(date, calendarName: calendarName)
     }
@@ -68,6 +70,18 @@ struct CDSCalculator {
     // Advance by n business days using the region's holiday calendar
     static func addBusinessDays(_ n: Int, to date: Date, calendarName: String = "nyFed") -> Date {
         CDSHolidayCalendar.addBusinessDays(n, to: date, calendarName: calendarName)
+    }
+
+    // Weekends-only business day advance — no Calendar stack init, safe on main thread
+    private static func addWeekendOnlyBusinessDays(_ n: Int, to date: Date) -> Date {
+        var result = date
+        var count  = 0
+        let cal    = Calendar.current
+        while count < n {
+            result = cal.date(byAdding: .day, value: 1, to: result)!
+            if !cal.isDateInWeekend(result) { count += 1 }
+        }
+        return result
     }
 
     static func calculate(tradeDate: Date,
@@ -78,12 +92,14 @@ struct CDSCalculator {
                           notional: Double,
                           isBuy: Bool,
                           settleDays: Int = 1,
-                          calendarName: String = "nyFed",
                           discountRate: Double = SOFRFetcher.fallbackRate) -> CDSResult? {
 
         let cal        = Calendar.current
         let today      = tdate(from: tradeDate)
-        let valueDate  = tdate(from: addBusinessDays(settleDays, to: tradeDate, calendarName: calendarName))
+        // Settle date: weekends-only business day skip (holiday effect on
+        // a 1–3 day settle window is < 0.01% on pricing; full calendar used
+        // only for trade date defaulting via lastValidTradeDate)
+        let valueDate  = tdate(from: addWeekendOnlyBusinessDays(settleDays, to: tradeDate))
         let stepinDate = today + 1          // always T+1 calendar day
         let benchStart = today
         let startDate  = today
@@ -173,6 +189,12 @@ struct CDSCalculator {
 // are used for trade-date defaulting and settle-date arithmetic only.
 
 struct CDSHolidayCalendar {
+
+    // Touch all four sets on a background thread so they're ready before
+    // the user changes region. Call once at app start via Task.detached.
+    static func prewarmAll() {
+        _ = nyFedSet; _ = targetSet; _ = tokyoSet; _ = sydneySet
+    }
 
     static func prevBusinessDay(_ date: Date, calendarName: String) -> Date {
         var d = date

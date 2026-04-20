@@ -59,13 +59,23 @@ final class FeeViewModel: ObservableObject {
 
     init() {
         contracts = ISDAContract.readFromPlist()
-        // Snap initial trade date to last business day for the default region
-        let region = contracts.first?.calendarName ?? "nyFed"
-        let lastBiz = CDSCalculator.lastValidTradeDate(on: Date(), calendarName: region)
-        tradeDateOffset = Calendar.current.dateComponents([.day], from: Date(), to: lastBiz).day ?? 0
-        // Fetch SOFR for the snapped trade date, not wall-clock today
-        SOFRRateStore.shared.updateForTradeDate(lastBiz)
         recalculate()
+
+        // Pre-warm all holiday calendar sets in the background so they are
+        // ready before the user changes region. Done detached to avoid
+        // blocking the main thread on first-time Calendar stack initialisation.
+        Task.detached(priority: .utility) { CDSHolidayCalendar.prewarmAll() }
+
+        // Snap trade date to last valid business day and fetch SOFR for that
+        // date. Done in a Task so CDSHolidayCalendar's static sets initialise
+        // after the UI is up rather than blocking the launch critical path.
+        Task { @MainActor in
+            let region  = self.contract?.calendarName ?? "nyFed"
+            let lastBiz = CDSCalculator.lastValidTradeDate(on: Date(), calendarName: region)
+            let offset  = Calendar.current.dateComponents([.day], from: Date(), to: lastBiz).day ?? 0
+            if self.tradeDateOffset != offset { self.tradeDateOffset = offset }
+            SOFRRateStore.shared.updateForTradeDate(self.tradeDate)
+        }
 
         // Recalculate whenever any input changes
         Publishers.MergeMany(
@@ -124,8 +134,7 @@ final class FeeViewModel: ObservableObject {
             recoveryRate: Double(recoveryPct) / 100.0,
             notional:     notionalValues[notionalIndex],
             isBuy:        buySellIndex == 0,
-            settleDays:   contract?.settleDays   ?? 1,
-            calendarName: contract?.calendarName ?? "nyFed",
+            settleDays:   contract?.settleDays ?? 1,
             discountRate: SOFRRateStore.shared.rate
         )
     }
