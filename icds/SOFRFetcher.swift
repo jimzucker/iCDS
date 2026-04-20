@@ -16,7 +16,7 @@ import Combine
 struct SOFRFetcher {
     static let fallbackRate: Double = 0.045
 
-    private static let endpoint = URL(string: "https://markets.newyorkfed.org/api/rates/sofr/last/1.json")!
+    private static let endpoint = URL(string: "https://markets.newyorkfed.org/api/rates/secured/sofr/last/1.json")!
 
     // Returns latest SOFR (rate as decimal, effectiveDate). Never throws.
     static func fetchLatest() async -> (rate: Double, effectiveDate: String) {
@@ -26,15 +26,23 @@ struct SOFRFetcher {
     // Returns SOFR rate on or before `targetDate`. Fetches last 10 observations and picks
     // the most recent one whose effectiveDate ≤ targetDate (handles weekends/holidays).
     static func fetchForDate(_ targetDate: Date) async -> (rate: Double, effectiveDate: String) {
-        let url = URL(string: "https://markets.newyorkfed.org/api/rates/sofr/last/10.json")!
+        let url = URL(string: "https://markets.newyorkfed.org/api/rates/secured/sofr/last/10.json")!
         let target = isoDay(targetDate)
+        print("🔵 SOFR fetch START  target=\(target)")
         do {
             let (data, response) = try await URLSession.shared.data(from: url)
             guard let http = response as? HTTPURLResponse, http.statusCode == 200 else {
+                print("🔴 SOFR fetch HTTP error: \((response as? HTTPURLResponse)?.statusCode ?? -1)")
                 return (fallbackRate, "unavailable")
             }
-            if let parsed = parseOnOrBefore(data, target: target) { return parsed }
-        } catch {}
+            if let parsed = parseOnOrBefore(data, target: target) {
+                print("🟢 SOFR fetch OK    rate=\(parsed.rate)  effectiveDate=\(parsed.effectiveDate)")
+                return parsed
+            }
+            print("🟡 SOFR fetch: no observation on or before \(target)")
+        } catch {
+            print("🔴 SOFR fetch EXCEPTION: \(error.localizedDescription)")
+        }
         return (fallbackRate, "unavailable")
     }
 
@@ -83,12 +91,14 @@ final class SOFRRateStore: ObservableObject {
             }
             return d
         }()
+        print("🔵 SOFRRateStore.init() scheduling fetch for last weekday: \(lastWeekday)")
         Task { @MainActor in
             await refresh(for: lastWeekday)
         }
     }
 
     func updateForTradeDate(_ date: Date) {
+        print("🔵 SOFRRateStore.updateForTradeDate(\(date))")
         Task { @MainActor in
             await refresh(for: date)
         }

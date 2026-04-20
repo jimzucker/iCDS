@@ -11,10 +11,12 @@ private let orange = Color(red: 1, green: 0.502, blue: 0)
 
 struct FeeView: View {
     @StateObject private var vm = FeeViewModel()
+    @ObservedObject private var sofrStore = SOFRRateStore.shared
 
     var body: some View {
         ScrollView {
             VStack(spacing: 12) {
+                sofrIndicator
                 regionRow
                 termRows
                 spreadRow
@@ -27,6 +29,26 @@ struct FeeView: View {
         }
         .background(Color.black)
         .navigationTitle("iCDS")
+    }
+
+    // MARK: - SOFR indicator (shows which discount rate is in use)
+
+    private var sofrIndicator: some View {
+        HStack(spacing: 6) {
+            switch sofrStore.status {
+            case .loading:
+                Circle().fill(Color(white: 0.5)).frame(width: 6, height: 6)
+                Text("SOFR loading…").font(.caption2).foregroundColor(Color(white: 0.55))
+            case .live:
+                Circle().fill(Color.green).frame(width: 6, height: 6)
+                Text(String(format: "SOFR %.4f%% · %@", sofrStore.rate * 100, sofrStore.effectiveDate))
+                    .font(.caption2).foregroundColor(Color(white: 0.7))
+            case .fallback:
+                Image(systemName: "exclamationmark.triangle.fill").font(.caption2).foregroundColor(.red)
+                Text("SOFR unavailable — using 4.50% fallback").font(.caption2).foregroundColor(.red)
+            }
+            Spacer()
+        }
     }
 
     // MARK: - Region
