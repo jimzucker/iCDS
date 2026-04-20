@@ -63,6 +63,8 @@ final class FeeViewModel: ObservableObject {
         let region = contracts.first?.calendarName ?? "nyFed"
         let lastBiz = CDSCalculator.lastValidTradeDate(on: Date(), calendarName: region)
         tradeDateOffset = Calendar.current.dateComponents([.day], from: Date(), to: lastBiz).day ?? 0
+        // Fetch SOFR for the snapped trade date, not wall-clock today
+        SOFRRateStore.shared.updateForTradeDate(lastBiz)
         recalculate()
 
         // Recalculate whenever any input changes
