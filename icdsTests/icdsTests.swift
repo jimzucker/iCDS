@@ -121,12 +121,15 @@ class icdsTests: XCTestCase {
         XCTAssertNotNil(r)
     }
 
-    func testAtParSpreadUpfrontNearZero() {
-        // Spread = coupon → upfront ≈ 0
+    func testAtParSpreadUpfrontIsExactlyZero() {
+        // SNAC invariant: spread == coupon → clean upfront = 0 (tight tolerance)
         let r = CDSCalculator.calculate(tradeDate: refDate, tenorYears: 5,
                                         parSpreadBp: 100, couponBp: 100,
                                         recoveryRate: 0.40, notional: 10_000_000, isBuy: true)!
-        XCTAssertEqual(r.upfrontFraction, 0.0, accuracy: 0.005)
+        XCTAssertEqual(r.upfrontFraction, 0.0, accuracy: 0.00001,
+                       "Par trade must give $0 upfront, not a 1-day coupon residual")
+        XCTAssertEqual(r.upfrontDollars, 0.0, accuracy: 1.0,
+                       "Par trade upfront in dollars must be < $1 on $10M")
     }
 
     func testSpreadAboveCouponBuyerPays() {
@@ -237,12 +240,13 @@ class icdsTests: XCTestCase {
 
     // MARK: - ISDA Standard: 500bp Coupon (NA Distressed)
 
-    func testAtParSpread500bpCouponUpfrontNearZero() {
-        // NA distressed standard uses 500bp fixed coupon; at-par spread → upfront ≈ 0
+    func testAtParSpread500bpCouponIsExactlyZero() {
+        // NA distressed standard uses 500bp fixed coupon; at-par spread → upfront = 0
         let r = CDSCalculator.calculate(tradeDate: refDate, tenorYears: 5,
                                         parSpreadBp: 500, couponBp: 500,
                                         recoveryRate: 0.40, notional: 10_000_000, isBuy: true)!
-        XCTAssertEqual(r.upfrontFraction, 0.0, accuracy: 0.005)
+        XCTAssertEqual(r.upfrontFraction, 0.0, accuracy: 0.00001)
+        XCTAssertEqual(r.upfrontDollars,  0.0, accuracy: 1.0)
     }
 
     func testSpreadAbove500bpCouponBuyerPays() {
@@ -332,8 +336,8 @@ class icdsTests: XCTestCase {
         XCTAssertFalse(em.recoveryList.isEmpty)
     }
 
-    func testAllRegionsAtParCouponNearZeroUpfront() {
-        // For every region × coupon combination, at-par spread → upfront ≈ 0
+    func testAllRegionsAtParCouponAreExactlyZero() {
+        // SNAC invariant for every region × coupon: par spread → $0 upfront (tight tolerance)
         let contracts = ISDAContract.readFromPlist()
         for contract in contracts {
             let recovery = Double(contract.recoveryList.first?.recovery ?? 40) / 100.0
@@ -344,8 +348,8 @@ class icdsTests: XCTestCase {
                                                 recoveryRate: recovery,
                                                 notional: 10_000_000, isBuy: true)
                 XCTAssertNotNil(r, "\(contract.region) coupon=\(coupon)bp at-par failed")
-                XCTAssertEqual(r!.upfrontFraction, 0.0, accuracy: 0.005,
-                               "\(contract.region) coupon=\(coupon)bp at-par upfront should be ~0")
+                XCTAssertEqual(r!.upfrontFraction, 0.0, accuracy: 0.00001,
+                               "\(contract.region) coupon=\(coupon)bp at-par upfront must be $0, not a residual")
             }
         }
     }
@@ -492,8 +496,8 @@ class icdsTests: XCTestCase {
         XCTAssertGreaterThan(lo.upfrontDollars, hi.upfrontDollars)
     }
 
-    func testAtParSpreadUpfrontNearZeroRegardlessOfDiscountRate() {
-        // Discount rate affects the risky annuity but hazard rate re-calibrates to match; upfront stays ~0
+    func testAtParSpreadIsExactlyZeroRegardlessOfDiscountRate() {
+        // Discount rate affects risky annuity, but hazard rate re-calibrates → upfront stays $0
         let lo = CDSCalculator.calculate(tradeDate: refDate, tenorYears: 5,
                                          parSpreadBp: 100, couponBp: 100,
                                          recoveryRate: 0.40, notional: 10_000_000,
@@ -502,8 +506,8 @@ class icdsTests: XCTestCase {
                                          parSpreadBp: 100, couponBp: 100,
                                          recoveryRate: 0.40, notional: 10_000_000,
                                          isBuy: true, discountRate: 0.08)!
-        XCTAssertEqual(lo.upfrontFraction, 0.0, accuracy: 0.005)
-        XCTAssertEqual(hi.upfrontFraction, 0.0, accuracy: 0.005)
+        XCTAssertEqual(lo.upfrontFraction, 0.0, accuracy: 0.00001)
+        XCTAssertEqual(hi.upfrontFraction, 0.0, accuracy: 0.00001)
     }
 
     func testDiscountRateImpactSignificantFor10YTenor() {
