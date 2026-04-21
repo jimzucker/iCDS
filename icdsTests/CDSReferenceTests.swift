@@ -282,4 +282,139 @@ class CDSReferenceTests: XCTestCase {
         XCTAssertGreaterThan(u20, u40,
                              "R=20% gives higher upfront than R=40% for above-coupon spread: lower R → lower hazard → longer risky duration")
     }
+
+    // =======================================================================
+    // MARK: - ISDA Official RFR Test Grid (USD SOFR 2021-04-26)
+    // -----------------------------------------------------------------------
+    // Source: https://www.cdsmodel.com/assets/cds-model/rfr-test-grids/USD/USD_SOFR_20210426.zip
+    // Tests the app's ISDA C library against the authoritative ISDA-published
+    // Clean Upfront values. Covers 6 maturities × 4 spreads × coupon=100bp, R=40%.
+    // =======================================================================
+
+    // SOFR OIS swap curve for 2021-04-26 (from ISDA test grid "RFR Curve" sheet)
+    private let sofrSwapTenors = ["1M","2M","3M","6M","1Y","2Y","3Y","4Y","5Y","6Y",
+                                   "7Y","8Y","9Y","10Y","12Y","15Y","20Y","25Y","30Y"]
+    private let sofrSwapRates: [Double] = [
+        0.000162, 0.00025, 0.00029, 0.00037, 0.000475, 0.001101, 0.002731, 0.004851,
+        0.006832, 0.008592, 0.010081, 0.011242, 0.012202, 0.013032, 0.014311, 0.01554,
+        0.016521, 0.016871, 0.016979
+    ]
+
+    // Build the ISDA SOFR OIS curve. JpmcdsBuildIRZeroCurve requires short tenors
+    // as money-market ('M'); using LIBOR-style frequencies gives a close-enough
+    // curve vs the reference ISDA build (small residual expected).
+    private func buildSofrOISCurve(valueDate: TDate) -> UnsafeMutablePointer<TCurve>? {
+        // 1M, 2M, 3M, 6M → 'M' (deposits); 1Y+ → 'S' (swaps)
+        let types      = "MMMM" + String(repeating: "S", count: sofrSwapTenors.count - 4)
+        let nInstr     = sofrSwapTenors.count
+        var cMat: [UnsafeMutablePointer<CChar>?] = sofrSwapTenors.map { strdup($0) }
+        var cRates     = sofrSwapRates
+        let holidays   = strdup("None")
+        let typesStr   = strdup(types)
+        defer {
+            cMat.forEach { free($0) }
+            free(holidays); free(typesStr)
+        }
+        var dates = [TDate](repeating: 0, count: sofrSwapTenors.count)
+        let routine = strdup("sofr"); defer { free(routine) }
+        for i in 0..<sofrSwapTenors.count {
+            var ivl = TDateInterval()
+            JpmcdsStringToDateInterval(cMat[i], routine, &ivl)
+            JpmcdsDateFwdThenAdjust(valueDate, &ivl, Int(UInt8(ascii: "N")), holidays, &dates[i])
+        }
+        return JpmcdsBuildIRZeroCurve(
+            valueDate,
+            typesStr,
+            &dates,
+            &cRates,
+            nInstr,
+            3,      // mmDCC Act/360
+            1,      // fixed annual (SOFR OIS convention)
+            1,      // float annual (SOFR OIS)
+            3,      // fixed Act/360 (SOFR OIS)
+            3,      // float Act/360
+            Int(UInt8(ascii: "M")),  // modified following
+            holidays
+        )
+    }
+
+    // Compute clean upfront using the grid's trade-date conventions
+    private func gridUpfront(tradeDate: TDate, valueDate: TDate, startDate: TDate,
+                              endDate: TDate, couponBp: Int, spreadBp: Int,
+                              recovery: Double, curve: UnsafeMutablePointer<TCurve>) -> Double? {
+        var ivl = TDateInterval(); ivl.prd = 3; ivl.prd_typ = Int8(bitPattern: UInt8(ascii: "M")); ivl.flag = 0
+        var stub = TStubMethod(); stub.stubAtEnd = 0; stub.longStub = 0
+        let cal = strdup("None"); defer { free(cal) }
+        var result = 0.0
+        let status = JpmcdsCdsoneUpfrontCharge(
+            tradeDate, valueDate, startDate, startDate,   // benchStart = stepin = startDate
+            startDate, endDate,
+            Double(couponBp) / 10000.0, 1,
+            &ivl, &stub,
+            JPMCDS_ACT_360, Int(UInt8(ascii: "F")),
+            cal, curve,
+            Double(spreadBp) / 10000.0, recovery, 1,      // isPriceClean = 1
+            &result
+        )
+        return status == SUCCESS ? result : nil
+    }
+
+    func testISDAGridUSDSOFR_coupon100_R40() {
+        // Trade date 2021-04-26 (Mon); Cash Settle 2021-04-29 (T+3); Start 2021-04-27 (T+1)
+        let trade   = JpmcdsDate(2021, 4, 26)
+        let settle  = JpmcdsDate(2021, 4, 29)
+        let start   = JpmcdsDate(2021, 4, 27)
+        guard let curve = buildSofrOISCurve(valueDate: trade) else {
+            XCTFail("Failed to build SOFR OIS curve"); return
+        }
+        defer { JpmcdsFreeTCurve(curve) }
+
+        // (maturityYYYYMMDD, spreadBp, expectedCleanUpfront)
+        let cases: [(Int, Int, Double)] = [
+            (20220620,   50, -0.00580311532381747),
+            (20220620,  100,  0.0),
+            (20220620,  500,  0.04445978768484159),
+            (20220620, 1000,  0.09541117712096613),
+            (20230620,   50, -0.010792491678912823),
+            (20230620,  100,  0.0),
+            (20230620,  500,  0.07968146812200938),
+            (20230620, 1000,  0.16441311787211674),
+            (20240620,   50, -0.01572809135426417),
+            (20240620,  100,  0.0),
+            (20240620,  500,  0.11197256965246417),
+            (20240620, 1000,  0.22254755669137702),
+            (20260620,   50, -0.02528283662891464),
+            (20260620,  100,  0.0),
+            (20260620,  500,  0.16781989168415334),
+            (20260620, 1000,  0.3113969783077487),
+            (20280620,   50, -0.03437801070756048),
+            (20280620,  100,  0.0),
+            (20280620,  500,  0.21349920402493525),
+            (20280620, 1000,  0.37279122279513943),
+            (20310620,   50, -0.047067934014831246),
+            (20310620,  100,  0.0),
+            (20310620,  500,  0.26633077987260967),
+            (20310620, 1000,  0.4305881029133455),
+        ]
+
+        var maxErr = 0.0
+        for (matYMD, spreadBp, expected) in cases {
+            let y = matYMD / 10000
+            let m = (matYMD / 100) % 100
+            let d = matYMD % 100
+            let end = JpmcdsDate(y, m, d)
+            guard let computed = gridUpfront(tradeDate: trade, valueDate: settle,
+                                              startDate: start, endDate: end,
+                                              couponBp: 100, spreadBp: spreadBp,
+                                              recovery: 0.40, curve: curve) else {
+                XCTFail("Calc failed for mat=\(matYMD) spread=\(spreadBp)"); continue
+            }
+            let err = abs(computed - expected)
+            maxErr = max(maxErr, err)
+            // 5e-5 = 0.5bp on fraction = $500 on $10M — well within ISDA grid precision
+            XCTAssertEqual(computed, expected, accuracy: 5e-5,
+                           "mat=\(matYMD) spread=\(spreadBp)bp: got \(computed), expected \(expected)")
+        }
+        print("ISDA grid max absolute error: \(maxErr)")
+    }
 }
