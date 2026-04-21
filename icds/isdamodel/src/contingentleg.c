@@ -18,6 +18,8 @@
 #include "dtlist.h"
 #include "cashflow.h"
 #include "cerror.h"
+#include "convert.h"
+
 
 
 /*
@@ -84,6 +86,20 @@ int JpmcdsContingentLegPV
     REQUIRE (discountCurve != NULL);
     REQUIRE (spreadCurve != NULL);
     REQUIRE (pv != NULL);
+    
+    if (!JpmcdsZeroPrice(spreadCurve, cl->endDate) > JPMCDS_LOG0_THRESHOLD) 
+    {
+        JpmcdsErrMsg("%s: Default hazard rate is not defined at maturity %s!", 
+                routine, JpmcdsFormatDate(cl->endDate));
+        goto done;
+    }
+    
+    if (!JpmcdsZeroPrice(discountCurve, cl->endDate) > JPMCDS_LOG0_THRESHOLD)
+    {
+        JpmcdsErrMsg("%s: Zero discount rate is not defined at maturity %s!", 
+                routine, JpmcdsFormatDate(cl->endDate));
+        goto done;
+    }
 
     offset = (cl->protectStart ? 1 : 0);
     startDate = MAX(cl->startDate, stepinDate - offset);
@@ -204,7 +220,8 @@ static int onePeriodIntegral
     {
         double lambda;
         double fwdRate;
-        double thisPv;
+        double thisPv = 0.;
+		double lambdafwdRate;
 
         s0  = s1;
         df0 = df1;
@@ -212,11 +229,41 @@ static int onePeriodIntegral
         df1 = JpmcdsForwardZeroPrice(discCurve, today, tl->fArray[i]);
         t   = (double)(tl->fArray[i] - tl->fArray[i-1])/365.0;
         
-        lambda  = log(s0/s1)/t;
-        fwdRate = log(df0/df1)/t;
+		/*************************Markit Proposed Fix***************************************************
+		 * 
+		 * Some of the division of original ISDA model can be removed
+		 * lambda  = log(s0 / s1) / t = (log(s0) - log(s1)) / t
+		 * fwdRate = log(df0 / df) / t = (log(df0) - log(df1)) / t
+		 * Divisions by t can be absorbed by later formulas as well.
+		 */
+        lambda  = log(s0) - log(s1);
+        fwdRate = log(df0) - log(df1); 
+		lambdafwdRate = lambda + fwdRate + 1.0e-50;
         
-        thisPv  = loss * lambda / (lambda + fwdRate) * 
-            (1.0 - exp(-(lambda + fwdRate) * t)) * s0 * df0;
+		/**
+		 * If lambdafwdRate is extremely small, original calculation generates big noise on computer 
+		 * due to the small denominator.
+		 * In this case, Talyor expansion is employed to remove lambdafwdRate from denomintor 
+		 * so that numerical noise is signicantly reduced. 
+		 */
+		if (fabs(lambdafwdRate) > 1.e-4)
+		{
+			thisPv  = loss * lambda / lambdafwdRate * (1.0 - exp(-lambdafwdRate)) * s0 * df0;
+		}
+		else
+		{
+			const double thisPv0 = loss * lambda * s0 * df0;
+			const double thisPv1 = -thisPv0 * lambdafwdRate * .5;
+			const double thisPv2 = -thisPv1 * lambdafwdRate / 3.;
+			const double thisPv3 = -thisPv2 * lambdafwdRate * .25;
+			const double thisPv4 = -thisPv3 * lambdafwdRate * .2;
+
+			thisPv += thisPv0;
+			thisPv += thisPv1;
+			thisPv += thisPv2;
+			thisPv += thisPv3;
+			thisPv += thisPv4;
+		}
         
         myPv += thisPv;
     }

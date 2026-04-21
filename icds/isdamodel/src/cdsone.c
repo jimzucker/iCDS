@@ -96,7 +96,7 @@ EXPORT int JpmcdsCdsoneUpfrontCharge
 
     if (flatSpreadCurve == NULL)
         goto done;
-
+      
     if (JpmcdsCdsPrice(today,
                        valueDate,
                        stepinDate,
@@ -177,7 +177,7 @@ EXPORT int JpmcdsCdsoneSpread
     context.upfrontCharge       = upfrontCharge;
     context.recoveryRate        = recoveryRate;
     context.payAccruedAtStart   = payAccruedAtStart;
-
+     
     if (JpmcdsRootFindBrent ((TObjectFunc)cdsoneSpreadSolverFunction,
                           &context,
                           0.0,    /* boundLo */

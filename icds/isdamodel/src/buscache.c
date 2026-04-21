@@ -19,9 +19,10 @@
 #include "strutil.h"
 #include <limits.h>
 
-//#ifdef LINUX
+#if defined(LINUX) || defined(__APPLE__)
+#include <strings.h>
 #define stricmp strcasecmp
-//#endif
+#endif
 
 /*---------------------------------------------------------------------------
  *                  MACROS used in this file.

@@ -13,7 +13,7 @@
 		0A6376921A1AB6E66E70D4D8 /* zcswutil.c in Sources */ = {isa = PBXBuildFile; fileRef = 4FEF7354A4A3BC937D32BBED /* zcswutil.c */; };
 		0B53FCDE877F6EC89E799A7F /* fltrate.c in Sources */ = {isa = PBXBuildFile; fileRef = 0EA66C787E7379A208D3F0A2 /* fltrate.c */; };
 		0B948222350B0BCAAB4906A0 /* tcurve.c in Sources */ = {isa = PBXBuildFile; fileRef = 15C67FCF3F6E04053E0C8B45 /* tcurve.c */; };
-		10CC4ADA2D4B7626F2B77E56 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 922FF00CAF17D7684FEC557C /* main.c */; };
+		DEFA01010000000000000001 /* defaulted.c in Sources */ = {isa = PBXBuildFile; fileRef = DEFA01020000000000000002 /* defaulted.c */; };
 		1279209354AD3FE53BA5812F /* interpc.c in Sources */ = {isa = PBXBuildFile; fileRef = 1F478F36DB5C345F892BFF70 /* interpc.c */; };
 		133E8D17207002B01D0658E6 /* zerocurve.c in Sources */ = {isa = PBXBuildFile; fileRef = 43FB3C581DAC7C0F59BEEEBA /* zerocurve.c */; };
 		140CAB2AADA45FB296996153 /* version.c in Sources */ = {isa = PBXBuildFile; fileRef = 044943888A14FB56F6AF35DB /* version.c */; };
@@ -153,7 +153,7 @@
 		84A09E7781E95717C4B3F5CF /* contingentleg.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = contingentleg.c; sourceTree = "<group>"; };
 		88ABD66E79B64BF9C7721B74 /* busday.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = busday.c; sourceTree = "<group>"; };
 		8A4C7D9A4FA1CC3D607406A8 /* zr2fwd.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = zr2fwd.c; sourceTree = "<group>"; };
-		922FF00CAF17D7684FEC557C /* main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
+		DEFA01020000000000000002 /* defaulted.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = defaulted.c; sourceTree = "<group>"; };
 		93B2190D28AC35E5A214E146 /* lscanf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = lscanf.c; sourceTree = "<group>"; };
 		96379F9C42DD3DACEFE2AE82 /* date_sup.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = date_sup.c; sourceTree = "<group>"; };
 		9F715F83D9308EE75B0705CF /* dateadj.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = dateadj.c; sourceTree = "<group>"; };
@@ -319,7 +319,7 @@
 				028ADC4143E42D38E9FC4523 /* lintrp1.c */,
 				01B4FC6060C545E1A5F50052 /* lprintf.c */,
 				93B2190D28AC35E5A214E146 /* lscanf.c */,
-				922FF00CAF17D7684FEC557C /* main.c */,
+				DEFA01020000000000000002 /* defaulted.c */,
 				1CB1C28FB2E019EE8CA62C04 /* rtbrent.c */,
 				EE6A77C3421DF95ACA028CF6 /* schedule.c */,
 				0C214EAE9D3602B80679EEC5 /* streamcf.c */,
@@ -524,7 +524,7 @@
 				01670032C20A2085CA6A02F9 /* lintrp1.c in Sources */,
 				C014DAFB4C86702F3C673356 /* lprintf.c in Sources */,
 				EFEB6858B04DFB48FB6D16BC /* lscanf.c in Sources */,
-				10CC4ADA2D4B7626F2B77E56 /* main.c in Sources */,
+				DEFA01010000000000000001 /* defaulted.c in Sources */,
 				1DCA5DA057BEAEBCEFF22942 /* rtbrent.c in Sources */,
 				78803D9C6895C6F4DB0F2636 /* schedule.c in Sources */,
 				900F3152D2CE5629EA26189D /* streamcf.c in Sources */,

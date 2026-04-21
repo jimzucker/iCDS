@@ -19,6 +19,8 @@
 #include "ldate.h"
 #include "cerror.h"
 #include "cashflow.h"
+#include "convert.h"
+
 
 
 /*
@@ -96,6 +98,20 @@ int JpmcdsFeeLegPV
         TDate startDate = fl->accStartDates[0];
         TDate endDate   = fl->accEndDates[fl->nbDates-1];
         
+        if (!JpmcdsZeroPrice(spreadCurve, endDate) > JPMCDS_LOG0_THRESHOLD) 
+        {
+            JpmcdsErrMsg("%s: Default hazard rate is not defined at maturity %s!", 
+                    routine, JpmcdsFormatDate(endDate));
+            goto done;
+        }
+
+        if (!JpmcdsZeroPrice(discCurve, endDate) > JPMCDS_LOG0_THRESHOLD)
+        {
+            JpmcdsErrMsg("%s: Zero discount rate is not defined at maturity %s!",
+                    routine, JpmcdsFormatDate(endDate));
+            goto done;
+        }
+
         tl = JpmcdsRiskyTimeLine(startDate,
                                  endDate,
                                  discCurve,
@@ -363,7 +379,7 @@ int JpmcdsAccrualOnDefaultPVWithTimeLine
     {
         double lambda;
         double fwdRate;
-        double thisPv;
+        double thisPv = 0.;
         double t0;
         double t1;
         double lambdafwdRate;
@@ -377,14 +393,83 @@ int JpmcdsAccrualOnDefaultPVWithTimeLine
         t1  = (double)(tl->fArray[i] + 0.5- startDate)/365.0;
         t   = t1-t0;
 
-        lambda  = log(s0/s1)/t;
-        fwdRate = log(df0/df1)/t;
+		/*************************Markit Proposed Fix***************************************************
+		 *
+		 * Some of the division of original ISDA model can be removed
+		 * lambda  = log(s0 / s1) / t = (log(s0) - log(s1)) / t
+		 * fwdRate = log(df0 / df) / t = (log(df0) - log(df1)) / t
+		 * Divisions by t can be absorbed by later formulas as well.
+		 */
+        lambda  = log(s0) - log(s1);
+        fwdRate = log(df0) - log(df1);
         lambdafwdRate = lambda + fwdRate + 1.0e-50;
 
-        thisPv  = lambda * accRate * s0 * df0 * (
-            (t0 + 1.0/(lambdafwdRate))/(lambdafwdRate) -
-            (t1 + 1.0/(lambdafwdRate))/(lambdafwdRate) * 
-            s1/s0 * df1/df0);
+
+		/**
+		 * If lambdafwdRate is extremely small, original calculation generates big noise on computer 
+		 * due to the small denominators.
+		 * In this case, Talyor expansion is employed to remove lambdafwdRate from denomintors 
+		 * so that numerical noise is signicantly reduced. 
+		 */
+		if (fabs(lambdafwdRate) > 1e-4)
+		{
+			/*This is the original formula which contains an integral*/
+			thisPv  = lambda * accRate * s0 * df0 * ( \
+				(t0 + t/(lambdafwdRate))/(lambdafwdRate) - \
+				(t1 + t/(lambdafwdRate))/(lambdafwdRate) * \
+				s1/s0 * df1/df0);
+			
+			/* This is the accrual on default formula fix
+			thisPv  = lambda * accRate * s0 * df0 * t * ( \
+				1.0 / lambdafwdRate / lambdafwdRate - \
+				(1.0 + 1.0 / lambdafwdRate) / lambdafwdRate * \
+				s1 / s0 * df1 / df0);
+			*/
+		}
+		else
+		{
+			/* 
+			This is the numerical fix corresponding to the original formula
+			*/
+			const double lambdaAccRate = lambda * s0 * df0 * accRate * 0.5;
+			const double thisPv1 = lambdaAccRate * (t0 + t1);
+
+			const double lambdaAccRateLamdaFwdRate = lambdaAccRate * lambdafwdRate / 3.;
+			const double thisPv2 = -lambdaAccRateLamdaFwdRate * (t0 + 2. * t1);
+
+			const double lambdaAccRateLamdaFwdRate2 = lambdaAccRateLamdaFwdRate * lambdafwdRate * .25;
+			const double thisPv3 = lambdaAccRateLamdaFwdRate2 * (t0 + 3. * t1);
+
+			const double lambdaAccRateLamdaFwdRate3 = lambdaAccRateLamdaFwdRate2 * lambdafwdRate * .2;
+			const double thisPv4 = -lambdaAccRateLamdaFwdRate3 * (t0 + 4. * t1);
+
+			const double lambdaAccRateLamdaFwdRate4 = lambdaAccRateLamdaFwdRate3 * lambdafwdRate / 6.;
+			const double thisPv5 = lambdaAccRateLamdaFwdRate4 * (t0 + 5. * t1);
+			
+			/* This is the numerical fix along with accrual on default model fix
+			const double lambdaAccRate = lambda * s0 * df0 * accRate * t;
+			const double thisPv1 = lambdaAccRate * 0.5;
+
+			const double lambdaAccRateLamdaFwdRate = lambdaAccRate * lambdafwdRate;
+			const double thisPv2 = -lambdaAccRateLamdaFwdRate / 3.;
+
+			const double lambdaAccRateLamdaFwdRate2 = lambdaAccRateLamdaFwdRate * lambdafwdRate;
+			const double thisPv3 = lambdaAccRateLamdaFwdRate2 * .125;
+
+			const double lambdaAccRateLamdaFwdRate3 = lambdaAccRateLamdaFwdRate2 * lambdafwdRate;
+			const double thisPv4 = -lambdaAccRateLamdaFwdRate3 / 30.;
+
+			const double lambdaAccRateLamdaFwdRate4 = lambdaAccRateLamdaFwdRate3 * lambdafwdRate;
+			const double thisPv5 = lambdaAccRateLamdaFwdRate4 / 144.;
+			*/
+			
+			thisPv += thisPv1;
+			thisPv += thisPv2;
+			thisPv += thisPv3;
+			thisPv += thisPv4;
+			thisPv += thisPv5;
+
+		}
 
         myPv += thisPv;
         s0  = s1;

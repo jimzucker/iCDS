@@ -81,6 +81,10 @@ extern "C"
 #ifndef JPMCDS_MAX_RATE
 #define JPMCDS_MAX_RATE    100.            /* 10,000%. Used for validation */
 #endif
+    
+#ifndef JPMCDS_LOG0_THRESHOLD
+#define JPMCDS_LOG0_THRESHOLD      1E-100  /* Used for avoiding LOG0 error  */
+#endif
 
 
 /* IS_ALMOST_ZERO returns TRUE if and only if 1.0 + x = 1.0, assuming x is a
