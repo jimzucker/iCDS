@@ -372,8 +372,11 @@ class CDSReferenceTests: XCTestCase {
                 XCTFail("\(label) mat=\(matYMD) spread=\(spread) calc failed"); continue
             }
             maxErr = max(maxErr, abs(got - expected))
-            // 5e-5 = 0.5bp on fraction = $500 on $10M
-            XCTAssertEqual(got, expected, accuracy: 5e-5,
+            // 3e-5 = 0.3bp on fraction = $300 on $10M.
+            // Sized as 1.4× the worst observed (USD 2.14e-5) → catches any
+            // regression that worsens USD precision while leaving headroom
+            // for the 5 other currencies (JPY 33×, GBP 8×, EUR 2.7×, CHF 2×, AUD 1.6×).
+            XCTAssertEqual(got, expected, accuracy: 3e-5,
                            "\(label) mat=\(matYMD) spread=\(spread)bp: got=\(got) expected=\(expected)")
         }
         print("\(label) ISDA grid max abs error: \(maxErr)")
