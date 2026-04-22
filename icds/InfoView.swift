@@ -53,14 +53,18 @@ struct InfoView: View {
 
                 Divider().background(Color(white: 0.2)).padding(.vertical, 6)
 
-                // App copyright
+                // App copyright + license
                 Text("© 2016-2026 James A. Zucker")
                     .font(.caption)
                     .foregroundColor(Color(white: 0.5))
 
-                Text("All rights reserved.")
+                Text("Licensed under the Apache License, Version 2.0")
                     .font(.caption2)
-                    .foregroundColor(Color(white: 0.35))
+                    .foregroundColor(Color(white: 0.45))
+
+                Text("apache.org/licenses/LICENSE-2.0")
+                    .font(.caption2)
+                    .foregroundColor(orange)
             }
             .padding(.horizontal, 24)
             .padding(.vertical, 16)
