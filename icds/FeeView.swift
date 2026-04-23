@@ -209,7 +209,14 @@ struct FeeView: View {
                         outputCell("Accrued", fmt.string(from: NSNumber(value: r.accrued)) ?? "")
                         outputCell("Price",   String(format: "%.4f", r.price))
                     }
-                    datesBlock(r)
+                    HStack {
+                        outputCell("Start",    formatTDate(r.startDate))
+                        outputCell("Settle",   formatTDate(r.valueDate))
+                    }
+                    HStack {
+                        outputCell("Maturity", formatTDate(r.endDate))
+                        outputCell("Tenor",    "\(Int(r.endDate - r.startDate)) days")
+                    }
                 }
             }
         }
@@ -243,32 +250,6 @@ struct FeeView: View {
             }
         }
         .pickerStyle(.segmented)
-    }
-
-    // Stacked date block: Start / Maturity / Settle as label-value rows
-    private func datesBlock(_ r: CDSResult) -> some View {
-        VStack(spacing: 4) {
-            dateRow("Start",    formatTDate(r.startDate))
-            dateRow("Maturity", formatTDate(r.endDate))
-            dateRow("Settle",   formatTDate(r.valueDate))
-        }
-        .padding(8)
-        .frame(maxWidth: .infinity)
-        .background(Color(white: 0.07))
-        .cornerRadius(6)
-    }
-
-    private func dateRow(_ label: String, _ value: String) -> some View {
-        HStack {
-            Text(label)
-                .font(.caption2)
-                .foregroundColor(Color(white: 0.55))
-                .frame(width: 70, alignment: .leading)
-            Text(value)
-                .font(.system(.callout, design: .monospaced))
-                .foregroundColor(orange)
-            Spacer()
-        }
     }
 
     private func outputCell(_ label: String, _ value: String) -> some View {
