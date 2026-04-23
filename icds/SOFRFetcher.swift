@@ -3,7 +3,7 @@
 //  icds
 //
 //  Multi-currency RFR (Risk-Free Rate) fetcher. Despite the file name,
-//  this module now covers SOFR, €STR, SONIA, TONA, SARON, AONIA.
+//  this module now covers SOFR, €STR, SONIA, TONA, AONIA.
 //  File kept named SOFRFetcher.swift for project.pbxproj stability.
 //
 //  Copyright © 2016-2026 James A. Zucker.
@@ -16,7 +16,7 @@ import Combine
 // MARK: - RFR currency enum
 
 enum RFRCurrency: String, CaseIterable, Identifiable, Hashable {
-    case USD, EUR, GBP, JPY, CHF, AUD
+    case USD, EUR, GBP, JPY, AUD
 
     var id: String { rawValue }
 
@@ -27,7 +27,6 @@ enum RFRCurrency: String, CaseIterable, Identifiable, Hashable {
         case .EUR: return "€STR"
         case .GBP: return "SONIA"
         case .JPY: return "TONA"
-        case .CHF: return "SARON"
         case .AUD: return "AONIA"
         }
     }
@@ -39,7 +38,6 @@ enum RFRCurrency: String, CaseIterable, Identifiable, Hashable {
         case .EUR: return "ECB"
         case .GBP: return "Bank of England"
         case .JPY: return "FRED · Japan Overnight"
-        case .CHF: return "Static reference"
         case .AUD: return "Reserve Bank of Australia"
         }
     }
@@ -52,7 +50,6 @@ enum RFRCurrency: String, CaseIterable, Identifiable, Hashable {
         case .EUR: return 0.019
         case .GBP: return 0.037
         case .JPY: return 0.007
-        case .CHF: return 0.005
         case .AUD: return 0.041
         }
     }
@@ -71,7 +68,6 @@ struct RFRFetcher {
         case .EUR: return await fetchESTR()
         case .GBP: return await fetchSONIA()
         case .JPY: return await fetchTONA()
-        case .CHF: return (ccy.fallbackRate, "static")
         case .AUD: return await fetchAONIA()
         }
     }

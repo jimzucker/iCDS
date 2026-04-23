@@ -47,6 +47,12 @@ struct LiborView: View {
 
             Divider().background(Color(white: 0.2))
 
+            // Legend
+            legend
+                .padding(.horizontal, 16)
+                .padding(.top, 8)
+                .padding(.bottom, 4)
+
             List {
                 ForEach(RFRCurrency.allCases) { ccy in
                     row(for: ccy)
@@ -59,15 +65,37 @@ struct LiborView: View {
         .background(Color.black)
     }
 
+    // Legend explaining color coding in the summary list
+    private var legend: some View {
+        HStack(spacing: 12) {
+            legendItem(color: .green,  label: "Live curve")
+            legendItem(color: .yellow, label: "Default (no live source)")
+            legendItem(color: Color(white: 0.5), label: "Loading")
+            Spacer()
+        }
+        .font(.caption2)
+    }
+
+    private func legendItem(color: Color, label: String) -> some View {
+        HStack(spacing: 4) {
+            Circle().fill(color).frame(width: 7, height: 7)
+            Text(label).foregroundColor(Color(white: 0.6))
+        }
+    }
+
     // MARK: - Sub-views
 
     private var ccyStatus: SOFRDataStatus { sofrStore.status(for: selectedCurrency) }
 
     private var accentColor: Color {
-        switch ccyStatus {
+        rowColor(for: ccyStatus)
+    }
+
+    private func rowColor(for status: SOFRDataStatus) -> Color {
+        switch status {
         case .loading:  return Color(white: 0.5)
-        case .live:     return orange
-        case .fallback: return .red
+        case .live:     return .green     // have the curve
+        case .fallback: return .yellow    // defaulting to static reference
         }
     }
 
@@ -87,11 +115,11 @@ struct LiborView: View {
                     .foregroundColor(.green)
             case .fallback:
                 Image(systemName: "exclamationmark.triangle.fill")
-                    .foregroundColor(.red)
+                    .foregroundColor(.yellow)
                     .font(.caption)
                 Text("Reference rate — \(selectedCurrency.sourceLabel)")
                     .font(.caption.weight(.medium))
-                    .foregroundColor(.red)
+                    .foregroundColor(.yellow)
             }
             Spacer()
         }
@@ -105,7 +133,7 @@ struct LiborView: View {
         switch ccyStatus {
         case .loading:  return Color(white: 0.1)
         case .live:     return Color.green.opacity(0.08)
-        case .fallback: return Color.red.opacity(0.10)
+        case .fallback: return Color.yellow.opacity(0.10)
         }
     }
 
@@ -156,7 +184,7 @@ struct LiborView: View {
             VStack(alignment: .trailing, spacing: 2) {
                 Text(status == .loading ? "—" : String(format: "%.4f%%", rate * 100))
                     .font(.system(.body, design: .monospaced).weight(.semibold))
-                    .foregroundColor(status == .fallback ? .red : orange)
+                    .foregroundColor(rowColor(for: status))
                 Text(date.isEmpty ? " " : date)
                     .font(.caption2.monospaced())
                     .foregroundColor(Color(white: 0.5))

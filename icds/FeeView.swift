@@ -50,9 +50,9 @@ struct FeeView: View {
                 Text(String(format: "%@ %.4f%% · %@", indexName, rate, dateStr))
                     .font(.caption2).foregroundColor(Color(white: 0.7))
             case .fallback:
-                Image(systemName: "exclamationmark.triangle.fill").font(.caption2).foregroundColor(.red)
+                Image(systemName: "exclamationmark.triangle.fill").font(.caption2).foregroundColor(.yellow)
                 Text(String(format: "%@ unavailable — using %.3f%% reference", indexName, rate))
-                    .font(.caption2).foregroundColor(.red)
+                    .font(.caption2).foregroundColor(.yellow)
             }
             Spacer()
         }
