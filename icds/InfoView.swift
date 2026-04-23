@@ -42,12 +42,31 @@ struct InfoView: View {
                     ]
                 )
 
-                // Reference rates attribution
+                // Reference rates attribution (all 5 central banks we query)
                 attributionBlock(
-                    title: "Reference rates",
+                    title: "Live reference rates",
                     lines: [
-                        "SOFR data: Federal Reserve Bank of New York",
-                        "www.newyorkfed.org"
+                        "USD SOFR — Federal Reserve Bank of New York",
+                        "www.newyorkfed.org",
+                        "EUR €STR — European Central Bank",
+                        "www.ecb.europa.eu",
+                        "GBP SONIA — Bank of England",
+                        "www.bankofengland.co.uk",
+                        "JPY TONA (monthly proxy) — FRED, St. Louis Fed",
+                        "fred.stlouisfed.org",
+                        "AUD AONIA — Reserve Bank of Australia",
+                        "www.rba.gov.au"
+                    ]
+                )
+
+                // Disclaimer about rate usage
+                attributionBlock(
+                    title: "Disclaimer",
+                    lines: [
+                        "Rates shown are informational only and may be delayed.",
+                        "Calculations use a flat overnight-rate discount curve —",
+                        "a standard simplification for indicative pricing.",
+                        "Not suitable for booking, settlement, or trading."
                     ]
                 )
 

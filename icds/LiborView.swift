@@ -60,12 +60,11 @@ struct LiborView: View {
         .background(Color.black)
     }
 
-    // Legend explaining color coding in the summary list
+    // Legend: only mark problems/selection — live rates are neutral.
     private var legend: some View {
         HStack(spacing: 12) {
-            legendItem(color: .green,  label: "Live curve")
             legendItem(color: .yellow, label: "Default (no live source)")
-            legendItem(color: Color(white: 0.5), label: "Loading")
+            legendItem(color: orange,  label: "Selected")
             Spacer()
         }
         .font(.caption2)
@@ -103,8 +102,8 @@ struct LiborView: View {
                         .cornerRadius(6)
                         .overlay(
                             RoundedRectangle(cornerRadius: 6)
-                                .stroke(rowColor(for: sofrStore.status(for: ccy)),
-                                        lineWidth: selectedCurrency == ccy ? 2 : 0)
+                                .stroke(buttonBorderColor(for: ccy),
+                                        lineWidth: buttonBorderWidth(for: ccy))
                         )
                 }
                 .buttonStyle(.plain)
@@ -112,24 +111,50 @@ struct LiborView: View {
         }
     }
 
+    private func buttonBorderColor(for ccy: RFRCurrency) -> Color {
+        let status = sofrStore.status(for: ccy)
+        if status == .fallback { return .yellow }   // always flag fallbacks
+        return selectedCurrency == ccy ? orange : .clear
+    }
+
+    private func buttonBorderWidth(for ccy: RFRCurrency) -> CGFloat {
+        let status = sofrStore.status(for: ccy)
+        if status == .fallback { return 1.5 }
+        return selectedCurrency == ccy ? 2 : 0
+    }
+
+    // Only currencies with issues are color-marked — live ones use the app's
+    // neutral accent, which keeps problems visible at a glance.
     private func buttonBackground(for ccy: RFRCurrency) -> Color {
         let status = sofrStore.status(for: ccy)
-        let base   = rowColor(for: status)
         let selected = selectedCurrency == ccy
-        return selected ? base.opacity(0.35) : base.opacity(0.12)
+        switch status {
+        case .fallback:
+            return selected ? Color.yellow.opacity(0.35) : Color.yellow.opacity(0.12)
+        case .loading:
+            return selected ? Color(white: 0.5).opacity(0.35) : Color(white: 0.5).opacity(0.12)
+        case .live:
+            return selected ? orange.opacity(0.30) : Color(white: 0.15)
+        }
     }
 
     private func buttonForeground(for ccy: RFRCurrency) -> Color {
         let status = sofrStore.status(for: ccy)
         let selected = selectedCurrency == ccy
-        // Selected: full color; unselected: muted
-        return selected ? rowColor(for: status) : rowColor(for: status).opacity(0.7)
+        switch status {
+        case .fallback:
+            return .yellow
+        case .loading:
+            return Color(white: 0.6)
+        case .live:
+            return selected ? orange : Color(white: 0.8)
+        }
     }
 
     private func rowColor(for status: SOFRDataStatus) -> Color {
         switch status {
         case .loading:  return Color(white: 0.5)
-        case .live:     return .green     // have the curve
+        case .live:     return orange     // neutral / app accent
         case .fallback: return .yellow    // defaulting to static reference
         }
     }

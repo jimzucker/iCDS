@@ -133,26 +133,41 @@ struct FeeView: View {
         }
     }
 
-    // MARK: - Trade date & currency
+    // MARK: - Trade date (currency is implicit from region, shown in SOFR indicator)
 
     private var tradeDateCurrencyRow: some View {
-        HStack(spacing: 16) {
-            VStack(alignment: .leading, spacing: 4) {
-                label("Trade Date")
-                HStack {
-                    Text(vm.tradeDateLabel)
-                        .foregroundColor(orange)
-                        .font(.system(.body, design: .monospaced))
-                    Stepper("", value: $vm.tradeDateOffset, in: -30...30)
-                        .labelsHidden()
-                }
-            }
-            VStack(alignment: .leading, spacing: 4) {
-                label("Currency")
-                Text(vm.contract?.currency ?? "USD")
+        VStack(alignment: .leading, spacing: 4) {
+            label("Trade Date")
+            HStack(spacing: 12) {
+                Text(vm.tradeDateLabel)
                     .foregroundColor(orange)
-                    .font(.system(.body, design: .monospaced).weight(.semibold))
-                    .frame(minWidth: 60, alignment: .leading)
+                    .font(.system(.title3, design: .monospaced).weight(.semibold))
+                Spacer()
+                // Step buttons — more discoverable than a macOS-style stepper
+                Button {
+                    vm.tradeDateOffset -= 1
+                } label: {
+                    Image(systemName: "chevron.left").foregroundColor(orange).frame(width: 28, height: 28)
+                }
+                .background(Color(white: 0.12))
+                .cornerRadius(6)
+                .disabled(vm.tradeDateOffset <= -30)
+
+                Button {
+                    vm.tradeDateOffset += 1
+                } label: {
+                    Image(systemName: "chevron.right").foregroundColor(orange).frame(width: 28, height: 28)
+                }
+                .background(Color(white: 0.12))
+                .cornerRadius(6)
+                .disabled(vm.tradeDateOffset >= 30)
+
+                Button("Today") { vm.tradeDateOffset = 0 }
+                    .font(.caption.weight(.medium))
+                    .foregroundColor(Color(white: 0.7))
+                    .padding(.horizontal, 10).padding(.vertical, 6)
+                    .background(Color(white: 0.12))
+                    .cornerRadius(6)
             }
         }
     }
@@ -197,8 +212,9 @@ struct FeeView: View {
                         outputCell("Price",   String(format: "%.4f", r.price))
                     }
                     HStack {
-                        outputCell("Start",   formatTDate(r.startDate))
-                        outputCell("Settle",  formatTDate(r.valueDate))
+                        outputCell("Start",    formatTDate(r.startDate))
+                        outputCell("Maturity", formatTDate(r.endDate))
+                        outputCell("Settle",   formatTDate(r.valueDate))
                     }
                 }
             }
