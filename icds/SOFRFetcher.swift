@@ -72,13 +72,25 @@ struct RFRFetcher {
         }
     }
 
+    /// Per-fetch timeout (seconds). Default URLSession is 60s — too long for UI.
+    private static let fetchTimeout: TimeInterval = 15
+
+    /// Build a URLRequest with our standard timeout and User-Agent.
+    private static func req(_ url: URL) -> URLRequest {
+        var r = URLRequest(url: url)
+        r.timeoutInterval = fetchTimeout
+        r.setValue("iCDS/1.0", forHTTPHeaderField: "User-Agent")
+        return r
+    }
+
     // MARK: USD — NY Fed SOFR
 
     private static func fetchSOFR() async -> (rate: Double, effectiveDate: String) {
         let url = URL(string: "https://markets.newyorkfed.org/api/rates/secured/sofr/last/1.json")!
         do {
-            let (data, response) = try await URLSession.shared.data(from: url)
+            let (data, response) = try await URLSession.shared.data(for: req(url))
             guard let http = response as? HTTPURLResponse, http.statusCode == 200 else {
+                print("SOFR fetch HTTP \((response as? HTTPURLResponse)?.statusCode ?? -1)")
                 return (RFRCurrency.USD.fallbackRate, "unavailable")
             }
             guard let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
@@ -89,6 +101,7 @@ struct RFRFetcher {
             else { return (RFRCurrency.USD.fallbackRate, "unavailable") }
             return (pct / 100.0, date)
         } catch {
+            print("SOFR fetch failed: \(error.localizedDescription)")
             return (RFRCurrency.USD.fallbackRate, "unavailable")
         }
     }
@@ -97,7 +110,7 @@ struct RFRFetcher {
 
     private static func fetchESTR() async -> (rate: Double, effectiveDate: String) {
         let url = URL(string: "https://data-api.ecb.europa.eu/service/data/EST/B.EU000A2X2A25.WT?lastNObservations=1&format=csvdata")!
-        return await fetchCSV(url: url, dateCol: 4, valueCol: 5, fallback: RFRCurrency.EUR.fallbackRate)
+        return await fetchCSV(tag: "€STR", url: url, dateCol: 4, valueCol: 5, fallback: RFRCurrency.EUR.fallbackRate)
     }
 
     // MARK: GBP — Bank of England SONIA (IUDSOIA)
@@ -116,7 +129,7 @@ struct RFRFetcher {
         guard let url = URL(string: urlStr) else {
             return (RFRCurrency.GBP.fallbackRate, "unavailable")
         }
-        return await fetchCSV(url: url, dateCol: 0, valueCol: 1, fallback: RFRCurrency.GBP.fallbackRate,
+        return await fetchCSV(tag: "SONIA", url: url, dateCol: 0, valueCol: 1, fallback: RFRCurrency.GBP.fallbackRate,
                                dateFormat: "dd MMM yyyy", takeLast: true)
     }
 
@@ -124,7 +137,7 @@ struct RFRFetcher {
 
     private static func fetchTONA() async -> (rate: Double, effectiveDate: String) {
         let url = URL(string: "https://fred.stlouisfed.org/graph/fredgraph.csv?id=IRSTCI01JPM156N")!
-        return await fetchCSV(url: url, dateCol: 0, valueCol: 1, fallback: RFRCurrency.JPY.fallbackRate, takeLast: true)
+        return await fetchCSV(tag: "TONA", url: url, dateCol: 0, valueCol: 1, fallback: RFRCurrency.JPY.fallbackRate, takeLast: true)
     }
 
     // MARK: AUD — RBA F1 Interbank Overnight Cash Rate (column 3)
@@ -132,22 +145,21 @@ struct RFRFetcher {
     private static func fetchAONIA() async -> (rate: Double, effectiveDate: String) {
         let url = URL(string: "https://www.rba.gov.au/statistics/tables/csv/f1-data.csv")!
         // RBA CSV has ~10 header rows then data. Date = col 0, Interbank Overnight Cash Rate = col 3
-        return await fetchCSV(url: url, dateCol: 0, valueCol: 3, fallback: RFRCurrency.AUD.fallbackRate,
+        return await fetchCSV(tag: "AONIA", url: url, dateCol: 0, valueCol: 3, fallback: RFRCurrency.AUD.fallbackRate,
                                dateFormat: "dd-MMM-yyyy", takeLast: true, skipHeaderUntilDate: true)
     }
 
     // MARK: Generic CSV fetcher used by ECB/BoE/FRED/RBA
 
-    private static func fetchCSV(url: URL, dateCol: Int, valueCol: Int, fallback: Double,
+    private static func fetchCSV(tag: String, url: URL, dateCol: Int, valueCol: Int, fallback: Double,
                                   dateFormat: String = "yyyy-MM-dd",
                                   takeLast: Bool = false,
                                   skipHeaderUntilDate: Bool = false) async -> (rate: Double, effectiveDate: String) {
         do {
-            var req = URLRequest(url: url)
-            req.setValue("Mozilla/5.0", forHTTPHeaderField: "User-Agent")
-            let (data, response) = try await URLSession.shared.data(for: req)
+            let (data, response) = try await URLSession.shared.data(for: req(url))
             guard let http = response as? HTTPURLResponse, http.statusCode == 200,
                   let text = String(data: data, encoding: .utf8) else {
+                print("\(tag) fetch HTTP \((response as? HTTPURLResponse)?.statusCode ?? -1)")
                 return (fallback, "unavailable")
             }
             let lines = text.split(separator: "\n", omittingEmptySubsequences: false).map(String.init)
@@ -173,10 +185,14 @@ struct RFRFetcher {
                 }
                 candidates.append((d, outFmt.string(from: d), v / 100.0))  // convert percent → decimal
             }
-            guard !candidates.isEmpty else { return (fallback, "unavailable") }
+            guard !candidates.isEmpty else {
+                print("\(tag) fetch: no parseable rows")
+                return (fallback, "unavailable")
+            }
             let chosen = takeLast ? candidates.sorted(by: { $0.date < $1.date }).last! : candidates.first!
             return (chosen.value, chosen.dateStr)
         } catch {
+            print("\(tag) fetch failed: \(error.localizedDescription)")
             return (fallback, "unavailable")
         }
     }
