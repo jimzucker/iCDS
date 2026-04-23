@@ -35,18 +35,24 @@ struct FeeView: View {
     // MARK: - SOFR indicator (shows which discount rate is in use)
 
     private var sofrIndicator: some View {
-        HStack(spacing: 6) {
-            switch sofrStore.status {
+        let ccyStr = vm.contract?.currency ?? "USD"
+        let ccy = RFRCurrency(rawValue: ccyStr) ?? .USD
+        let indexName = ccy.indexName
+        let rate = vm.discountRate * 100
+        let dateStr = vm.discountRateDate
+        return HStack(spacing: 6) {
+            switch vm.discountRateStatus {
             case .loading:
                 Circle().fill(Color(white: 0.5)).frame(width: 6, height: 6)
-                Text("SOFR loading…").font(.caption2).foregroundColor(Color(white: 0.55))
+                Text("\(indexName) loading…").font(.caption2).foregroundColor(Color(white: 0.55))
             case .live:
                 Circle().fill(Color.green).frame(width: 6, height: 6)
-                Text(String(format: "SOFR %.4f%% · %@", sofrStore.rate * 100, sofrStore.effectiveDate))
+                Text(String(format: "%@ %.4f%% · %@", indexName, rate, dateStr))
                     .font(.caption2).foregroundColor(Color(white: 0.7))
             case .fallback:
                 Image(systemName: "exclamationmark.triangle.fill").font(.caption2).foregroundColor(.red)
-                Text("SOFR unavailable — using 4.50% fallback").font(.caption2).foregroundColor(.red)
+                Text(String(format: "%@ unavailable — using %.3f%% reference", indexName, rate))
+                    .font(.caption2).foregroundColor(.red)
             }
             Spacer()
         }
@@ -143,7 +149,10 @@ struct FeeView: View {
             }
             VStack(alignment: .leading, spacing: 4) {
                 label("Currency")
-                segPicker(vm.currencies, selection: $vm.currencyIndex)
+                Text(vm.contract?.currency ?? "USD")
+                    .foregroundColor(orange)
+                    .font(.system(.body, design: .monospaced).weight(.semibold))
+                    .frame(minWidth: 60, alignment: .leading)
             }
         }
     }

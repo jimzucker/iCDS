@@ -12,61 +12,46 @@ struct LiborView: View {
 
     private let orange = Color(red: 1, green: 0.502, blue: 0)
     @ObservedObject private var sofrStore = SOFRRateStore.shared
-
-    private let curve: [(tenor: String, rate: String)] = [
-        ("1M",  "5.31%"), ("3M",  "5.33%"), ("6M",  "5.20%"),
-        ("1Y",  "4.88%"), ("2Y",  "4.42%"), ("3Y",  "4.25%"),
-        ("5Y",  "4.15%"), ("7Y",  "4.18%"), ("10Y", "4.22%"),
-        ("20Y", "4.48%"), ("30Y", "4.38%"),
-    ]
-
-    // Colors driven by data status
-    private var accentColor: Color {
-        switch sofrStore.status {
-        case .loading:  return Color(white: 0.5)
-        case .live:     return orange
-        case .fallback: return .red
-        }
-    }
+    @State private var selectedCurrency: RFRCurrency = .USD
 
     var body: some View {
         VStack(spacing: 0) {
-            Text("USD Reference Curve")
+            Text("Reference Rates")
                 .font(.title2.bold())
                 .foregroundColor(orange)
                 .padding(.top, 16)
 
-            // Status banner
-            statusBanner
-                .padding(.horizontal, 16)
-                .padding(.top, 8)
-
-            Text("LIBOR discontinued Jun 2023 · Reference curve is SOFR-based USD swap mid-market (2024 static)")
+            Text("Live RFR overnight rates by currency")
                 .font(.caption)
                 .foregroundColor(Color(white: 0.45))
-                .multilineTextAlignment(.center)
-                .padding(.horizontal, 16)
-                .padding(.top, 6)
+                .padding(.top, 4)
                 .padding(.bottom, 10)
 
-            // SOFR overnight rate box
+            // Currency picker
+            Picker("Currency", selection: $selectedCurrency) {
+                ForEach(RFRCurrency.allCases) { ccy in
+                    Text(ccy.rawValue).tag(ccy)
+                }
+            }
+            .pickerStyle(.segmented)
+            .padding(.horizontal, 16)
+            .padding(.bottom, 12)
+
+            statusBanner
+                .padding(.horizontal, 16)
+                .padding(.bottom, 8)
+
             overnightBanner
                 .padding(.horizontal, 16)
-                .padding(.bottom, 10)
+                .padding(.bottom, 12)
 
             Divider().background(Color(white: 0.2))
 
-            List(curve, id: \.tenor) { entry in
-                HStack {
-                    Text(entry.tenor)
-                        .font(.system(.body, design: .monospaced))
-                        .foregroundColor(Color(white: 0.7))
-                    Spacer()
-                    Text(entry.rate)
-                        .font(.system(.body, design: .monospaced).weight(.semibold))
-                        .foregroundColor(accentColor)
+            List {
+                ForEach(RFRCurrency.allCases) { ccy in
+                    row(for: ccy)
+                        .listRowBackground(Color.black)
                 }
-                .listRowBackground(Color.black)
             }
             .listStyle(.plain)
             .background(Color.black)
@@ -76,25 +61,35 @@ struct LiborView: View {
 
     // MARK: - Sub-views
 
+    private var ccyStatus: SOFRDataStatus { sofrStore.status(for: selectedCurrency) }
+
+    private var accentColor: Color {
+        switch ccyStatus {
+        case .loading:  return Color(white: 0.5)
+        case .live:     return orange
+        case .fallback: return .red
+        }
+    }
+
     @ViewBuilder
     private var statusBanner: some View {
         HStack(spacing: 6) {
-            switch sofrStore.status {
+            switch ccyStatus {
             case .loading:
                 Circle().fill(Color(white: 0.5)).frame(width: 8, height: 8)
-                Text("Fetching live rates…")
+                Text("Fetching \(selectedCurrency.indexName)…")
                     .font(.caption.weight(.medium))
                     .foregroundColor(Color(white: 0.5))
             case .live:
                 Circle().fill(Color.green).frame(width: 8, height: 8)
-                Text("LIVE  ·  NY Fed SOFR")
+                Text("LIVE  ·  \(selectedCurrency.sourceLabel)")
                     .font(.caption.weight(.medium))
                     .foregroundColor(.green)
             case .fallback:
                 Image(systemName: "exclamationmark.triangle.fill")
                     .foregroundColor(.red)
                     .font(.caption)
-                Text("DEFAULT RATES  ·  No network — rates below may be stale")
+                Text("Reference rate — \(selectedCurrency.sourceLabel)")
                     .font(.caption.weight(.medium))
                     .foregroundColor(.red)
             }
@@ -107,7 +102,7 @@ struct LiborView: View {
     }
 
     private var statusBannerBackground: Color {
-        switch sofrStore.status {
+        switch ccyStatus {
         case .loading:  return Color(white: 0.1)
         case .live:     return Color.green.opacity(0.08)
         case .fallback: return Color.red.opacity(0.10)
@@ -115,15 +110,17 @@ struct LiborView: View {
     }
 
     private var overnightBanner: some View {
-        HStack {
+        let rate = sofrStore.rate(for: selectedCurrency)
+        let date = sofrStore.effectiveDate(for: selectedCurrency)
+        return HStack {
             VStack(alignment: .leading, spacing: 2) {
-                Text("SOFR Overnight")
+                Text("\(selectedCurrency.indexName)  (\(selectedCurrency.rawValue))")
                     .font(.caption2)
                     .foregroundColor(Color(white: 0.55))
-                Text(sofrStore.status == .loading
+                Text(ccyStatus == .loading
                      ? "loading…"
-                     : String(format: "%.4f%%", sofrStore.rate * 100))
-                    .font(.system(size: 22, weight: .bold, design: .monospaced))
+                     : String(format: "%.4f%%", rate * 100))
+                    .font(.system(size: 28, weight: .bold, design: .monospaced))
                     .foregroundColor(accentColor)
             }
             Spacer()
@@ -131,9 +128,9 @@ struct LiborView: View {
                 Text("as of")
                     .font(.caption2)
                     .foregroundColor(Color(white: 0.55))
-                Text(sofrStore.effectiveDate.isEmpty ? "—" : sofrStore.effectiveDate)
+                Text(date.isEmpty ? "—" : date)
                     .font(.system(.caption, design: .monospaced))
-                    .foregroundColor(sofrStore.status == .fallback ? .red : Color(white: 0.7))
+                    .foregroundColor(ccyStatus == .fallback ? .red : Color(white: 0.7))
             }
         }
         .padding(12)
@@ -143,5 +140,28 @@ struct LiborView: View {
             RoundedRectangle(cornerRadius: 8)
                 .stroke(accentColor.opacity(0.5), lineWidth: 1)
         )
+    }
+
+    @ViewBuilder
+    private func row(for ccy: RFRCurrency) -> some View {
+        let rate = sofrStore.rate(for: ccy)
+        let date = sofrStore.effectiveDate(for: ccy)
+        let status = sofrStore.status(for: ccy)
+        HStack {
+            Text("\(ccy.rawValue)  \(ccy.indexName)")
+                .font(.system(.body, design: .monospaced))
+                .foregroundColor(Color(white: 0.7))
+                .frame(width: 130, alignment: .leading)
+            Spacer()
+            VStack(alignment: .trailing, spacing: 2) {
+                Text(status == .loading ? "—" : String(format: "%.4f%%", rate * 100))
+                    .font(.system(.body, design: .monospaced).weight(.semibold))
+                    .foregroundColor(status == .fallback ? .red : orange)
+                Text(date.isEmpty ? " " : date)
+                    .font(.caption2.monospaced())
+                    .foregroundColor(Color(white: 0.5))
+            }
+        }
+        .padding(.vertical, 4)
     }
 }

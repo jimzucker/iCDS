@@ -22,12 +22,12 @@ class icdsTests: XCTestCase {
 
     func testContractLoadCount() {
         let contracts = ISDAContract.readFromPlist()
-        XCTAssertEqual(contracts.count, 7, "Expected 7 regional contracts")
+        XCTAssertEqual(contracts.count, 6, "Expected 6 regional contracts")
     }
 
     func testContractRegionNames() {
         let regions = ISDAContract.readFromPlist().map { $0.region }
-        for expected in ["NA", "EU", "EM", "Asia", "Japan", "AUS", "LCDS"] {
+        for expected in ["NA", "EU", "EM", "Asia", "Japan", "AUS"] {
             XCTAssertTrue(regions.contains(expected), "Missing region: \(expected)")
         }
     }
@@ -47,10 +47,7 @@ class icdsTests: XCTestCase {
         XCTAssertTrue(na.coupons.contains(500))
     }
 
-    func testLCDSHighRecovery() {
-        let lcds = ISDAContract.readFromPlist().first { $0.region == "LCDS" }!
-        XCTAssertEqual(lcds.recoveryList.first?.recovery, 70, "LCDS recovery should be 70%")
-    }
+    // LCDS removed — Loan CDS market has been largely dormant since ~2016.
 
     func testRecoverySubordinationSortedAlphabetically() {
         // Dictionary keys sorted: SEN before SUB

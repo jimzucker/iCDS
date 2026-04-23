@@ -105,8 +105,8 @@ final class FeeViewModel: ObservableObject {
             }
             .store(in: &cancellables)
 
-        // Recalculate when the live SOFR rate arrives or refreshes
-        SOFRRateStore.shared.$rate
+        // Recalculate when any live RFR rate arrives or refreshes
+        SOFRRateStore.shared.$rates
             .dropFirst()
             .receive(on: RunLoop.main)
             .sink { [weak self] _ in self?.recalculate() }
@@ -127,6 +127,29 @@ final class FeeViewModel: ObservableObject {
         spreadBp = couponBp
     }
 
+    /// Discount rate for the current region's currency
+    var discountRate: Double {
+        guard let ccyStr = contract?.currency,
+              let ccy = RFRCurrency(rawValue: ccyStr) else {
+            return RFRCurrency.USD.fallbackRate
+        }
+        return SOFRRateStore.shared.rate(for: ccy)
+    }
+
+    /// Effective date of the rate used (for display)
+    var discountRateDate: String {
+        guard let ccyStr = contract?.currency,
+              let ccy = RFRCurrency(rawValue: ccyStr) else { return "—" }
+        return SOFRRateStore.shared.effectiveDate(for: ccy)
+    }
+
+    /// Status of the rate used (for display)
+    var discountRateStatus: SOFRDataStatus {
+        guard let ccyStr = contract?.currency,
+              let ccy = RFRCurrency(rawValue: ccyStr) else { return .loading }
+        return SOFRRateStore.shared.status(for: ccy)
+    }
+
     private func recalculate() {
         result = CDSCalculator.calculate(
             tradeDate:    tradeDate,
@@ -138,7 +161,7 @@ final class FeeViewModel: ObservableObject {
             isBuy:        buySellIndex == 0,
             settleDays:   contract?.settleDays   ?? 1,
             calendarName: contract?.calendarName ?? "nyFed",
-            discountRate: SOFRRateStore.shared.rate
+            discountRate: discountRate
         )
     }
 }

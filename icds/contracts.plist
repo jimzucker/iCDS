@@ -80,17 +80,5 @@
 			<integer>25</integer><integer>100</integer><integer>500</integer>
 		</array>
 	</dict>
-	<dict>
-		<key>Region</key><string>LCDS</string>
-		<key>Currency</key><string>USD</string>
-		<key>Calendar</key><string>nyFed</string>
-		<key>SettleDays</key><integer>1</integer>
-		<key>Recovery</key><dict>
-			<key>SEN</key><integer>70</integer>
-		</dict>
-		<key>Coupons</key><array>
-			<integer>100</integer><integer>250</integer><integer>500</integer>
-		</array>
-	</dict>
 </array>
 </plist>
