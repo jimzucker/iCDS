@@ -27,15 +27,10 @@ struct LiborView: View {
                 .padding(.top, 4)
                 .padding(.bottom, 10)
 
-            // Currency picker
-            Picker("Currency", selection: $selectedCurrency) {
-                ForEach(RFRCurrency.allCases) { ccy in
-                    Text(ccy.rawValue).tag(ccy)
-                }
-            }
-            .pickerStyle(.segmented)
-            .padding(.horizontal, 16)
-            .padding(.bottom, 12)
+            // Currency picker — color-coded by fetch status
+            currencyPicker
+                .padding(.horizontal, 16)
+                .padding(.bottom, 12)
 
             statusBanner
                 .padding(.horizontal, 16)
@@ -89,6 +84,46 @@ struct LiborView: View {
 
     private var accentColor: Color {
         rowColor(for: ccyStatus)
+    }
+
+    /// Color-coded currency buttons. Green = live, yellow = default, gray = loading.
+    /// Selected currency is shown at full opacity; others are dimmed.
+    private var currencyPicker: some View {
+        HStack(spacing: 4) {
+            ForEach(RFRCurrency.allCases) { ccy in
+                Button {
+                    selectedCurrency = ccy
+                } label: {
+                    Text(ccy.rawValue)
+                        .font(.caption.weight(.semibold))
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 8)
+                        .background(buttonBackground(for: ccy))
+                        .foregroundColor(buttonForeground(for: ccy))
+                        .cornerRadius(6)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 6)
+                                .stroke(rowColor(for: sofrStore.status(for: ccy)),
+                                        lineWidth: selectedCurrency == ccy ? 2 : 0)
+                        )
+                }
+                .buttonStyle(.plain)
+            }
+        }
+    }
+
+    private func buttonBackground(for ccy: RFRCurrency) -> Color {
+        let status = sofrStore.status(for: ccy)
+        let base   = rowColor(for: status)
+        let selected = selectedCurrency == ccy
+        return selected ? base.opacity(0.35) : base.opacity(0.12)
+    }
+
+    private func buttonForeground(for ccy: RFRCurrency) -> Color {
+        let status = sofrStore.status(for: ccy)
+        let selected = selectedCurrency == ccy
+        // Selected: full color; unselected: muted
+        return selected ? rowColor(for: status) : rowColor(for: status).opacity(0.7)
     }
 
     private func rowColor(for status: SOFRDataStatus) -> Color {

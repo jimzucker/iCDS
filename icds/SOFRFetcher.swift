@@ -79,7 +79,8 @@ struct RFRFetcher {
     private static func req(_ url: URL) -> URLRequest {
         var r = URLRequest(url: url)
         r.timeoutInterval = fetchTimeout
-        r.setValue("iCDS/1.0", forHTTPHeaderField: "User-Agent")
+        // Some government APIs (BoE, ECB) reject non-browser User-Agents
+        r.setValue("Mozilla/5.0 (iCDS iOS)", forHTTPHeaderField: "User-Agent")
         return r
     }
 
