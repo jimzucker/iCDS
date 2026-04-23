@@ -42,16 +42,23 @@ struct LiborView: View {
 
             Divider().background(Color(white: 0.2))
 
-            // Legend
-            legend
+            // Per-currency reference swap curve (static 2021 snapshot)
+            curveTableHeader
                 .padding(.horizontal, 16)
                 .padding(.top, 8)
-                .padding(.bottom, 4)
 
             List {
-                ForEach(RFRCurrency.allCases) { ccy in
-                    row(for: ccy)
-                        .listRowBackground(Color.black)
+                ForEach(tenorsForSelected(), id: \.tenor) { entry in
+                    HStack {
+                        Text(entry.tenor)
+                            .font(.system(.body, design: .monospaced))
+                            .foregroundColor(Color(white: 0.7))
+                        Spacer()
+                        Text(String(format: "%.4f%%", entry.rate * 100))
+                            .font(.system(.body, design: .monospaced).weight(.semibold))
+                            .foregroundColor(orange)
+                    }
+                    .listRowBackground(Color.black)
                 }
             }
             .listStyle(.plain)
@@ -60,22 +67,49 @@ struct LiborView: View {
         .background(Color.black)
     }
 
-    // Legend: only mark problems/selection — live rates are neutral.
-    private var legend: some View {
-        HStack(spacing: 12) {
-            legendItem(color: .yellow, label: "Default (no live source)")
-            legendItem(color: orange,  label: "Selected")
+    // MARK: - Reference swap curves (ISDA RFR test grid · 2021-04-26 snapshot)
+
+    private var curveTableHeader: some View {
+        HStack {
+            Text("\(selectedCurrency.indexName) swap curve")
+                .font(.caption.weight(.semibold))
+                .foregroundColor(Color(white: 0.65))
             Spacer()
+            Text("reference · 2021-04-26")
+                .font(.caption2)
+                .foregroundColor(Color(white: 0.4))
         }
-        .font(.caption2)
     }
 
-    private func legendItem(color: Color, label: String) -> some View {
-        HStack(spacing: 4) {
-            Circle().fill(color).frame(width: 7, height: 7)
-            Text(label).foregroundColor(Color(white: 0.6))
+    private func tenorsForSelected() -> [(tenor: String, rate: Double)] {
+        switch selectedCurrency {
+        case .USD: return zip(usdTenors, usdRates).map { ($0, $1) }
+        case .EUR: return zip(eurTenors, eurRates).map { ($0, $1) }
+        case .GBP: return zip(gbpTenors, gbpRates).map { ($0, $1) }
+        case .JPY: return zip(jpyTenors, jpyRates).map { ($0, $1) }
+        case .AUD: return zip(audTenors, audRates).map { ($0, $1) }
         }
     }
+
+    // --- USD (SOFR) ---
+    private let usdTenors: [String] = ["1M","2M","3M","6M","1Y","2Y","3Y","4Y","5Y","6Y","7Y","8Y","9Y","10Y","12Y","15Y","20Y","25Y","30Y"]
+    private let usdRates:  [Double] = [0.000162, 0.00025, 0.00029, 0.00037, 0.000475, 0.001101, 0.002731, 0.004851, 0.006832, 0.008592, 0.010081, 0.011242, 0.012202, 0.013032, 0.014311, 0.01554, 0.016521, 0.016871, 0.016979]
+
+    // --- EUR (€STR) ---
+    private let eurTenors: [String] = ["1M","3M","6M","1Y","2Y","3Y","4Y","5Y","6Y","7Y","8Y","9Y","10Y","12Y","15Y","20Y","30Y"]
+    private let eurRates:  [Double] = [-0.005683, -0.005699, -0.005727, -0.00576, -0.00572, -0.005399, -0.00489, -0.00429, -0.00361, -0.00289, -0.00217, -0.00145, -0.00078, 0.000431, 0.00189, 0.00313, 0.00336]
+
+    // --- GBP (SONIA) ---
+    private let gbpTenors: [String] = ["1M","2M","3M","6M","1Y","2Y","3Y","4Y","5Y","6Y","7Y","8Y","9Y","10Y","12Y","15Y","20Y","25Y","30Y"]
+    private let gbpRates:  [Double] = [0.000494, 0.000494, 0.000494, 0.000496, 0.000541, 0.001096, 0.002129, 0.003182, 0.004173, 0.004981, 0.005687, 0.006298, 0.00684, 0.007314, 0.008028, 0.008676, 0.009064, 0.009052, 0.008867]
+
+    // --- JPY (TONA) ---
+    private let jpyTenors: [String] = ["1M","2M","3M","6M","1Y","2Y","3Y","4Y","5Y","6Y","7Y","8Y","9Y","10Y","12Y","15Y","20Y","30Y"]
+    private let jpyRates:  [Double] = [-0.000188, -0.0002, -0.000225, -0.000263, -0.000388, -0.000581, -0.000638, -0.0006, -0.000488, -0.00035, -0.000163, 6.3e-05, 0.0003, 0.000576, 0.001138, 0.002001, 0.003188, 0.004563]
+
+    // --- AUD (AONIA) ---
+    private let audTenors: [String] = ["1M","2M","3M","6M","1Y","2Y","3Y","4Y","5Y","6Y","7Y","8Y","9Y","10Y","12Y","15Y","20Y","25Y","30Y"]
+    private let audRates:  [Double] = [0.000315, 0.000305, 0.000315, 0.00035, 0.000495, 0.001121, 0.002559, 0.004592, 0.006868, 0.008915, 0.010933, 0.012285, 0.013666, 0.015018, 0.016713, 0.01828, 0.019156, 0.019176, 0.018727]
 
     // MARK: - Sub-views
 
@@ -230,26 +264,4 @@ struct LiborView: View {
         )
     }
 
-    @ViewBuilder
-    private func row(for ccy: RFRCurrency) -> some View {
-        let rate = sofrStore.rate(for: ccy)
-        let date = sofrStore.effectiveDate(for: ccy)
-        let status = sofrStore.status(for: ccy)
-        HStack {
-            Text("\(ccy.rawValue)  \(ccy.indexName)")
-                .font(.system(.body, design: .monospaced))
-                .foregroundColor(Color(white: 0.7))
-                .frame(width: 130, alignment: .leading)
-            Spacer()
-            VStack(alignment: .trailing, spacing: 2) {
-                Text(status == .loading ? "—" : String(format: "%.4f%%", rate * 100))
-                    .font(.system(.body, design: .monospaced).weight(.semibold))
-                    .foregroundColor(rowColor(for: status))
-                Text(date.isEmpty ? " " : date)
-                    .font(.caption2.monospaced())
-                    .foregroundColor(Color(white: 0.5))
-            }
-        }
-        .padding(.vertical, 4)
-    }
 }

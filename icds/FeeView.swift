@@ -265,10 +265,10 @@ struct FeeView: View {
                     }
                     HStack {
                         outputCell("Start",    formatTDate(r.startDate))
-                        outputCell("Settle",   formatTDate(r.valueDate))
+                        outputCell("Maturity", formatTDate(r.endDate))
                     }
                     HStack {
-                        outputCell("Maturity", formatTDate(r.endDate))
+                        outputCell("Settle",   formatTDate(r.valueDate))
                         outputCell("Tenor",    "\(Int(r.endDate - r.startDate)) days")
                     }
                 }
