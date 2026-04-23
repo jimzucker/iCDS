@@ -17,19 +17,13 @@ struct FeeView: View {
 
     var body: some View {
         ScrollView {
-            VStack(spacing: 10) {
+            VStack(spacing: 12) {
                 sofrIndicator
-
-                sectionHeader("Trade")
                 regionRow
                 termRows
                 spreadRow
                 tradeDateCurrencyRow
-
-                sectionHeader("Result")
                 resultBox
-
-                sectionHeader("Details")
                 outputGrid
             }
             .padding(.horizontal, 12)
@@ -37,19 +31,6 @@ struct FeeView: View {
         }
         .background(Color.black)
         .navigationTitle("iCDS")
-    }
-
-    private func sectionHeader(_ title: String) -> some View {
-        HStack(spacing: 8) {
-            Text(title.uppercased())
-                .font(.caption2.weight(.semibold))
-                .tracking(1.5)
-                .foregroundColor(Color(white: 0.45))
-            Rectangle()
-                .fill(Color(white: 0.18))
-                .frame(height: 1)
-        }
-        .padding(.top, 8)
     }
 
     // MARK: - SOFR indicator (shows which discount rate is in use)
@@ -118,15 +99,13 @@ struct FeeView: View {
             if let contract = vm.contract {
                 HStack(spacing: 8) {
                     VStack(alignment: .leading, spacing: 4) {
-                        label("Coupon")
-                        segPicker(contract.coupons.map { "\($0) bp" },
-                                  selection: $vm.couponIndex)
+                        label("Coupon (bp)")
+                        segPicker(contract.coupons.map(\.description), selection: $vm.couponIndex)
                             .onChange(of: vm.couponIndex) { _ in vm.resetSpreadToCoupon() }
                     }
                     VStack(alignment: .leading, spacing: 4) {
-                        label("Recovery")
-                        segPicker(contract.recoveryList.map { "\($0.subordination) \($0.recovery)%" },
-                                  selection: $vm.recoveryIndex)
+                        label("Recovery  \(vm.recoveryLabel)")
+                        segPicker(contract.recoveryList.map(\.subordination), selection: $vm.recoveryIndex)
                     }
                 }
             }
