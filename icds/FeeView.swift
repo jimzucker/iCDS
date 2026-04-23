@@ -63,13 +63,11 @@ struct FeeView: View {
     private var regionRow: some View {
         VStack(alignment: .leading, spacing: 4) {
             label("Region")
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 6) {
-                    ForEach(vm.contracts.indices, id: \.self) { i in
-                        segButton(vm.contracts[i].region, selected: vm.regionIndex == i) {
-                            vm.regionIndex = i
-                            vm.onRegionChanged()
-                        }
+            HStack(spacing: 6) {
+                ForEach(vm.contracts.indices, id: \.self) { i in
+                    segButton(vm.contracts[i].region, selected: vm.regionIndex == i) {
+                        vm.regionIndex = i
+                        vm.onRegionChanged()
                     }
                 }
             }
@@ -211,11 +209,7 @@ struct FeeView: View {
                         outputCell("Accrued", fmt.string(from: NSNumber(value: r.accrued)) ?? "")
                         outputCell("Price",   String(format: "%.4f", r.price))
                     }
-                    HStack {
-                        outputCell("Start",    formatTDate(r.startDate))
-                        outputCell("Maturity", formatTDate(r.endDate))
-                        outputCell("Settle",   formatTDate(r.valueDate))
-                    }
+                    datesBlock(r)
                 }
             }
         }
@@ -232,13 +226,14 @@ struct FeeView: View {
     private func segButton(_ title: String, selected: Bool, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Text(title)
-                .font(.caption)
-                .padding(.horizontal, 10)
-                .padding(.vertical, 6)
+                .font(.caption.weight(.medium))
+                .frame(maxWidth: .infinity)       // fill equal share of row
+                .padding(.vertical, 8)
                 .background(selected ? orange : Color(white: 0.18))
                 .foregroundColor(selected ? .black : .white)
                 .cornerRadius(6)
         }
+        .buttonStyle(.plain)
     }
 
     private func segPicker(_ options: [String], selection: Binding<Int>) -> some View {
@@ -248,6 +243,32 @@ struct FeeView: View {
             }
         }
         .pickerStyle(.segmented)
+    }
+
+    // Stacked date block: Start / Maturity / Settle as label-value rows
+    private func datesBlock(_ r: CDSResult) -> some View {
+        VStack(spacing: 4) {
+            dateRow("Start",    formatTDate(r.startDate))
+            dateRow("Maturity", formatTDate(r.endDate))
+            dateRow("Settle",   formatTDate(r.valueDate))
+        }
+        .padding(8)
+        .frame(maxWidth: .infinity)
+        .background(Color(white: 0.07))
+        .cornerRadius(6)
+    }
+
+    private func dateRow(_ label: String, _ value: String) -> some View {
+        HStack {
+            Text(label)
+                .font(.caption2)
+                .foregroundColor(Color(white: 0.55))
+                .frame(width: 70, alignment: .leading)
+            Text(value)
+                .font(.system(.callout, design: .monospaced))
+                .foregroundColor(orange)
+            Spacer()
+        }
     }
 
     private func outputCell(_ label: String, _ value: String) -> some View {
