@@ -13,16 +13,23 @@ private let orange = Color(red: 1, green: 0.502, blue: 0)
 struct FeeView: View {
     @StateObject private var vm = FeeViewModel()
     @ObservedObject private var sofrStore = SOFRRateStore.shared
+    @State private var showDatePicker = false
 
     var body: some View {
         ScrollView {
-            VStack(spacing: 12) {
+            VStack(spacing: 10) {
                 sofrIndicator
+
+                sectionHeader("Trade")
                 regionRow
                 termRows
                 spreadRow
                 tradeDateCurrencyRow
+
+                sectionHeader("Result")
                 resultBox
+
+                sectionHeader("Details")
                 outputGrid
             }
             .padding(.horizontal, 12)
@@ -30,6 +37,19 @@ struct FeeView: View {
         }
         .background(Color.black)
         .navigationTitle("iCDS")
+    }
+
+    private func sectionHeader(_ title: String) -> some View {
+        HStack(spacing: 8) {
+            Text(title.uppercased())
+                .font(.caption2.weight(.semibold))
+                .tracking(1.5)
+                .foregroundColor(Color(white: 0.45))
+            Rectangle()
+                .fill(Color(white: 0.18))
+                .frame(height: 1)
+        }
+        .padding(.top, 8)
     }
 
     // MARK: - SOFR indicator (shows which discount rate is in use)
@@ -41,6 +61,7 @@ struct FeeView: View {
         let rate = vm.discountRate * 100
         let dateStr = vm.discountRateDate
         return HStack(spacing: 6) {
+            Text("Discount:").font(.caption2).foregroundColor(Color(white: 0.45))
             switch vm.discountRateStatus {
             case .loading:
                 Circle().fill(Color(white: 0.5)).frame(width: 6, height: 6)
@@ -97,13 +118,15 @@ struct FeeView: View {
             if let contract = vm.contract {
                 HStack(spacing: 8) {
                     VStack(alignment: .leading, spacing: 4) {
-                        label("Coupon (bp)")
-                        segPicker(contract.coupons.map(\.description), selection: $vm.couponIndex)
+                        label("Coupon")
+                        segPicker(contract.coupons.map { "\($0) bp" },
+                                  selection: $vm.couponIndex)
                             .onChange(of: vm.couponIndex) { _ in vm.resetSpreadToCoupon() }
                     }
                     VStack(alignment: .leading, spacing: 4) {
-                        label("Recovery  \(vm.recoveryLabel)")
-                        segPicker(contract.recoveryList.map(\.subordination), selection: $vm.recoveryIndex)
+                        label("Recovery")
+                        segPicker(contract.recoveryList.map { "\($0.subordination) \($0.recovery)%" },
+                                  selection: $vm.recoveryIndex)
                     }
                 }
             }
@@ -135,37 +158,73 @@ struct FeeView: View {
 
     private var tradeDateCurrencyRow: some View {
         VStack(alignment: .leading, spacing: 4) {
-            label("Trade Date")
+            label("Trade Date  ·  tap date to pick")
             HStack(spacing: 12) {
-                Text(vm.tradeDateLabel)
-                    .foregroundColor(orange)
-                    .font(.system(.title3, design: .monospaced).weight(.semibold))
+                // Tappable date text — opens calendar sheet
+                Button { showDatePicker = true } label: {
+                    Text(vm.tradeDateLabel)
+                        .foregroundColor(orange)
+                        .font(.system(.title3, design: .monospaced).weight(.semibold))
+                        .underline()
+                }
+                .buttonStyle(.plain)
+
                 Spacer()
-                // Step buttons — more discoverable than a macOS-style stepper
-                Button {
-                    vm.tradeDateOffset -= 1
-                } label: {
+
+                Button { vm.tradeDateOffset -= 1 } label: {
                     Image(systemName: "chevron.left").foregroundColor(orange).frame(width: 28, height: 28)
                 }
                 .background(Color(white: 0.12))
                 .cornerRadius(6)
                 .disabled(vm.tradeDateOffset <= -30)
 
-                Button {
-                    vm.tradeDateOffset += 1
-                } label: {
+                Button { vm.tradeDateOffset += 1 } label: {
                     Image(systemName: "chevron.right").foregroundColor(orange).frame(width: 28, height: 28)
                 }
                 .background(Color(white: 0.12))
                 .cornerRadius(6)
                 .disabled(vm.tradeDateOffset >= 30)
 
-                Button("Today") { vm.tradeDateOffset = 0 }
-                    .font(.caption.weight(.medium))
-                    .foregroundColor(Color(white: 0.7))
-                    .padding(.horizontal, 10).padding(.vertical, 6)
-                    .background(Color(white: 0.12))
-                    .cornerRadius(6)
+                if vm.tradeDateOffset != 0 {
+                    Button("Today") { vm.tradeDateOffset = 0 }
+                        .font(.caption.weight(.medium))
+                        .foregroundColor(Color(white: 0.7))
+                        .padding(.horizontal, 10).padding(.vertical, 6)
+                        .background(Color(white: 0.12))
+                        .cornerRadius(6)
+                }
+            }
+        }
+        .sheet(isPresented: $showDatePicker) { datePickerSheet }
+    }
+
+    private var datePickerSheet: some View {
+        let today = Date()
+        let binding = Binding<Date>(
+            get: { vm.tradeDate },
+            set: { newValue in
+                let days = Calendar.current.dateComponents([.day], from: today, to: newValue).day ?? 0
+                vm.tradeDateOffset = max(-365, min(365, days))
+            }
+        )
+        let minDate = Calendar.current.date(byAdding: .year, value: -1, to: today)!
+        let maxDate = Calendar.current.date(byAdding: .year, value: 1, to: today)!
+        return NavigationView {
+            VStack {
+                DatePicker("Trade Date",
+                           selection: binding,
+                           in: minDate...maxDate,
+                           displayedComponents: .date)
+                    .datePickerStyle(.graphical)
+                    .padding()
+                Spacer()
+            }
+            .navigationTitle("Pick Trade Date")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done") { showDatePicker = false }
+                }
             }
         }
     }
@@ -177,13 +236,20 @@ struct FeeView: View {
             if let r = vm.result {
                 let fmt = currencyFormatter(vm.currency)
                 let display = noNegZero(r.upfrontDollars, eps: 0.5)
-                Text(fmt.string(from: NSNumber(value: display)) ?? String(format: "%.0f", display))
-                    .font(.system(size: 28, weight: .bold, design: .monospaced))
-                    .foregroundColor(.black)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 14)
-                    .background(Color(red: 1, green: 0.999, blue: 0.397))
-                    .cornerRadius(8)
+                let labelText = directionalLabel(r.upfrontDollars)
+                VStack(spacing: 2) {
+                    Text(labelText)
+                        .font(.caption2.weight(.semibold))
+                        .foregroundColor(Color(white: 0.35))
+                        .tracking(1)
+                    Text(fmt.string(from: NSNumber(value: abs(display))) ?? String(format: "%.0f", abs(display)))
+                        .font(.system(size: 28, weight: .bold, design: .monospaced))
+                        .foregroundColor(.black)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 10)
+                .background(Color(red: 1, green: 0.999, blue: 0.397))
+                .cornerRadius(8)
             } else {
                 Text("Calculating…")
                     .frame(maxWidth: .infinity)
@@ -192,6 +258,15 @@ struct FeeView: View {
                     .cornerRadius(8)
             }
         }
+    }
+
+    /// Directional description based on sign + buy/sell
+    private func directionalLabel(_ upfrontDollars: Double) -> String {
+        if abs(upfrontDollars) < 0.5 { return "NO UPFRONT · AT PAR" }
+        let isBuy = vm.buySellIndex == 0
+        let actor = isBuy ? "BUYER" : "SELLER"
+        let action = upfrontDollars > 0 ? "PAYS" : "RECEIVES"
+        return "\(actor) \(action)"
     }
 
     // MARK: - Output grid

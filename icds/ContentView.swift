@@ -14,7 +14,7 @@ struct ContentView: View {
             FeeView()
                 .tabItem { Label("Fee", image: "CalcTabbarIcon") }
             LiborView()
-                .tabItem { Label("Libor", systemImage: "chart.line.uptrend.xyaxis") }
+                .tabItem { Label("Curves", systemImage: "chart.line.uptrend.xyaxis") }
             InfoView()
                 .tabItem { Label("Info", systemImage: "info.circle") }
         }
