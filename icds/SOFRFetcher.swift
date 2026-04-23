@@ -163,7 +163,9 @@ struct RFRFetcher {
                 print("\(tag) fetch HTTP \((response as? HTTPURLResponse)?.statusCode ?? -1)")
                 return (fallback, "unavailable")
             }
-            let lines = text.split(separator: "\n", omittingEmptySubsequences: false).map(String.init)
+            // Use CharacterSet-based splitting — Swift's String.split(separator:) treats
+            // "\r\n" as a single grapheme cluster, so plain "\n" splits miss CRLF lines.
+            let lines = text.components(separatedBy: .newlines)
             // Find data rows (first col parses as date)
             let inFmt = DateFormatter()
             inFmt.dateFormat = dateFormat
@@ -187,7 +189,15 @@ struct RFRFetcher {
                 candidates.append((d, outFmt.string(from: d), v / 100.0))  // convert percent → decimal
             }
             guard !candidates.isEmpty else {
-                print("\(tag) fetch: no parseable rows")
+                // Diagnostic: dump the first 3 non-empty lines so we can see
+                // what the server actually returned (encoding, structure, etc.)
+                let nonEmpty = lines.map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+                                     .filter { !$0.isEmpty }
+                                     .prefix(3)
+                print("\(tag) fetch: no parseable rows. First 3 lines:")
+                for (i, l) in nonEmpty.enumerated() {
+                    print("  [\(i)] \(l.prefix(200))")
+                }
                 return (fallback, "unavailable")
             }
             let chosen = takeLast ? candidates.sorted(by: { $0.date < $1.date }).last! : candidates.first!
