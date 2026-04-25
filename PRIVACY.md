@@ -2,9 +2,7 @@
 
 **Effective date:** April 25, 2026
 
-## TL;DR
-
-iCDS does not collect, store, transmit, or share any personal information. It has no accounts, no analytics, no advertising, no tracking, and no third-party SDKs.
+> **Summary** — iCDS does not collect, store, transmit, or share any personal information. It has no accounts, no analytics, no advertising, no tracking, and no third-party SDKs.
 
 ## What iCDS does
 
