@@ -52,7 +52,7 @@ final class FeeViewModel: ObservableObject {
         return CDSCalculator.lastValidTradeDate(on: raw, calendarName: contract?.calendarName ?? "nyFed")
     }
     var tradeDateLabel: String {
-        let fmt = DateFormatter(); fmt.dateFormat = "d-MMM"
+        let fmt = DateFormatter(); fmt.dateFormat = "dd-MMM-yy"
         return fmt.string(from: tradeDate)
     }
 
@@ -60,6 +60,14 @@ final class FeeViewModel: ObservableObject {
 
     init() {
         contracts = ISDAContract.readFromPlist()
+        // Sync the default spread to the default contract's first coupon so the
+        // input is always meaningful at first render (e.g. SNAC NA = 100 bp).
+        // Without this, spreadBp could be left at the literal 100 default while
+        // a contract with a different first coupon is selected, and the spread
+        // picker would open showing the stale value.
+        if let firstCoupon = contracts.first?.coupons.first {
+            spreadBp = Double(firstCoupon)
+        }
         // result stays nil here → FeeView shows "Calculating…" for one frame
 
         // Pre-warm all holiday calendar sets at high priority so they are
@@ -161,7 +169,26 @@ final class FeeViewModel: ObservableObject {
             isBuy:        buySellIndex == 0,
             settleDays:   contract?.settleDays   ?? 1,
             calendarName: contract?.calendarName ?? "nyFed",
-            discountRate: discountRate
+            discountRate: discountRate,
+            minSettle:    Date()
+        )
+    }
+
+    /// Recompute upfront for a hypothetical spread without committing it.
+    /// Used by the spread picker sheet to preview the dollar impact live.
+    func previewUpfront(forSpread spread: Double) -> CDSResult? {
+        CDSCalculator.calculate(
+            tradeDate:    tradeDate,
+            tenorYears:   tenorYears[maturityIndex],
+            parSpreadBp:  spread,
+            couponBp:     couponBp,
+            recoveryRate: Double(recoveryPct) / 100.0,
+            notional:     notionalValues[notionalIndex],
+            isBuy:        buySellIndex == 0,
+            settleDays:   contract?.settleDays   ?? 1,
+            calendarName: contract?.calendarName ?? "nyFed",
+            discountRate: discountRate,
+            minSettle:    Date()
         )
     }
 }

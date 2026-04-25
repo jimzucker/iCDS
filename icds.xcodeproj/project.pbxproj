@@ -7,13 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0154F71853E6C41DA6C77F38 /* FeeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 996BCBAD123E77136BAE1C83 /* FeeViewModel.swift */; };
 		015C1A8BA366DDF95B691808 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CA3A5795DC151BA635B0909 /* SceneDelegate.swift */; };
 		01670032C20A2085CA6A02F9 /* lintrp1.c in Sources */ = {isa = PBXBuildFile; fileRef = 028ADC4143E42D38E9FC4523 /* lintrp1.c */; };
 		08FB39060F3EBB855560AD01 /* cxzerocurve.c in Sources */ = {isa = PBXBuildFile; fileRef = B70979ADB9022E9318D8D530 /* cxzerocurve.c */; };
 		0A6376921A1AB6E66E70D4D8 /* zcswutil.c in Sources */ = {isa = PBXBuildFile; fileRef = 4FEF7354A4A3BC937D32BBED /* zcswutil.c */; };
 		0B53FCDE877F6EC89E799A7F /* fltrate.c in Sources */ = {isa = PBXBuildFile; fileRef = 0EA66C787E7379A208D3F0A2 /* fltrate.c */; };
 		0B948222350B0BCAAB4906A0 /* tcurve.c in Sources */ = {isa = PBXBuildFile; fileRef = 15C67FCF3F6E04053E0C8B45 /* tcurve.c */; };
-		DEFA01010000000000000001 /* defaulted.c in Sources */ = {isa = PBXBuildFile; fileRef = DEFA01020000000000000002 /* defaulted.c */; };
 		1279209354AD3FE53BA5812F /* interpc.c in Sources */ = {isa = PBXBuildFile; fileRef = 1F478F36DB5C345F892BFF70 /* interpc.c */; };
 		133E8D17207002B01D0658E6 /* zerocurve.c in Sources */ = {isa = PBXBuildFile; fileRef = 43FB3C581DAC7C0F59BEEEBA /* zerocurve.c */; };
 		140CAB2AADA45FB296996153 /* version.c in Sources */ = {isa = PBXBuildFile; fileRef = 044943888A14FB56F6AF35DB /* version.c */; };
@@ -31,6 +31,7 @@
 		30048073EE2D758B9045895F /* badday.c in Sources */ = {isa = PBXBuildFile; fileRef = 4FD6605195C501374B979EB0 /* badday.c */; };
 		4760CCD747B9A575209A2F60 /* CDSReferenceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A32A6343EBA78C51BE2DE3C3 /* CDSReferenceTests.swift */; };
 		50C2810CC8F2DD80CCA6C0F2 /* cx.c in Sources */ = {isa = PBXBuildFile; fileRef = 392E35EE73954B8002E83A27 /* cx.c */; };
+		50C5DA458B9EAC869B1292D2 /* InfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70E6D2AEB8B8096DDBC017F3 /* InfoView.swift */; };
 		5317F43DBD4961F596BFF2E9 /* cds.c in Sources */ = {isa = PBXBuildFile; fileRef = 7F4137ABAC884F48B86FAB46 /* cds.c */; };
 		5E93DF3200D649859C864FE9 /* zr2fwd.c in Sources */ = {isa = PBXBuildFile; fileRef = 8A4C7D9A4FA1CC3D607406A8 /* zr2fwd.c */; };
 		67FA209731D6D21E6EA7BC85 /* cerror.c in Sources */ = {isa = PBXBuildFile; fileRef = A5B4CA813F57EE951C81A593 /* cerror.c */; };
@@ -38,9 +39,7 @@
 		6D497B181CE2D88E00FACBB2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D497B171CE2D88E00FACBB2 /* AppDelegate.swift */; };
 		6D497B1A1CE2D88E00FACBB2 /* FeeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D497B191CE2D88E00FACBB2 /* FeeViewController.swift */; };
 		6D497B1C1CE2D88E00FACBB2 /* LiborViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D497B1B1CE2D88E00FACBB2 /* LiborViewController.swift */; };
-		6D497B1F1CE2D88E00FACBB2 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6D497B1D1CE2D88E00FACBB2 /* Main.storyboard */; };
 		6D497B211CE2D88E00FACBB2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6D497B201CE2D88E00FACBB2 /* Assets.xcassets */; };
-		6D497B241CE2D88E00FACBB2 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6D497B221CE2D88E00FACBB2 /* LaunchScreen.storyboard */; };
 		6D497B2F1CE2D88E00FACBB2 /* icdsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D497B2E1CE2D88E00FACBB2 /* icdsTests.swift */; };
 		6D497B3A1CE2D88E00FACBB2 /* icdsUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D497B391CE2D88E00FACBB2 /* icdsUITests.swift */; };
 		6D6418581DA4535C005E8048 /* contracts.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6D6418571DA4535C005E8048 /* contracts.plist */; };
@@ -54,6 +53,7 @@
 		8DF22F4C501AE0535CB74F6D /* cxdatelist.c in Sources */ = {isa = PBXBuildFile; fileRef = B3EC5FDCF94F3CEAB715322D /* cxdatelist.c */; };
 		8F78A10BF3F48672084BF347 /* cdsone.c in Sources */ = {isa = PBXBuildFile; fileRef = A5461EAEB109ABD031560473 /* cdsone.c */; };
 		900F3152D2CE5629EA26189D /* streamcf.c in Sources */ = {isa = PBXBuildFile; fileRef = 0C214EAE9D3602B80679EEC5 /* streamcf.c */; };
+		94EE53CF05E7431E1BFD54A9 /* iCDSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A90EAC4E5785542C5B795AB /* iCDSApp.swift */; };
 		9F7CA5ACC9FB3AA3C35DA978 /* CDSCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D4361BD00D76E89B5561B0E /* CDSCalculator.swift */; };
 		A1B2C3D400000001AABBCCDD /* SOFRFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D400000002AABBCCDD /* SOFRFetcher.swift */; };
 		A1B2C3D400000003AABBCCDD /* SOFRRateStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D400000004AABBCCDD /* SOFRRateStore.swift */; };
@@ -67,19 +67,17 @@
 		C014DAFB4C86702F3C673356 /* lprintf.c in Sources */ = {isa = PBXBuildFile; fileRef = 01B4FC6060C545E1A5F50052 /* lprintf.c */; };
 		C264948CC52E528F3C13251F /* gtozc.c in Sources */ = {isa = PBXBuildFile; fileRef = 56823F4FC4B6E57BBA7AD041 /* gtozc.c */; };
 		C9D39AD95BCB885AC1888C32 /* linterpc.c in Sources */ = {isa = PBXBuildFile; fileRef = 65EB12469120E37B3A5A68D2 /* linterpc.c */; };
+		CA23CE042611BBBAA7359ED8 /* FeeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFF16E2C276024762890C05C /* FeeView.swift */; };
+		CAEF09B9FA1A8040A3895598 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B0DE7D94D77C24947FEF601 /* ContentView.swift */; };
 		CCB5332F754E6C3B73E1A725 /* cfileio.c in Sources */ = {isa = PBXBuildFile; fileRef = DC075B77E3D1BC99CDCB2013 /* cfileio.c */; };
 		D3EEA8172B13245822EB72E1 /* zcswap.c in Sources */ = {isa = PBXBuildFile; fileRef = 1A489950E0B1FCD50CDDD342 /* zcswap.c */; };
+		DEFA01010000000000000001 /* defaulted.c in Sources */ = {isa = PBXBuildFile; fileRef = DEFA01020000000000000002 /* defaulted.c */; };
 		DF2220694499CC32DFDA69BE /* cxbsearch.c in Sources */ = {isa = PBXBuildFile; fileRef = 65C11F58336A3ED4C36AC17A /* cxbsearch.c */; };
 		E6DD8830A019DA6BFB39948D /* cfinanci.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A698E9567CCAAC860E870C5A /* cfinanci.cpp */; };
 		ED9A1F2B71B87B1AFDE62908 /* zr2coup.c in Sources */ = {isa = PBXBuildFile; fileRef = 0B5058BD5B81005E684857BC /* zr2coup.c */; };
 		EFEB6858B04DFB48FB6D16BC /* lscanf.c in Sources */ = {isa = PBXBuildFile; fileRef = 93B2190D28AC35E5A214E146 /* lscanf.c */; };
-		F68C948E92F8BB8EA4660180 /* zcall.c in Sources */ = {isa = PBXBuildFile; fileRef = B6E3671B194E4DC86E2B8201 /* zcall.c */; };
-		94EE53CF05E7431E1BFD54A9 /* iCDSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A90EAC4E5785542C5B795AB /* iCDSApp.swift */; };
-		CAEF09B9FA1A8040A3895598 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B0DE7D94D77C24947FEF601 /* ContentView.swift */; };
-		0154F71853E6C41DA6C77F38 /* FeeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 996BCBAD123E77136BAE1C83 /* FeeViewModel.swift */; };
-		CA23CE042611BBBAA7359ED8 /* FeeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFF16E2C276024762890C05C /* FeeView.swift */; };
 		F062BAF0F3FF89329C73DBF4 /* LiborView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D5F69D65B727609C9935D39 /* LiborView.swift */; };
-		50C5DA458B9EAC869B1292D2 /* InfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70E6D2AEB8B8096DDBC017F3 /* InfoView.swift */; };
+		F68C948E92F8BB8EA4660180 /* zcall.c in Sources */ = {isa = PBXBuildFile; fileRef = B6E3671B194E4DC86E2B8201 /* zcall.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -120,10 +118,10 @@
 		3D364DA3592F4FB6014BBA10 /* timeline.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = timeline.c; sourceTree = "<group>"; };
 		4271C9982F9535C5004B4AC3 /* icds.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = icds.xctestplan; sourceTree = "<group>"; };
 		43FB3C581DAC7C0F59BEEEBA /* zerocurve.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = zerocurve.c; sourceTree = "<group>"; };
+		4A90EAC4E5785542C5B795AB /* iCDSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iCDSApp.swift; sourceTree = "<group>"; };
 		4CA550BC4EB1C92D551B21E8 /* dateconv.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = dateconv.c; sourceTree = "<group>"; };
 		4D4361BD00D76E89B5561B0E /* CDSCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CDSCalculator.swift; sourceTree = "<group>"; };
-		A1B2C3D400000002AABBCCDD /* SOFRFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SOFRFetcher.swift; sourceTree = "<group>"; };
-		A1B2C3D400000004AABBCCDD /* SOFRRateStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SOFRRateStore.swift; sourceTree = "<group>"; };
+		4D5F69D65B727609C9935D39 /* LiborView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiborView.swift; sourceTree = "<group>"; };
 		4FD6605195C501374B979EB0 /* badday.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = badday.c; sourceTree = "<group>"; };
 		4FEF7354A4A3BC937D32BBED /* zcswutil.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = zcswutil.c; sourceTree = "<group>"; };
 		56823F4FC4B6E57BBA7AD041 /* gtozc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = gtozc.c; sourceTree = "<group>"; };
@@ -147,16 +145,20 @@
 		6D6418571DA4535C005E8048 /* contracts.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = contracts.plist; sourceTree = "<group>"; };
 		6D6418591DA45B95005E8048 /* ISDAContract.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ISDAContract.swift; sourceTree = "<group>"; };
 		6D64185B1DA47D21005E8048 /* Recovery.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Recovery.swift; sourceTree = "<group>"; };
+		70E6D2AEB8B8096DDBC017F3 /* InfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoView.swift; sourceTree = "<group>"; };
 		7F4137ABAC884F48B86FAB46 /* cds.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cds.c; sourceTree = "<group>"; };
 		7F6D3F3D3BD8C81FE4B7AE68 /* cdsbootstrap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cdsbootstrap.c; sourceTree = "<group>"; };
 		8362B2590A4C6A2473223449 /* stub.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = stub.c; sourceTree = "<group>"; };
 		84A09E7781E95717C4B3F5CF /* contingentleg.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = contingentleg.c; sourceTree = "<group>"; };
 		88ABD66E79B64BF9C7721B74 /* busday.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = busday.c; sourceTree = "<group>"; };
 		8A4C7D9A4FA1CC3D607406A8 /* zr2fwd.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = zr2fwd.c; sourceTree = "<group>"; };
-		DEFA01020000000000000002 /* defaulted.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = defaulted.c; sourceTree = "<group>"; };
 		93B2190D28AC35E5A214E146 /* lscanf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = lscanf.c; sourceTree = "<group>"; };
 		96379F9C42DD3DACEFE2AE82 /* date_sup.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = date_sup.c; sourceTree = "<group>"; };
+		996BCBAD123E77136BAE1C83 /* FeeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeeViewModel.swift; sourceTree = "<group>"; };
+		9B0DE7D94D77C24947FEF601 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		9F715F83D9308EE75B0705CF /* dateadj.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = dateadj.c; sourceTree = "<group>"; };
+		A1B2C3D400000002AABBCCDD /* SOFRFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SOFRFetcher.swift; sourceTree = "<group>"; };
+		A1B2C3D400000004AABBCCDD /* SOFRRateStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SOFRRateStore.swift; sourceTree = "<group>"; };
 		A32A6343EBA78C51BE2DE3C3 /* CDSReferenceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CDSReferenceTests.swift; sourceTree = "<group>"; };
 		A5461EAEB109ABD031560473 /* cdsone.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cdsone.c; sourceTree = "<group>"; };
 		A5B4CA813F57EE951C81A593 /* cerror.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cerror.c; sourceTree = "<group>"; };
@@ -171,15 +173,11 @@
 		C5338A857EA11FD2E9D66231 /* buscache.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = buscache.c; sourceTree = "<group>"; };
 		C8CCAB1B8A743942125FA101 /* cmemory.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cmemory.c; sourceTree = "<group>"; };
 		DC075B77E3D1BC99CDCB2013 /* cfileio.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cfileio.c; sourceTree = "<group>"; };
+		DEFA01020000000000000002 /* defaulted.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = defaulted.c; sourceTree = "<group>"; };
 		E20D859F64A5E31A849C5055 /* datelist.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = datelist.c; sourceTree = "<group>"; };
 		EE6A77C3421DF95ACA028CF6 /* schedule.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = schedule.c; sourceTree = "<group>"; };
-		F5AE6950814005F282917D15 /* dtlist.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = dtlist.c; sourceTree = "<group>"; };
-		4A90EAC4E5785542C5B795AB /* iCDSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iCDSApp.swift; sourceTree = "<group>"; };
-		9B0DE7D94D77C24947FEF601 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		996BCBAD123E77136BAE1C83 /* FeeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeeViewModel.swift; sourceTree = "<group>"; };
 		EFF16E2C276024762890C05C /* FeeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeeView.swift; sourceTree = "<group>"; };
-		4D5F69D65B727609C9935D39 /* LiborView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiborView.swift; sourceTree = "<group>"; };
-		70E6D2AEB8B8096DDBC017F3 /* InfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoView.swift; sourceTree = "<group>"; };
+		F5AE6950814005F282917D15 /* dtlist.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = dtlist.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -823,6 +821,7 @@
 		6D497B451CE2D88E00FACBB2 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				DEVELOPMENT_TEAM = 583XUQ99J6;
 				INFOPLIST_FILE = icdsUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -840,6 +839,7 @@
 		6D497B461CE2D88E00FACBB2 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				DEVELOPMENT_TEAM = 583XUQ99J6;
 				INFOPLIST_FILE = icdsUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

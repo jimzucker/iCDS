@@ -233,7 +233,7 @@ struct LiborView: View {
 
     private var overnightBanner: some View {
         let rate = sofrStore.rate(for: selectedCurrency)
-        let date = sofrStore.effectiveDate(for: selectedCurrency)
+        let date = FeeView.formatISODate(sofrStore.effectiveDate(for: selectedCurrency))
         return HStack {
             VStack(alignment: .leading, spacing: 2) {
                 Text("\(selectedCurrency.indexName)  (\(selectedCurrency.rawValue))")

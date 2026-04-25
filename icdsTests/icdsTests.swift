@@ -672,6 +672,41 @@ class icdsTests: XCTestCase {
         XCTAssertEqual(vm.result!.parSpreadBp, r1.parSpreadBp, accuracy: 2.0)
     }
 
+    // MARK: - FeeViewModel spread initialization
+
+    @MainActor
+    func testFeeViewModelSpreadBpIsPositiveAtInit() {
+        let vm = FeeViewModel()
+        XCTAssertGreaterThan(vm.spreadBp, 0,
+            "spreadBp must never be 0 at init — that would open the picker showing 0 bp")
+    }
+
+    @MainActor
+    func testFeeViewModelSpreadBpMatchesDefaultCouponAtInit() {
+        let vm = FeeViewModel()
+        // Synced in init() so the spread input is meaningful before the user
+        // touches the coupon segmented control. Without this, switching
+        // coupon was the only way to populate a real spread value.
+        XCTAssertEqual(vm.spreadBp, vm.couponBp, accuracy: 0.001,
+            "spreadBp at init should equal the default contract's first coupon")
+    }
+
+    @MainActor
+    func testFeeViewModelPreviewUpfrontUsesCurrentSpread() async throws {
+        let vm = FeeViewModel()
+        try await Task.sleep(nanoseconds: 1_000_000_000)  // let async init finish
+        // At par (spread == coupon) the upfront should be ~0.
+        let atPar = vm.previewUpfront(forSpread: vm.couponBp)
+        XCTAssertNotNil(atPar)
+        XCTAssertLessThan(abs(atPar!.upfrontDollars), 1.0,
+            "preview at par should produce zero upfront")
+
+        // At spread well above coupon, buyer of protection pays a positive upfront.
+        let wide = vm.previewUpfront(forSpread: vm.couponBp + 200)
+        XCTAssertNotNil(wide)
+        XCTAssertGreaterThan(wide!.upfrontDollars, 0)
+    }
+
     // MARK: - Performance
 
     func testCalculationPerformance() {

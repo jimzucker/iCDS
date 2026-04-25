@@ -82,11 +82,16 @@ struct CDSCalculator {
                           isBuy: Bool,
                           settleDays: Int = 1,
                           calendarName: String = "nyFed",
-                          discountRate: Double = SOFRFetcher.fallbackRate) -> CDSResult? {
+                          discountRate: Double = SOFRFetcher.fallbackRate,
+                          minSettle: Date? = nil) -> CDSResult? {
 
         let cal        = Calendar.current
         let today      = tdate(from: tradeDate)
-        let valueDate  = tdate(from: addBusinessDays(settleDays, to: tradeDate, calendarName: calendarName))
+        // Settle = T + settleDays business days, but clamped to >= minSettle when supplied
+        // (e.g., 'today') because real-world settlement cannot fall in the past.
+        let computedSettle = addBusinessDays(settleDays, to: tradeDate, calendarName: calendarName)
+        let effectiveSettle = (minSettle.map { max(computedSettle, $0) }) ?? computedSettle
+        let valueDate  = tdate(from: effectiveSettle)
         let stepinDate = today + 1                                         // T+1 calendar day
         let prevIMM    = prevIMMDate(before: tradeDate)
         let startDate  = tdate(from: prevIMM)                              // SNAC: coupon accrues from previous IMM
