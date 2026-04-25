@@ -1,0 +1,30 @@
+title: iCDS
+description: ISDA SNAC CDS upfront fee calculator for iOS
+theme: jekyll-theme-cayman
+
+# Repo metadata used by some themes
+repository: jimzucker/iCDS
+
+# Files Jekyll should not try to render. The Xcode project, source, tests,
+# and build artefacts have nothing to do with the Pages site; excluding them
+# keeps the Pages build fast and avoids accidental publication of source.
+exclude:
+  - icds/
+  - icds.xcodeproj/
+  - icdsTests/
+  - icdsUITests/
+  - images/
+  - .claude/
+  - .github/
+  - "*.xcprivacy"
+  - "*.entitlements"
+  - "*.swift"
+  - "*.m"
+  - "*.h"
+  - "*.c"
+  - "*.cpp"
+  - "*.plist"
+  - Gemfile
+  - Gemfile.lock
+  - LICENSE
+  - CLAUDE.md
