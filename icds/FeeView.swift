@@ -17,6 +17,10 @@ struct FeeView: View {
     @State private var showSpreadPicker = false
     @State private var spreadBuffer: String = ""
 
+    // Absolute cap on the quoted spread (bp). 10000 bp = 100%/yr, deep
+    // into distressed territory and well beyond any realistic CDS quote.
+    private static let maxSpreadBp: Int = 10000
+
     var body: some View {
         ScrollView {
             VStack(spacing: 12) {
@@ -213,7 +217,7 @@ struct FeeView: View {
 
     private var spreadPickerSheet: some View {
         let coupon = Int(vm.couponBp)
-        let upper = coupon + 1000
+        let cap = Self.maxSpreadBp
         // Always fall back to the current spread value when the buffer is
         // empty or stale — fixes a SwiftUI timing race where the sheet body
         // is evaluated before the button action's spreadBuffer write lands.
@@ -221,14 +225,16 @@ struct FeeView: View {
             if let v = Int(spreadBuffer), v > 0 { return v }
             return Int(vm.spreadBp)
         }()
+        let isOverCap = pending > cap
+        let valueColor: Color = isOverCap ? .red : orange
 
         return NavigationView {
             VStack(spacing: 12) {
-                // Spread block: pending value + coupon context + relation
+                // Spread block: pending value + coupon context + relation + cap hint
                 VStack(spacing: 4) {
                     Text("\(pending) bp")
                         .font(.system(size: 44, weight: .bold, design: .monospaced))
-                        .foregroundColor(orange)
+                        .foregroundColor(valueColor)
 
                     HStack(spacing: 8) {
                         Text("Coupon \(coupon) bp")
@@ -237,19 +243,24 @@ struct FeeView: View {
                         Text("·")
                             .font(.caption2)
                             .foregroundColor(Color(white: 0.3))
-                        Text(pendingHint(pending: pending, coupon: coupon))
+                        Text(pendingHint(pending: pending, coupon: coupon, cap: cap))
                             .font(.caption.weight(.semibold))
-                            .foregroundColor(Color(white: 0.7))
+                            .foregroundColor(isOverCap ? .red : Color(white: 0.7))
                     }
+                    Text("max \(cap) bp")
+                        .font(.caption2)
+                        .foregroundColor(Color(white: 0.4))
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.top, 8)
 
-                // Result preview card — separate visual block
-                livePreviewCard(pending: pending)
+                // Result preview card — separate visual block.
+                // Skip preview when over cap so we don't show a number that
+                // won't be committed.
+                livePreviewCard(pending: isOverCap ? 0 : pending)
                     .padding(.horizontal, 12)
 
-                // Preset chips — symmetric around par
+                // Preset chips — symmetric around par, with a distressed row
                 VStack(spacing: 8) {
                     HStack(spacing: 8) {
                         chip("Coupon -200", value: max(1, coupon - 200), pending: pending)
@@ -265,6 +276,11 @@ struct FeeView: View {
                         chip("Coupon +200", value: coupon + 200,   pending: pending)
                         chip("Coupon +500", value: coupon + 500,   pending: pending)
                         chip("Coupon +1000",value: coupon + 1000,  pending: pending)
+                    }
+                    HStack(spacing: 8) {
+                        chip("Coupon +2000",value: coupon + 2000,  pending: pending)
+                        chip("Coupon +5000",value: coupon + 5000,  pending: pending)
+                        chip("Max \(cap)",  value: cap,            pending: pending)
                     }
                 }
                 .padding(.horizontal, 12)
@@ -297,8 +313,8 @@ struct FeeView: View {
                     Button("Cancel") { showSpreadPicker = false }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Done") { commitSpreadBuffer(upper: upper) }
-                        .disabled(Int(spreadBuffer) == nil || Int(spreadBuffer) == 0)
+                    Button("Done") { commitSpreadBuffer(cap: cap) }
+                        .disabled(pending <= 0 || pending > cap)
                 }
             }
         }
@@ -345,7 +361,8 @@ struct FeeView: View {
         }
     }
 
-    private func pendingHint(pending: Int, coupon: Int) -> String {
+    private func pendingHint(pending: Int, coupon: Int, cap: Int) -> String {
+        if pending > cap { return "exceeds max \(cap) bp" }
         if pending == 0 { return " " }
         if pending == coupon { return "AT PAR" }
         let diff = pending - coupon
@@ -401,9 +418,9 @@ struct FeeView: View {
         .buttonStyle(.plain)
     }
 
-    private func commitSpreadBuffer(upper: Int) {
-        guard let v = Int(spreadBuffer), v >= 1 else { return }
-        vm.spreadBp = Double(min(v, upper))
+    private func commitSpreadBuffer(cap: Int) {
+        guard let v = Int(spreadBuffer), v >= 1, v <= cap else { return }
+        vm.spreadBp = Double(v)
         showSpreadPicker = false
     }
 
