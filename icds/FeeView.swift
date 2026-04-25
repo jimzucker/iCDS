@@ -23,7 +23,7 @@ struct FeeView: View {
                 sofrIndicator
                 regionRow
                 termRows
-                resultBox
+                spreadFeeRow
                 outputGrid
             }
             .padding(.horizontal, 12)
@@ -93,17 +93,12 @@ struct FeeView: View {
                     }
                 }
             }
-            // Row 2: Notional (full width)
-            VStack(alignment: .leading, spacing: 4) {
-                label("Notional")
-                segPicker(vm.notionalLabels, selection: $vm.notionalIndex)
-            }
-            // Row 3: Maturity (full width)
+            // Row 2: Maturity (full width)
             VStack(alignment: .leading, spacing: 4) {
                 label("Maturity")
                 segPicker(vm.tenorLabels, selection: $vm.maturityIndex)
             }
-            // Row 4: Coupon  |  Quoted Spread
+            // Row 3: Coupon  |  Notional
             if let contract = vm.contract {
                 HStack(alignment: .bottom, spacing: 8) {
                     VStack(alignment: .leading, spacing: 4) {
@@ -112,8 +107,8 @@ struct FeeView: View {
                             .onChange(of: vm.couponIndex) { _ in vm.resetSpreadToCoupon() }
                     }
                     VStack(alignment: .leading, spacing: 4) {
-                        label("Quoted Spread  ·  tap")
-                        spreadButton
+                        label("Notional")
+                        segPicker(vm.notionalLabels, selection: $vm.notionalIndex)
                     }
                 }
             }
@@ -128,33 +123,90 @@ struct FeeView: View {
         }
     }
 
-    private var spreadButton: some View {
+    // MARK: - Spread + Fee equal-prominence row
+    //
+    // The Quoted Spread (input) and Upfront Fee (output) share one row with
+    // identical card geometry: same width, same minHeight, same internal
+    // structure (caption + big monospaced value). The orange tint on the
+    // spread side signals 'tappable input'; the yellow on the fee side
+    // signals 'computed output'. They read as a cause/effect pair.
+
+    private var spreadFeeRow: some View {
+        HStack(spacing: 8) {
+            spreadCard
+            feeCard
+        }
+    }
+
+    private var spreadCard: some View {
         Button {
             spreadBuffer = String(Int(vm.spreadBp))
             showSpreadPicker = true
         } label: {
-            HStack(spacing: 6) {
-                Spacer()
-                Text("\(Int(vm.spreadBp))")
-                    .font(.system(.body, design: .monospaced).weight(.semibold))
-                    .foregroundColor(orange)
-                Text("bp")
-                    .font(.system(.body, design: .monospaced).weight(.semibold))
-                    .foregroundColor(orange)
-                Image(systemName: "pencil")
-                    .font(.caption.weight(.semibold))
-                    .foregroundColor(orange)
-                Spacer()
+            VStack(spacing: 4) {
+                Text("QUOTED SPREAD · tap")
+                    .font(.caption2.weight(.semibold))
+                    .tracking(1)
+                    .foregroundColor(Color(white: 0.55))
+                HStack(alignment: .firstTextBaseline, spacing: 6) {
+                    Text("\(Int(vm.spreadBp))")
+                        .font(.system(size: 28, weight: .bold, design: .monospaced))
+                        .foregroundColor(orange)
+                    Text("bp")
+                        .font(.system(size: 18, weight: .semibold, design: .monospaced))
+                        .foregroundColor(orange)
+                    Image(systemName: "pencil")
+                        .font(.caption.weight(.semibold))
+                        .foregroundColor(orange)
+                }
             }
-            .padding(.vertical, 6)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 10)
             .background(orange.opacity(0.18))
-            .cornerRadius(6)
+            .cornerRadius(8)
             .overlay(
-                RoundedRectangle(cornerRadius: 6)
+                RoundedRectangle(cornerRadius: 8)
                     .stroke(orange.opacity(0.6), lineWidth: 1)
             )
         }
         .buttonStyle(.plain)
+    }
+
+    private var feeCard: some View {
+        Group {
+            if let r = vm.result {
+                let fmt = currencyFormatter(vm.currency)
+                let display = noNegZero(r.upfrontDollars, eps: 0.5)
+                let labelText = directionalLabel(r.upfrontDollars)
+                VStack(spacing: 4) {
+                    Text(labelText)
+                        .font(.caption2.weight(.semibold))
+                        .tracking(1)
+                        .foregroundColor(Color(white: 0.30))
+                    Text(fmt.string(from: NSNumber(value: abs(display))) ?? String(format: "%.0f", abs(display)))
+                        .font(.system(size: 28, weight: .bold, design: .monospaced))
+                        .foregroundColor(.black)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 10)
+                .background(Color(red: 1, green: 0.999, blue: 0.397))
+                .cornerRadius(8)
+            } else {
+                VStack(spacing: 4) {
+                    Text("CALCULATING")
+                        .font(.caption2.weight(.semibold))
+                        .tracking(1)
+                        .foregroundColor(Color(white: 0.30))
+                    Text("…")
+                        .font(.system(size: 28, weight: .bold, design: .monospaced))
+                        .foregroundColor(.black)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 10)
+                .background(Color(red: 1, green: 0.999, blue: 0.397))
+                .cornerRadius(8)
+            }
+        }
     }
 
     // MARK: - Spread picker sheet (preset chips + numeric keypad)
@@ -421,37 +473,6 @@ struct FeeView: View {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Done") { showDatePicker = false }
                 }
-            }
-        }
-    }
-
-    // MARK: - Result box
-
-    private var resultBox: some View {
-        Group {
-            if let r = vm.result {
-                let fmt = currencyFormatter(vm.currency)
-                let display = noNegZero(r.upfrontDollars, eps: 0.5)
-                let labelText = directionalLabel(r.upfrontDollars)
-                VStack(spacing: 2) {
-                    Text(labelText)
-                        .font(.caption2.weight(.semibold))
-                        .foregroundColor(Color(white: 0.35))
-                        .tracking(1)
-                    Text(fmt.string(from: NSNumber(value: abs(display))) ?? String(format: "%.0f", abs(display)))
-                        .font(.system(size: 28, weight: .bold, design: .monospaced))
-                        .foregroundColor(.black)
-                }
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 10)
-                .background(Color(red: 1, green: 0.999, blue: 0.397))
-                .cornerRadius(8)
-            } else {
-                Text("Calculating…")
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 14)
-                    .background(Color(red: 1, green: 0.999, blue: 0.397))
-                    .cornerRadius(8)
             }
         }
     }
