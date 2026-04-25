@@ -156,6 +156,8 @@ struct FeeView: View {
                     Text("\(Int(vm.spreadBp))")
                         .font(.system(size: 28, weight: .bold, design: .monospaced))
                         .foregroundColor(orange)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.6)
                     Text("bp")
                         .font(.system(size: 18, weight: .semibold, design: .monospaced))
                         .foregroundColor(orange)
@@ -190,6 +192,8 @@ struct FeeView: View {
                     Text(fmt.string(from: NSNumber(value: abs(display))) ?? String(format: "%.0f", abs(display)))
                         .font(.system(size: 28, weight: .bold, design: .monospaced))
                         .foregroundColor(.black)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.6)
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 10)
@@ -260,15 +264,17 @@ struct FeeView: View {
                 livePreviewCard(pending: isOverCap ? 0 : pending)
                     .padding(.horizontal, 12)
 
-                // Preset chips — symmetric around par, with a distressed row
+                // Preset chips — symmetric around par, with a distressed row.
+                // Negative chips below par are hidden when coupon - N <= 0
+                // (would clamp to 1 bp and confuse rather than help).
                 VStack(spacing: 8) {
                     HStack(spacing: 8) {
-                        chip("Coupon -200", value: max(1, coupon - 200), pending: pending)
-                        chip("Coupon -100", value: max(1, coupon - 100), pending: pending)
-                        chip("Coupon -50",  value: max(1, coupon - 50),  pending: pending)
+                        negChip(label: "Coupon -200", offset: 200, coupon: coupon, pending: pending)
+                        negChip(label: "Coupon -100", offset: 100, coupon: coupon, pending: pending)
+                        negChip(label: "Coupon -50",  offset: 50,  coupon: coupon, pending: pending)
                     }
                     HStack(spacing: 8) {
-                        chip("At Par",      value: coupon,         pending: pending)
+                        chip("At Par",      value: coupon,         pending: pending, prominent: true)
                         chip("Coupon +50",  value: coupon + 50,    pending: pending)
                         chip("Coupon +100", value: coupon + 100,   pending: pending)
                     }
@@ -369,22 +375,41 @@ struct FeeView: View {
         return diff > 0 ? "Coupon + \(diff) bp" : "Coupon − \(-diff) bp"
     }
 
-    private func chip(_ title: String, value: Int, pending: Int) -> some View {
+    private func chip(_ title: String, value: Int, pending: Int, prominent: Bool = false) -> some View {
         let isActive = pending == value
+        let bg: Color = isActive ? orange.opacity(0.30)
+                       : prominent ? orange.opacity(0.15)
+                       : Color(white: 0.15)
+        let strokeColor: Color = isActive ? orange.opacity(0.7)
+                                : prominent ? orange.opacity(0.4)
+                                : .clear
         return Button { spreadBuffer = String(value) } label: {
             Text(title)
-                .font(.caption.weight(.medium))
+                .font(.caption.weight(prominent ? .bold : .medium))
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 8)
-                .background(isActive ? orange.opacity(0.30) : Color(white: 0.15))
+                .background(bg)
                 .foregroundColor(orange)
                 .cornerRadius(6)
                 .overlay(
                     RoundedRectangle(cornerRadius: 6)
-                        .stroke(isActive ? orange.opacity(0.7) : .clear, lineWidth: 1)
+                        .stroke(strokeColor, lineWidth: 1)
                 )
         }
         .buttonStyle(.plain)
+    }
+
+    /// Negative-offset chip that stays as an invisible placeholder when
+    /// `coupon - offset <= 0` (would clamp to 1 bp). The `.hidden()` modifier
+    /// preserves the row's grid alignment so other rows don't shift.
+    @ViewBuilder
+    private func negChip(label: String, offset: Int, coupon: Int, pending: Int) -> some View {
+        let v = coupon - offset
+        if v > 0 {
+            chip(label, value: v, pending: pending)
+        } else {
+            chip(label, value: -1, pending: pending).hidden()
+        }
     }
 
     private func keypadDigit(_ d: String) -> some View {
