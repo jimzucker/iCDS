@@ -298,6 +298,147 @@ class icdsTests: XCTestCase {
         XCTAssertNotNil(r, "2000bp distressed spread should produce a result")
     }
 
+    // MARK: - Spread ceiling (10000 bp = FeeView.maxSpreadBp)
+    //
+    // 10000 bp = 100%/yr — effectively default-certain over the contract life.
+    // The upfront should approach the loss-given-default ((1 - recovery) ×
+    // notional) discounted to PV, less the present value of the running
+    // coupon. For 5Y / 40% recovery / 4.5% flat discount, that's roughly
+    // 50% of notional. These tests pin down the math at the new ceiling
+    // and the round-trip behaviour the picker relies on.
+
+    func test10kSpreadProducesPositiveUpfront() {
+        let r = CDSCalculator.calculate(tradeDate: refDate, tenorYears: 5,
+                                        parSpreadBp: 10000, couponBp: 100,
+                                        recoveryRate: 0.40, notional: 10_000_000, isBuy: true)
+        XCTAssertNotNil(r, "10000bp ceiling spread must produce a result")
+        XCTAssertGreaterThan(r!.upfrontDollars, 0,
+                             "Buyer pays substantial upfront at 10000 bp on a 100 bp coupon")
+    }
+
+    func test10kSpreadUpfrontIsBoundedByLossGivenDefault() {
+        // upfront fraction cannot exceed (1 - recovery): you can never
+        // owe more than the loss-given-default at default certainty.
+        // Allow a 5% absolute margin for accrued / numerical slack.
+        let recovery = 0.40
+        let r = CDSCalculator.calculate(tradeDate: refDate, tenorYears: 5,
+                                        parSpreadBp: 10000, couponBp: 100,
+                                        recoveryRate: recovery, notional: 10_000_000, isBuy: true)!
+        XCTAssertLessThan(r.upfrontFraction, (1 - recovery) + 0.05,
+                          "Upfront fraction must not exceed loss-given-default")
+        XCTAssertGreaterThan(r.upfrontFraction, 0.30,
+                             "5Y at 10000 bp on 100 bp coupon should be a substantial fraction (>30%)")
+    }
+
+    func test10kSpreadRoundTrip() {
+        // Par spread back-calculated from a 10000 bp upfront should
+        // recover the 10000 bp input. Tight tolerance: 1 bp on $10M.
+        let r = CDSCalculator.calculate(tradeDate: refDate, tenorYears: 5,
+                                        parSpreadBp: 10000, couponBp: 100,
+                                        recoveryRate: 0.40, notional: 10_000_000, isBuy: true)!
+        XCTAssertEqual(r.parSpreadBp, 10000.0, accuracy: 1.0,
+                       "parSpread round-trip must recover 10000 bp at the cap")
+    }
+
+    func test10kSpreadBuySellSymmetric() {
+        let buy  = CDSCalculator.calculate(tradeDate: refDate, tenorYears: 5,
+                                           parSpreadBp: 10000, couponBp: 100,
+                                           recoveryRate: 0.40, notional: 10_000_000, isBuy: true)!
+        let sell = CDSCalculator.calculate(tradeDate: refDate, tenorYears: 5,
+                                           parSpreadBp: 10000, couponBp: 100,
+                                           recoveryRate: 0.40, notional: 10_000_000, isBuy: false)!
+        XCTAssertEqual(buy.upfrontDollars, -sell.upfrontDollars, accuracy: 1.0,
+                       "Buy and sell upfronts must be exact opposites at the 10000 bp ceiling")
+    }
+
+    // MARK: - Spread picker chip grid
+    //
+    // The Quoted Spread sheet exposes a 4 × 3 chip grid. For each chip we
+    // verify three things at once:
+    //   1. the calculator returns a result (no crash, no nil)
+    //   2. the directional sign matches the chip's relation to coupon
+    //      (below-par → buyer receives, at-par → ~$0, above-par → buyer pays)
+    //   3. parSpread round-trips back to the chip's bp value within 1 bp on
+    //      $10M, so the result panel's reported par spread agrees with what
+    //      the user picked
+
+    /// Walks every visible chip for the default 100 bp coupon (the picker's
+    /// initial state for NA SNAC) and checks calculator output and round-trip.
+    func testChipGridDefault100bpCoupon() {
+        let coupon = 100.0
+        // (bp value, expected upfront sign, chip label) — labels mirror FeeView
+        let chips: [(bp: Double, sign: Int, label: String)] = [
+            // Row 1 negatives: -200 and -100 are hidden for coupon=100 (would
+            // clamp to 1 bp and confuse). -50 is the only visible neg chip.
+            (50,    -1, "Coupon -50"),
+            // Row 2 near-par
+            (100,    0, "At Par"),
+            (150,   +1, "Coupon +50"),
+            (200,   +1, "Coupon +100"),
+            // Row 3 medium
+            (300,   +1, "Coupon +200"),
+            (600,   +1, "Coupon +500"),
+            (1100,  +1, "Coupon +1000"),
+            // Row 4 distressed
+            (2100,  +1, "Coupon +2000"),
+            (5100,  +1, "Coupon +5000"),
+            (10000, +1, "Max 10000"),
+        ]
+        var prevUpfront: Double = -.infinity
+        for spec in chips {
+            guard let r = CDSCalculator.calculate(tradeDate: refDate, tenorYears: 5,
+                                                  parSpreadBp: spec.bp, couponBp: coupon,
+                                                  recoveryRate: 0.40, notional: 10_000_000,
+                                                  isBuy: true) else {
+                XCTFail("\(spec.label) (\(spec.bp) bp): calculator returned nil")
+                continue
+            }
+            switch spec.sign {
+            case -1:
+                XCTAssertLessThan(r.upfrontDollars, -1.0,
+                                  "\(spec.label) (\(spec.bp) bp): buyer should receive (< -$1)")
+            case 0:
+                XCTAssertEqual(r.upfrontDollars, 0.0, accuracy: 1.0,
+                               "\(spec.label) (\(spec.bp) bp): at-par upfront must be ~$0 on $10M")
+            case 1:
+                XCTAssertGreaterThan(r.upfrontDollars, 1.0,
+                                     "\(spec.label) (\(spec.bp) bp): buyer should pay (> $1)")
+            default: break
+            }
+            XCTAssertEqual(r.parSpreadBp, spec.bp, accuracy: 1.0,
+                           "\(spec.label) (\(spec.bp) bp): parSpread round-trip mismatch")
+            XCTAssertGreaterThan(r.upfrontDollars, prevUpfront,
+                                 "\(spec.label) (\(spec.bp) bp): chip grid must be monotonic in upfront")
+            prevUpfront = r.upfrontDollars
+        }
+    }
+
+    /// With a 500 bp coupon the three below-par chips (-200, -100, -50) are
+    /// all visible. Each should produce a buyer-receives upfront of the right
+    /// magnitude ordering: -200 most negative, -50 least negative.
+    func testChipGridBelowParChipsHighCoupon() {
+        let coupon = 500.0
+        let chips: [(bp: Double, label: String)] = [
+            (300, "Coupon -200"),  // most below par → most buyer-receives
+            (400, "Coupon -100"),
+            (450, "Coupon -50"),   // least below par
+        ]
+        var prevUpfront: Double = -.infinity
+        for spec in chips {
+            let r = CDSCalculator.calculate(tradeDate: refDate, tenorYears: 5,
+                                            parSpreadBp: spec.bp, couponBp: coupon,
+                                            recoveryRate: 0.40, notional: 10_000_000,
+                                            isBuy: true)!
+            XCTAssertLessThan(r.upfrontDollars, -1.0,
+                              "\(spec.label) (\(spec.bp) bp): buyer should receive on a 500 bp coupon")
+            XCTAssertGreaterThan(r.upfrontDollars, prevUpfront,
+                                 "\(spec.label) (\(spec.bp) bp): below-par chips must be monotonic")
+            prevUpfront = r.upfrontDollars
+            XCTAssertEqual(r.parSpreadBp, spec.bp, accuracy: 1.0,
+                           "\(spec.label) (\(spec.bp) bp): parSpread round-trip mismatch")
+        }
+    }
+
     func testNearZeroSpreadProducesResult() {
         let r = CDSCalculator.calculate(tradeDate: refDate, tenorYears: 5,
                                         parSpreadBp: 1, couponBp: 100,
