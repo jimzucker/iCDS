@@ -139,8 +139,11 @@ struct CDSCalculator {
         let bp           = signed * 10_000.0
         let price        = (1.0 - signed) * 100.0
 
-        // Accrued shown separately: days from previous IMM to trade date × coupon
-        let accrualDays  = Double(today - startDate)
+        // Accrued shown separately: days from previous IMM to stepinDate
+        // (T+1 calendar) × coupon. SNAC convention: accrued endpoint is
+        // stepinDate, not the trade date. The C library uses stepinDate
+        // internally too — see the call to JpmcdsCdsoneUpfrontCharge above.
+        let accrualDays  = Double(stepinDate - startDate)
         let accrued      = (couponBp / 10_000.0) * (accrualDays / 360.0) * notional
 
         // Back-calculate par spread from the actual clean upfront → round-trip of input spread

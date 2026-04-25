@@ -453,6 +453,26 @@ class icdsTests: XCTestCase {
         XCTAssertGreaterThanOrEqual(r.accrued, 0)
     }
 
+    /// SNAC convention pin: accrued endpoint is stepinDate (T+1 calendar),
+    /// not T. This regression test guards against re-introducing the
+    /// off-by-one that historically displayed (T - prevIMM) days instead
+    /// of (stepinDate - prevIMM) days.
+    ///
+    /// For refDate = 2024-04-15 (Mon):
+    ///   stepinDate    = 2024-04-16 (T + 1 calendar)
+    ///   prevIMM       = 2024-03-20
+    ///   day count ACT = 27 days
+    ///   accrued       = $10M × 1% × 27/360 = $7,500
+    func testAccruedUsesStepinDateNotTradeDate() {
+        let r = CDSCalculator.calculate(tradeDate: refDate, tenorYears: 5,
+                                        parSpreadBp: 100, couponBp: 100,
+                                        recoveryRate: 0.40, notional: 10_000_000, isBuy: true)!
+        let expected = 10_000_000.0 * 0.01 * 27.0 / 360.0
+        XCTAssertEqual(r.accrued, expected, accuracy: 0.01,
+                       "Accrued must be (stepinDate - prevIMM)/360 × coupon × notional, "
+                       + "= 27/360 days for refDate. Off-by-one if it equals $7,222.22 (= 26 days, T-prevIMM).")
+    }
+
     func testPriceRangeReasonable() {
         for spread in [50.0, 100.0, 200.0, 500.0, 1000.0] {
             let r = CDSCalculator.calculate(tradeDate: refDate, tenorYears: 5,
