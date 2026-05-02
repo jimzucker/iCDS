@@ -1,17 +1,23 @@
-# iCDS Credit Default Swap Calculator
-
 <p align="center">
   <img width="180" height="180" src="images/512_iCDS_Icon.png">
 </p>
 
-**iCDS** is a SNAC (Standard North American CDS) upfront fee calculator built on the [ISDA Standard CDS Model](https://www.cdsmodel.com). It mirrors the indicative-pricing workflow found on the [Markit Partners CDS calculator](https://www.markit.com/cds).
+**iCDS** is a SNAC (Standard North American CDS) upfront fee calculator built on the [ISDA Standard CDS Model](https://www.cdsmodel.com). It mirrors the indicative-pricing workflow originally found on the Markit Partners CDS calculator.
 
 The app is free. Its only objective is for the author to have a non-trivial application in the iPhone App Store.
 
 It recalculates the upfront fee and intermediate results live as you change inputs — using quick-entry controls or the pickers reached by tapping the input buttons.
 
-## Background 
-<img width="292" height="500" align="right" src="images/JPEG_iCDSWikiScreenShoot.jpg">
+## Background
+
+<style>
+.bg-screenshot { float: right; max-width: 292px; height: auto; margin: 0 0 1em 1.5em; }
+@media (max-width: 720px) {
+  .bg-screenshot { float: none; display: block; margin: 1em auto; max-width: 70%; }
+}
+</style>
+
+<img class="bg-screenshot" src="images/JPEG_iCDSWikiScreenShoot.jpg" width="292" height="500">
 
 I started this project when as a 'former' Mac developer I was swept up by the excitement of the iPhone App phenomenon. This led me to a drive to get a non-trivial application into the App Store. I convinced my family to buy me a MacBookPro for my birthday in Sept, 2009 and about 20 hours of effort latter I had my first GUI prototype running on the simulator.
 
