@@ -8,6 +8,41 @@
 
 import Foundation
 import Combine
+import StoreKit
+import UIKit
+
+// Tracks "successful pricing sessions" across launches and asks the system
+// to show the App Store review prompt at a tasteful threshold. Apple itself
+// rate-limits requestReview to 3 times per 365 days regardless of how often
+// it's called, so we just ask once when the counter first crosses the bar.
+private enum AppReviewPrompter {
+    private static let countKey = "iCDS.successfulSessions"
+    private static let promptThreshold = 5
+    private static var sessionRecorded = false
+
+    static func recordSuccessfulCalculation() {
+        guard !sessionRecorded else { return }
+        sessionRecorded = true
+
+        let defaults = UserDefaults.standard
+        let count = defaults.integer(forKey: countKey) + 1
+        defaults.set(count, forKey: countKey)
+
+        if count == promptThreshold {
+            requestReviewSoon()
+        }
+    }
+
+    private static func requestReviewSoon() {
+        Task { @MainActor in
+            try? await Task.sleep(nanoseconds: 1_000_000_000)
+            guard let scene = UIApplication.shared.connectedScenes
+                .first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene
+            else { return }
+            SKStoreReviewController.requestReview(in: scene)
+        }
+    }
+}
 
 final class FeeViewModel: ObservableObject {
 
@@ -172,6 +207,9 @@ final class FeeViewModel: ObservableObject {
             discountRate: discountRate,
             minSettle:    Date()
         )
+        if result != nil {
+            AppReviewPrompter.recordSuccessfulCalculation()
+        }
     }
 
     /// Recompute upfront for a hypothetical spread without committing it.
