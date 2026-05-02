@@ -25,6 +25,13 @@ For support please create a ticket at: https://github.com/jimzucker/iCDS/issues
 
 # Release Notes
 
+## 3.0.1
+- Apache 2.0 source license headers and full third-party attribution (ISDA model, central-bank rate sources)
+- Expanded in-app disclaimers (not financial advice, AS IS, no liability, no affiliation)
+- Working in-app links to the Apache 2.0 license and the documentation site
+- "Documentation & Source" button on the Info screen
+- GitHub Pages site for README and journal, with cleaned-up image links
+
 ## 3.0
 - Live overnight reference rate curves from five central banks: USD SOFR, EUR €STR, GBP SONIA, JPY TONA (monthly proxy), AUD AONIA
 - ISDA CDS Standard Model C library upgraded to v1.8.3 with full IR zero curve construction
