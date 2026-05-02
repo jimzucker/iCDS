@@ -776,6 +776,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				DEVELOPMENT_TEAM = 583XUQ99J6;
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/icds/isdamodel/include/isda",
 					"$(SRCROOT)/icds/isdamodel/include",
@@ -799,6 +800,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				DEVELOPMENT_TEAM = 583XUQ99J6;
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/icds/isdamodel/include/isda",
 					"$(SRCROOT)/icds/isdamodel/include",

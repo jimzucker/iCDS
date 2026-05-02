@@ -1,16 +1,23 @@
 # iCDS Credit Default Swap Calculator
-<img width="200" height="200" align="left" src="https://github.com/jimzucker/iCDS/blob/master/images/512_iCDS_Icon.jpg">
 
-The 1.0 version of the application will implement a SNAC(Standard North American CDS), upfront fee calculator using the ISDA Standard CDS Model, www.cdsmodel.com and based on the functionality found on the MarkIt partners website, www.markit.com/cds. The applications free. Its only objective is for the author to have a non-trivial application in the iPhone AppStore. The approach of the application is to recalculate the upfront fee and intermediate results and display them as the user changes outputs using the quick entry controls or the pickers accessed by pressing the buttons displaying the inputs. Copyright 2009-2015.
+<p align="center">
+  <img width="180" height="180" src="images/512_iCDS_Icon.png">
+</p>
+
+**iCDS** is a SNAC (Standard North American CDS) upfront fee calculator built on the [ISDA Standard CDS Model](https://www.cdsmodel.com). It mirrors the indicative-pricing workflow found on the [Markit Partners CDS calculator](https://www.markit.com/cds).
+
+The app is free. Its only objective is for the author to have a non-trivial application in the iPhone App Store.
+
+It recalculates the upfront fee and intermediate results live as you change inputs — using quick-entry controls or the pickers reached by tapping the input buttons.
 
 ## Background 
-<img width="292" height="500" align="right" src="https://github.com/jimzucker/iCDS/blob/master/images/JPEG_iCDSWikiScreenShoot.jpg">
+<img width="292" height="500" align="right" src="images/JPEG_iCDSWikiScreenShoot.jpg">
 
 I started this project when as a 'former' Mac developer I was swept up by the excitement of the iPhone App phenomenon. This led me to a drive to get a non-trivial application into the App Store. I convinced my family to buy me a MacBookPro for my birthday in Sept, 2009 and about 20 hours of effort latter I had my first GUI prototype running on the simulator.
 
 Along the way I have learned a lot about the rich environment of information sharing now happening in the development community. I was re-introduced to the Apple Development Tools (XCode) and the Snow Leopard OS. Not having touched MPW(Macintosh Programmers Workshop) in over 15 years, it was like I never left home with the added power of the underlying LINUX environment that I am well versed in using every day at work. I then was introduced to new resources including ITunes U, blogs and code.google.com.
 
-###  [Read my Journal here](https://github.com/jimzucker/iCDS/blob/master/Article_Build_Iphone.md)
+###  [Read my Journal here](https://jimzucker.github.io/iCDS/Article_Build_Iphone.html)
 
 ## Feedback 
 Please post feedback to ITunes!
@@ -18,3 +25,15 @@ For support please create a ticket at: https://github.com/jimzucker/iCDS/issues
 
 # Release Notes
 1.0 SNAC(Standard North American CDS), upfront fee calculator using the ISDA Standard CDS Model
+
+## License
+Copyright © 2016-2026 James A. Zucker.
+
+iCDS application source code is licensed under the **Apache License, Version 2.0** — see [LICENSE](LICENSE) or <https://www.apache.org/licenses/LICENSE-2.0>.
+
+### Third-party components
+- **ISDA CDS Standard Model** (C library, `icds/isdamodel/`) — © 2009 International Swaps and Derivatives Association, Inc. Licensed under the ISDA CDS Standard Model Public License — see [Licenses/ISDA_CDS_Standard_Model_Public_Licence_1.0.txt](Licenses/ISDA_CDS_Standard_Model_Public_Licence_1.0.txt). Available at <https://www.cdsmodel.com>.
+- **Reference rates** are fetched live from public central-bank endpoints (NY Fed, ECB, BoE, FRED/St. Louis Fed, RBA) and used for indicative pricing only.
+
+### Disclaimer
+This app produces indicative pricing for educational purposes only. It is not financial, investment, or trading advice, is provided **AS IS** without warranty, and is not suitable for booking, settlement, or trading. Not affiliated with ISDA, Markit, JPMorgan Chase, or any rate provider.

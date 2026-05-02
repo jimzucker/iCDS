@@ -13,7 +13,6 @@ exclude:
   - icds.xcodeproj/
   - icdsTests/
   - icdsUITests/
-  - images/
   - .claude/
   - .github/
   - "*.xcprivacy"

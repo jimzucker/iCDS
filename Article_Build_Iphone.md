@@ -1,7 +1,13 @@
+---
+layout: default
+title: "iCDS Journal — Building an iPhone App"
+description: "Jim Zucker's journal building the iCDS app, Sept 2009 — Feb 2010."
+---
+
 # What does it take to build an iphone app?
 Jim Zucker, September 2009 to Feb 2010
 
-<img width="225" height="225" align="left" src="https://github.com/jimzucker/iCDS/blob/master/images/512_iCDS_Icon.jpg">
+<img width="225" height="225" align="left" src="images/512_iCDS_Icon.png">
 
 It took me about $2,427 bucks, over 5 months and 134 hours of my time. 
 
