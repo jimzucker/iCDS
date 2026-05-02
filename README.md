@@ -24,7 +24,18 @@ Please post feedback to ITunes!
 For support please create a ticket at: https://github.com/jimzucker/iCDS/issues
 
 # Release Notes
-1.0 SNAC(Standard North American CDS), upfront fee calculator using the ISDA Standard CDS Model
+
+## 3.0
+- Live overnight reference rate curves from five central banks: USD SOFR, EUR €STR, GBP SONIA, JPY TONA (monthly proxy), AUD AONIA
+- ISDA CDS Standard Model C library upgraded to v1.8.3 with full IR zero curve construction
+- Six regional ISDA contracts: NA, EM, EU, Asia, Japan, AUS
+- Rewritten UI in SwiftUI (Fee, Curves, Info tabs); spread input via preset chips + numeric keypad; spread cap raised to 10,000 bp
+- ISDA RFR test grid validation across all five currencies
+- Apache 2.0 source license; in-app disclaimers and full data attributions
+- GitHub Pages site for README and journal
+
+## 1.0
+- SNAC (Standard North American CDS) upfront fee calculator using the ISDA Standard CDS Model
 
 ## License
 Copyright © 2016-2026 James A. Zucker.
