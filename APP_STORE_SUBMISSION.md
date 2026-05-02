@@ -47,6 +47,7 @@ Source code: Apache 2.0. Pricing engine: ISDA CDS Standard Model Public License 
 
 • Rebuilt UI in SwiftUI — clearer layout and faster interaction
 • Updated for iOS 16 and current iPhone/iPad models
+• Refreshed app icon
 • Live overnight reference rates from five central banks
    (USD SOFR, EUR €STR, GBP SONIA, JPY TONA, AUD AONIA)
 • Six regional contracts: NA, EM, EU, Asia, Japan, AUS

@@ -30,6 +30,7 @@ For support please create a ticket at: https://github.com/jimzucker/iCDS/issues
 - Expanded in-app disclaimers (not financial advice, AS IS, no liability, no affiliation)
 - Working in-app links to the Apache 2.0 license and the documentation site
 - "Documentation & Source" button on the Info screen
+- Refreshed app icon
 - GitHub Pages site for README and journal, with cleaned-up image links
 
 ## 3.0
