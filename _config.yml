@@ -27,3 +27,4 @@ exclude:
   - Gemfile.lock
   - LICENSE
   - CLAUDE.md
+  - APP_STORE_SUBMISSION.md

@@ -1,3 +1,9 @@
+---
+layout: default
+title: "iCDS Privacy Policy"
+description: "iCDS does not collect, store, or transmit any personal information."
+---
+
 # Privacy Policy
 
 **Effective date:** April 25, 2026
