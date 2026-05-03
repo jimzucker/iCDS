@@ -1,0 +1,124 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1350" width="1080" height="1350" preserveAspectRatio="xMidYMid meet">
+<defs>
+<radialGradient id="glow" cx="26%" cy="52%" r="55%"><stop offset="0%" stop-color="#3D2008" stop-opacity="0.6"/><stop offset="60%" stop-color="#1A0E05" stop-opacity="0.25"/><stop offset="100%" stop-color="#000000" stop-opacity="0"/></radialGradient>
+</defs>
+<rect x="0" y="0" width="1080" height="1350" fill="#000000"/>
+<rect x="0" y="0" width="1080" height="1350" fill="url(#glow)"/>
+<rect x="50" y="90" width="430" height="985" rx="58" ry="58" fill="#121214" stroke="#3C3C40" stroke-width="3" />
+<rect x="56" y="96" width="418" height="973" rx="52" ry="52" fill="none" stroke="#23232A" stroke-width="2" />
+<rect x="62" y="102" width="406" height="961" rx="44" ry="44" fill="#000000" />
+<rect x="210" y="118" width="110" height="30" rx="15" ry="15" fill="#080808" />
+<text x="90" y="120" font-family="Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="18" font-weight="700" fill="#F0F0F0" text-anchor="start" dominant-baseline="text-before-edge">10:21</text>
+<rect x="414" y="124" width="26" height="12" rx="3" ry="3" fill="none" stroke="#DCDCDC" stroke-width="1" />
+<rect x="416" y="126" width="21" height="8" fill="#DCDCDC"/>
+<rect x="440" y="128" width="2" height="4" fill="#DCDCDC"/>
+<path d="M 383.34 131.00 A 10 10 0 0 1 400.66 131.00" fill="none" stroke="#DCDCDC" stroke-width="2" stroke-linecap="round"/>
+<path d="M 385.94 132.50 A 7 7 0 0 1 398.06 132.50" fill="none" stroke="#DCDCDC" stroke-width="2" stroke-linecap="round"/>
+<path d="M 388.54 134.00 A 4 4 0 0 1 395.46 134.00" fill="none" stroke="#DCDCDC" stroke-width="2" stroke-linecap="round"/>
+<circle cx="392" cy="136" r="1.5" fill="#DCDCDC"/>
+<text x="78" y="162" font-family="Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#9B9BA0" text-anchor="start" dominant-baseline="text-before-edge">Discount:</text>
+<circle cx="153" cy="172" r="5" fill="#3CD782"/>
+<text x="164" y="162" font-family="Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="13" font-weight="700" fill="#F0F0F0" text-anchor="start" dominant-baseline="text-before-edge">SOFR 3.6600%</text>
+<text x="266" y="162" font-family="Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#9B9BA0" text-anchor="start" dominant-baseline="text-before-edge">· 30-Apr-26</text>
+<text x="78" y="190" font-family="Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#9B9BA0" text-anchor="start" dominant-baseline="text-before-edge">Region</text>
+<rect x="78" y="208" width="51" height="30" rx="12" ry="12" fill="#FF8A1E" />
+<text x="103.5" y="223.0" font-family="Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="13" font-weight="900" fill="#0F0F0F" text-anchor="middle" dominant-baseline="central">NA</text>
+<rect x="133" y="208" width="51" height="30" rx="12" ry="12" fill="#2D2D30" />
+<text x="158.5" y="223.0" font-family="Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="13" font-weight="900" fill="#F0F0F0" text-anchor="middle" dominant-baseline="central">EM</text>
+<rect x="188" y="208" width="46" height="30" rx="12" ry="12" fill="#2D2D30" />
+<text x="211.0" y="223.0" font-family="Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="13" font-weight="900" fill="#F0F0F0" text-anchor="middle" dominant-baseline="central">EU</text>
+<rect x="238" y="208" width="64" height="30" rx="12" ry="12" fill="#2D2D30" />
+<text x="270.0" y="223.0" font-family="Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="13" font-weight="900" fill="#F0F0F0" text-anchor="middle" dominant-baseline="central">Asia</text>
+<rect x="306" y="208" width="72" height="30" rx="12" ry="12" fill="#2D2D30" />
+<text x="342.0" y="223.0" font-family="Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="13" font-weight="900" fill="#F0F0F0" text-anchor="middle" dominant-baseline="central">Japan</text>
+<rect x="382" y="208" width="70" height="30" rx="12" ry="12" fill="#2D2D30" />
+<text x="417.0" y="223.0" font-family="Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="13" font-weight="900" fill="#F0F0F0" text-anchor="middle" dominant-baseline="central">AUS</text>
+<text x="78" y="252" font-family="Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#9B9BA0" text-anchor="start" dominant-baseline="text-before-edge">Buy / Sell</text>
+<text x="271" y="252" font-family="Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#9B9BA0" text-anchor="start" dominant-baseline="text-before-edge">Recovery  40%</text>
+<rect x="78" y="270" width="181" height="30" rx="15" ry="15" fill="#18181A" />
+<rect x="80" y="272" width="88" height="26" rx="14" ry="14" fill="#2D2D30" />
+<text x="123.0" y="285" font-family="Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="13" font-weight="900" fill="#F0F0F0" text-anchor="middle" dominant-baseline="central">Buy</text>
+<text x="213.0" y="285" font-family="Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="13" font-weight="900" fill="#F0F0F0" text-anchor="middle" dominant-baseline="central">Sell</text>
+<rect x="271" y="270" width="181" height="30" rx="15" ry="15" fill="#18181A" />
+<rect x="273" y="272" width="88" height="26" rx="14" ry="14" fill="#2D2D30" />
+<text x="316.0" y="285" font-family="Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="13" font-weight="900" fill="#F0F0F0" text-anchor="middle" dominant-baseline="central">SEN</text>
+<text x="406.0" y="285" font-family="Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="13" font-weight="900" fill="#F0F0F0" text-anchor="middle" dominant-baseline="central">SUB</text>
+<text x="78" y="314" font-family="Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#9B9BA0" text-anchor="start" dominant-baseline="text-before-edge">Maturity</text>
+<rect x="78" y="332" width="374" height="30" rx="15" ry="15" fill="#18181A" />
+<text x="123.0" y="347.0" font-family="Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="13" font-weight="900" fill="#F0F0F0" text-anchor="middle" dominant-baseline="central">1Y</text>
+<rect x="174" y="334" width="86" height="26" rx="14" ry="14" fill="#2D2D30" />
+<text x="217.0" y="347.0" font-family="Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="13" font-weight="900" fill="#F0F0F0" text-anchor="middle" dominant-baseline="central">5Y</text>
+<text x="311.0" y="347.0" font-family="Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="13" font-weight="900" fill="#F0F0F0" text-anchor="middle" dominant-baseline="central">7Y</text>
+<text x="405.0" y="347.0" font-family="Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="13" font-weight="900" fill="#F0F0F0" text-anchor="middle" dominant-baseline="central">10Y</text>
+<text x="78" y="376" font-family="Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#9B9BA0" text-anchor="start" dominant-baseline="text-before-edge">Coupon (bp)</text>
+<text x="271" y="376" font-family="Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#9B9BA0" text-anchor="start" dominant-baseline="text-before-edge">Notional</text>
+<rect x="78" y="394" width="181" height="30" rx="15" ry="15" fill="#18181A" />
+<rect x="80" y="396" width="88" height="26" rx="14" ry="14" fill="#2D2D30" />
+<text x="123.0" y="409" font-family="Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="13" font-weight="900" fill="#F0F0F0" text-anchor="middle" dominant-baseline="central">100</text>
+<text x="213.0" y="409" font-family="Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="13" font-weight="900" fill="#F0F0F0" text-anchor="middle" dominant-baseline="central">500</text>
+<rect x="271" y="394" width="181" height="30" rx="15" ry="15" fill="#18181A" />
+<text x="293.5" y="409.0" font-family="Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="12" font-weight="900" fill="#F0F0F0" text-anchor="middle" dominant-baseline="central">1M</text>
+<text x="338.5" y="409.0" font-family="Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="12" font-weight="900" fill="#F0F0F0" text-anchor="middle" dominant-baseline="central">5M</text>
+<rect x="363" y="396" width="41" height="26" rx="14" ry="14" fill="#2D2D30" />
+<text x="383.5" y="409.0" font-family="Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="12" font-weight="900" fill="#F0F0F0" text-anchor="middle" dominant-baseline="central">10M</text>
+<text x="428.5" y="409.0" font-family="Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="12" font-weight="900" fill="#F0F0F0" text-anchor="middle" dominant-baseline="central">20M</text>
+<rect x="78" y="440" width="181" height="96" rx="14" ry="14" fill="#281402" stroke="#FF6E00" stroke-width="2" />
+<text x="92" y="450" font-family="Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="11" font-weight="700" fill="#DCB482" text-anchor="start" dominant-baseline="text-before-edge">QUOTED SPREAD · tap</text>
+<text x="100" y="472" font-family="Poppins, Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="38" font-weight="700" fill="#FF8A1E" text-anchor="start" dominant-baseline="text-before-edge">150</text>
+<text x="174" y="496" font-family="Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="16" font-weight="700" fill="#FF8A1E" text-anchor="start" dominant-baseline="text-before-edge">bp</text>
+<line x1="208" y1="512" x2="222" y2="498" stroke="#FF8A1E" stroke-width="3" stroke-linecap="round"/>
+<polygon points="222,498 226,502 212,516 208,512" fill="#FF8A1E"/>
+<rect x="271" y="440" width="181" height="96" rx="14" ry="14" fill="#F5E84A" />
+<text x="285" y="450" font-family="Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="11" font-weight="700" fill="#3C3200" text-anchor="start" dominant-baseline="text-before-edge">BUYER PAYS</text>
+<text x="285" y="472" font-family="Poppins, Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="28" font-weight="700" fill="#141414" text-anchor="start" dominant-baseline="text-before-edge">$222,234</text>
+<rect x="78" y="548" width="181" height="50" rx="12" ry="12" fill="#18181A" stroke="#FF6E00" stroke-width="2" />
+<text x="90" y="555" font-family="Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#9B9BA0" text-anchor="start" dominant-baseline="text-before-edge">Trade Date · tap to pick</text>
+<text x="90" y="570" font-family="'Liberation Mono', Menlo, Monaco, Consolas, monospace" font-size="16" font-weight="700" fill="#FF8A1E" text-anchor="start" dominant-baseline="text-before-edge">01-May-26</text>
+<rect x="271" y="548" width="181" height="50" rx="12" ry="12" fill="#18181A" />
+<text x="283" y="555" font-family="Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#9B9BA0" text-anchor="start" dominant-baseline="text-before-edge">Settle Date</text>
+<text x="283" y="570" font-family="'Liberation Mono', Menlo, Monaco, Consolas, monospace" font-size="16" font-weight="700" fill="#FF8A1E" text-anchor="start" dominant-baseline="text-before-edge">04-May-26</text>
+<rect x="78" y="606" width="181" height="50" rx="12" ry="12" fill="#18181A" />
+<text x="90" y="613" font-family="Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#9B9BA0" text-anchor="start" dominant-baseline="text-before-edge">Par Spread</text>
+<text x="90" y="628" font-family="'Liberation Mono', Menlo, Monaco, Consolas, monospace" font-size="16" font-weight="700" fill="#FF8A1E" text-anchor="start" dominant-baseline="text-before-edge">150  bp</text>
+<rect x="271" y="606" width="181" height="50" rx="12" ry="12" fill="#18181A" />
+<text x="283" y="613" font-family="Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#9B9BA0" text-anchor="start" dominant-baseline="text-before-edge">Upfront</text>
+<text x="283" y="628" font-family="'Liberation Mono', Menlo, Monaco, Consolas, monospace" font-size="16" font-weight="700" fill="#FF8A1E" text-anchor="start" dominant-baseline="text-before-edge">222.2 bp</text>
+<rect x="78" y="664" width="181" height="50" rx="12" ry="12" fill="#18181A" />
+<text x="90" y="671" font-family="Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#9B9BA0" text-anchor="start" dominant-baseline="text-before-edge">Accrued</text>
+<text x="90" y="686" font-family="'Liberation Mono', Menlo, Monaco, Consolas, monospace" font-size="16" font-weight="700" fill="#FF8A1E" text-anchor="start" dominant-baseline="text-before-edge">$11,944</text>
+<rect x="271" y="664" width="181" height="50" rx="12" ry="12" fill="#18181A" />
+<text x="283" y="671" font-family="Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#9B9BA0" text-anchor="start" dominant-baseline="text-before-edge">Price</text>
+<text x="283" y="686" font-family="'Liberation Mono', Menlo, Monaco, Consolas, monospace" font-size="16" font-weight="700" fill="#FF8A1E" text-anchor="start" dominant-baseline="text-before-edge">97.7777</text>
+<rect x="78" y="722" width="181" height="50" rx="12" ry="12" fill="#18181A" />
+<text x="90" y="729" font-family="Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#9B9BA0" text-anchor="start" dominant-baseline="text-before-edge">Start</text>
+<text x="90" y="744" font-family="'Liberation Mono', Menlo, Monaco, Consolas, monospace" font-size="16" font-weight="700" fill="#FF8A1E" text-anchor="start" dominant-baseline="text-before-edge">20-Mar-26</text>
+<rect x="271" y="722" width="181" height="50" rx="12" ry="12" fill="#18181A" />
+<text x="283" y="729" font-family="Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#9B9BA0" text-anchor="start" dominant-baseline="text-before-edge">Maturity</text>
+<text x="283" y="744" font-family="'Liberation Mono', Menlo, Monaco, Consolas, monospace" font-size="16" font-weight="700" fill="#FF8A1E" text-anchor="start" dominant-baseline="text-before-edge">20-Jun-31</text>
+<rect x="102" y="993" width="326" height="44" rx="22" ry="22" fill="#1C1C1E" />
+<rect x="108" y="997" width="76" height="36" rx="18" ry="18" fill="#32240E" />
+<text x="132" y="1007" font-family="Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="13" font-weight="700" fill="#FF8A1E" text-anchor="start" dominant-baseline="text-before-edge">Fee</text>
+<text x="222" y="1007" font-family="Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#F0F0F0" text-anchor="start" dominant-baseline="text-before-edge">Curves</text>
+<text x="368" y="1007" font-family="Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#F0F0F0" text-anchor="start" dominant-baseline="text-before-edge">Info</text>
+<rect x="215" y="1049" width="100" height="4" rx="2" ry="2" fill="#787878" />
+<circle cx="535" cy="254" r="5" fill="#3CD782"/>
+<text x="548" y="240" font-family="Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="16" font-weight="700" fill="#C8C8CD" text-anchor="start" dominant-baseline="text-before-edge">iCDS 3.0.1  ·  LIVE</text>
+<text x="530" y="296" font-family="Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="64" font-weight="900" fill="#F0F0F0" text-anchor="start" dominant-baseline="text-before-edge">REBUILT</text>
+<text x="530" y="366" font-family="Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="64" font-weight="900" fill="#F0F0F0" text-anchor="start" dominant-baseline="text-before-edge">IN A</text>
+<text x="672" y="366" font-family="Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="64" font-weight="900" fill="#FF8A1E" text-anchor="start" dominant-baseline="text-before-edge">WEEKEND.</text>
+<text x="530" y="462" font-family="Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="96" font-weight="900" fill="#FF8A1E" text-anchor="start" dominant-baseline="text-before-edge">0</text>
+<text x="608" y="476" font-family="Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="30" font-weight="900" fill="#F0F0F0" text-anchor="start" dominant-baseline="text-before-edge">lines of iOS code</text>
+<text x="608" y="512" font-family="Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="30" font-weight="900" fill="#F0F0F0" text-anchor="start" dominant-baseline="text-before-edge">I wrote myself.</text>
+<rect x="530" y="592" width="500" height="200" rx="18" ry="18" fill="#141416" stroke="#323236" stroke-width="2" />
+<text x="552" y="610" font-family="Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="13" font-weight="700" fill="#9B9BA0" text-anchor="start" dominant-baseline="text-before-edge">THEN  (2009)</text>
+<text x="552" y="640" font-family="Poppins, Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="22" font-weight="700" fill="#5F5F65" text-anchor="start" dominant-baseline="text-before-edge">134 hrs</text>
+<text x="552" y="682" font-family="Poppins, Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="22" font-weight="700" fill="#5F5F65" text-anchor="start" dominant-baseline="text-before-edge">$2,427</text>
+<text x="552" y="734" font-family="Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#9B9BA0" text-anchor="start" dominant-baseline="text-before-edge">UIKit · weeks</text>
+<line x1="776" y1="614" x2="776" y2="770" stroke="#323236" stroke-width="1" stroke-linecap="round"/>
+<text x="791" y="610" font-family="Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="13" font-weight="700" fill="#FF8A1E" text-anchor="start" dominant-baseline="text-before-edge">NOW  (2026)</text>
+<text x="791" y="634" font-family="Poppins, Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="32" font-weight="700" fill="#FF8A1E" text-anchor="start" dominant-baseline="text-before-edge">a few hrs</text>
+<text x="791" y="678" font-family="Poppins, Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="32" font-weight="700" fill="#FF8A1E" text-anchor="start" dominant-baseline="text-before-edge">$100</text>
+<text x="791" y="734" font-family="Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="13" font-weight="500" fill="#9B9BA0" text-anchor="start" dominant-baseline="text-before-edge">SwiftUI · Claude Code</text>
+<text x="530" y="824" font-family="'Liberation Mono', Menlo, Monaco, Consolas, monospace" font-size="17" font-weight="700" fill="#B4B4B9" text-anchor="start" dominant-baseline="text-before-edge">jimzucker.github.io/iCDS</text>
+<text x="530" y="850" font-family="'Liberation Mono', Menlo, Monaco, Consolas, monospace" font-size="12" font-weight="400" fill="#5F5F65" text-anchor="start" dominant-baseline="text-before-edge">Source: github.com/jimzucker/iCDS  ·  Apache 2.0</text>
+</svg>
