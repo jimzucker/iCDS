@@ -102,33 +102,38 @@ class _CurvesTabState extends State<CurvesTab> {
         child: Column(
           children: [
             const SizedBox(height: 16),
-            Stack(
-              alignment: Alignment.center,
-              children: [
-                const Text(
-                  'Reference Rates',
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: AppTheme.orange,
+            // Title row: full-width so the refresh icon sits flush to the
+            // right edge instead of overlapping the centered title text.
+            SizedBox(
+              width: double.infinity,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  const Text(
+                    'Reference Rates',
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: AppTheme.orange,
+                    ),
                   ),
-                ),
-                Positioned(
-                  right: 16,
-                  child: IconButton(
-                    tooltip: 'Refresh all currencies',
-                    icon: _refreshing
-                        ? const SizedBox(
-                            width: 18, height: 18,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2, color: AppTheme.orange,
-                            ),
-                          )
-                        : const Icon(Icons.refresh, color: AppTheme.orange),
-                    onPressed: _refreshing ? null : _refresh,
+                  Positioned(
+                    right: 16,
+                    child: IconButton(
+                      tooltip: 'Refresh all currencies',
+                      icon: _refreshing
+                          ? const SizedBox(
+                              width: 18, height: 18,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2, color: AppTheme.orange,
+                              ),
+                            )
+                          : const Icon(Icons.refresh, color: AppTheme.orange),
+                      onPressed: _refreshing ? null : _refresh,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
             const SizedBox(height: 4),
             const Text(
