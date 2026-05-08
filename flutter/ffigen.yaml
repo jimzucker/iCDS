@@ -1,0 +1,15 @@
+# Run with `dart run ffigen --config ffigen.yaml`.
+name: IcdsSpikeBindings
+description: |
+  Bindings for `src/icds_spike.h`.
+
+  Regenerate bindings with `dart run ffigen --config ffigen.yaml`.
+output: 'lib/icds_spike_bindings_generated.dart'
+headers:
+  entry-points:
+    - 'src/icds_spike.h'
+  include-directives:
+    - 'src/icds_spike.h'
+comments:
+  style: any
+  length: full
