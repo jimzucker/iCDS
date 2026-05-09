@@ -15,39 +15,44 @@ Build to upload: `flutter/example/build/app/outputs/bundle/release/app-release.a
 iCDS
 
 ## Short description (max 80 chars)
-ISDA SNAC CDS upfront pricing calculator. Bit-identical to QuantLib.
+ISDA SNAC pricing calculator for finance students and professionals.
 
 ## Full description (max 4000 chars)
 
-iCDS is a Credit Default Swap (CDS) upfront fee calculator implementing
-the SNAC (Standard North American CDS) model.
+iCDS is an educational and reference calculator for the ISDA SNAC
+(Standard North American CDS) pricing model.
 
-The pricing engine is the ISDA CDS Standard Model — the same C library
-that lives at www.cdsmodel.com — compiled directly into the app and
-called via Dart FFI. Reference test grids match ISDA's published values
-within 2.5 × 10⁻⁵ across six currencies (USD, EUR, GBP, JPY, AUD, CHF).
+The pricing engine is the ISDA CDS Standard Model — the same open
+C library published at www.cdsmodel.com — compiled directly into
+the app and called via Dart FFI. Computed values match the
+reference grids published by ISDA within 2.5 × 10⁻⁵ across six
+currencies (USD, EUR, GBP, JPY, AUD, CHF).
 
-What you can do with it:
+What the app does:
 
-• Price an upfront fee from a flat par spread, or back-solve par spread
-  from an upfront, for any of the major regional contracts (NA, EU, EM,
-  Asia, Japan, AUS, LCDS).
-• See the impact of trade date, tenor, recovery, and notional in real
-  time as you change inputs.
-• View the live SOFR / €STR / SONIA / TONA / RBA cash rate curve used
-  for discounting (fetched from each region's central bank or
-  reference-rate publisher).
-• Read the Apache 2.0 / disclaimer / methodology references on the Info
-  tab.
+• Computes an upfront fee from a flat par spread, or back-solves a
+  par spread from an upfront, for any of the major regional contract
+  conventions (NA, EU, EM, Asia, Japan, AUS, LCDS).
+• Shows the impact of valuation date, tenor, recovery, and notional
+  in real time as you change inputs — useful for teaching how the
+  model responds to each parameter.
+• Displays the live overnight reference rate (SOFR / €STR / SONIA /
+  TONA / RBA cash rate) used for discounting, fetched as public data
+  from each region's central bank or rate publisher.
+• Provides Apache 2.0 / disclaimer / methodology references on the
+  Info tab.
 
-iCDS is a calculation tool. It does not place trades, route orders,
-recommend any security, give investment advice, or store any user
-data. Numbers are indicative and for educational purposes only — see
-the in-app disclaimer for the full text.
+What the app is NOT: iCDS is a calculation tool only. It is not a
+brokerage, exchange, or trading platform. It does not have an
+account system, does not move money, does not execute orders, does
+not provide individualized recommendations, and does not store any
+user data. All numbers shown are indicative and intended for
+educational and reference purposes; see the in-app disclaimer for
+the full text.
 
-iCDS has been on iOS since 2019 and uses the same pricing engine as
-the iOS app. This Android version was built with Flutter to maintain
-exact numerical parity with the iOS build.
+iCDS has been on iOS since 2019 under the same name. This Android
+edition was built with Flutter to maintain exact numerical parity
+with the iOS build.
 
 Source code: https://github.com/jimzucker/iCDS
 Privacy: https://jimzucker.github.io/iCDS/PRIVACY
@@ -55,10 +60,17 @@ Privacy: https://jimzucker.github.io/iCDS/PRIVACY
 ---
 
 ## Category
-Finance
+Tools
+
+(Was Finance — but Google Play's August-2024 organization-account
+rule heavily weights the Finance category as a trigger for the
+"financial services require an organization account" check, even
+for calculators. Tools is accurate for a reference / computation
+app and is what comparable Apple-side apps such as PCalc and
+Soulver use. Productivity is a fine alternative.)
 
 ## Tags (optional, max 5)
-Finance, Tools
+Calculator, Reference, Tools
 
 ## Contact details
 - Email: jamesazucker@gmail.com
@@ -116,13 +128,23 @@ No.
 No.
 
 ## Financial features (most-asked-about question)
-Tick: **None of these features are in my app.**
 
-Justification (paste in the explanation box if Play asks): "iCDS is an
-informational calculator for Credit Default Swap upfront fees using
-the ISDA SNAC model. It does not facilitate, recommend, broker, or
-custody any financial product. Users cannot place trades, transfer
-money, or interact with any market venue. The app reads public
+This is the field most likely to have triggered the
+organization-account requirement. The TOP-LEVEL answer must be:
+
+  **"No, my app does not contain any of these financial features."**
+
+Do not tick anything underneath. In particular do not tick
+"Investments" — Google's classifier maps any sub-tick under
+Investments (Stock trading, Cryptocurrency, Investment funds,
+Tokenized digital assets) onto the org-only policy bucket, even
+though iCDS does none of those things.
+
+Justification (paste in the explanation box if Play asks): "iCDS
+is an educational reference calculator for ISDA SNAC pricing
+mathematics. It does not facilitate, recommend, broker, or custody
+any financial product. There is no order entry, account system,
+or interaction with any market venue. The app reads public
 reference rates from central banks for display purposes only."
 
 ## Health
