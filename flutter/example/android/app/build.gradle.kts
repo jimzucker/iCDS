@@ -32,7 +32,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.jimzucker.icds"
+        applicationId = "com.jimzucker.iCDS"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode

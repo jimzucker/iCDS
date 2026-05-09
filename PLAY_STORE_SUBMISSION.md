@@ -4,7 +4,7 @@ Copy-paste source for the Google Play Console listing. Excluded from
 the Pages site via `_config.yml`.
 
 Build to upload: `flutter/example/build/app/outputs/bundle/release/app-release.aab`
-- applicationId: `com.jimzucker.icds`
+- applicationId: `com.jimzucker.iCDS`
 - versionName: 3.0.1
 - versionCode: 1 (defaulted from flutter; bump on each upload)
 - Upload key SHA-1: `3C:52:AB:CA:13:49:62:9B:87:7B:97:00:01:84:1C:C0:83:BB:32:B5`
