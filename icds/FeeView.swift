@@ -182,8 +182,14 @@ struct FeeView: View {
         Group {
             if let r = vm.result {
                 let fmt = currencyFormatter(vm.currency)
-                let display = noNegZero(r.upfrontDollars, eps: 0.5)
-                let labelText = directionalLabel(r.upfrontDollars)
+                // Headline = dirty cash to settle: clean upfront + accrued.
+                // Accrued is unsigned in the result; direction follows buy/sell.
+                let signedAccrued = (vm.buySellIndex == 0) ? r.accrued : -r.accrued
+                let dirty = r.upfrontDollars + signedAccrued
+                let display = noNegZero(dirty, eps: 0.5)
+                let labelText = directionalLabel(dirty)
+                let upStr = fmt.string(from: NSNumber(value: abs(r.upfrontDollars))) ?? String(format: "%.0f", abs(r.upfrontDollars))
+                let acStr = fmt.string(from: NSNumber(value: r.accrued)) ?? String(format: "%.0f", r.accrued)
                 VStack(spacing: 4) {
                     Text(labelText)
                         .font(.caption2.weight(.semibold))
@@ -192,6 +198,11 @@ struct FeeView: View {
                     Text(fmt.string(from: NSNumber(value: abs(display))) ?? String(format: "%.0f", abs(display)))
                         .font(.system(size: 28, weight: .bold, design: .monospaced))
                         .foregroundColor(.black)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.6)
+                    Text("Upfront \(upStr) + Accrued \(acStr)")
+                        .font(.system(size: 10, weight: .medium, design: .monospaced))
+                        .foregroundColor(Color(white: 0.30))
                         .lineLimit(1)
                         .minimumScaleFactor(0.6)
                 }
@@ -326,12 +337,15 @@ struct FeeView: View {
         }
     }
 
-    /// Estimated-upfront preview card with directional caption.
+    /// Estimated cash-settlement preview card with directional caption.
+    /// Mirrors the headline (yellow) card: shows dirty = clean upfront + accrued.
     @ViewBuilder
     private func livePreviewCard(pending: Int) -> some View {
         if pending > 0,
            let preview = vm.previewUpfront(forSpread: Double(pending)) {
-            let dollars = preview.upfrontDollars
+            // Match the headline: dirty cash to settle.
+            let signedAccrued = (vm.buySellIndex == 0) ? preview.accrued : -preview.accrued
+            let dollars = preview.upfrontDollars + signedAccrued
             let mag = Swift.abs(dollars)
             let fmt = currencyFormatter(vm.currency)
             let amount = fmt.string(from: NSNumber(value: mag)) ?? String(format: "%.0f", mag)
@@ -341,7 +355,7 @@ struct FeeView: View {
                          : dollars > 0 ? "\(actor) PAYS"
                          : "\(actor) RECEIVES"
             VStack(spacing: 4) {
-                Text("ESTIMATED UPFRONT")
+                Text("ESTIMATED CASH SETTLEMENT")
                     .font(.caption2.weight(.semibold))
                     .foregroundColor(Color(white: 0.4))
                     .tracking(1.2)
