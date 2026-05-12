@@ -41,3 +41,12 @@ String formatCurrency(double dollars, String code) {
   final fmt = NumberFormat.simpleCurrency(name: code, decimalDigits: 0);
   return fmt.format(dollars);
 }
+
+/// Signed currency: positive renders as the bare "$X" (the default
+/// direction — actor pays), negative prepends a U+2212 MINUS SIGN
+/// so "−$X" reads as "actor receives". Mirrors the Swift app's
+/// `signedCurrencyFormatter`. Zero takes the positive (unsigned) form.
+String formatSignedCurrency(double dollars, String code) {
+  final magnitude = formatCurrency(dollars.abs(), code);
+  return dollars < 0 ? '−$magnitude' : magnitude;
+}

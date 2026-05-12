@@ -5,7 +5,7 @@ import 'theme.dart';
 
 /// Port of `iCDS/icds/InfoView.swift`.
 class InfoTab extends StatelessWidget {
-  const InfoTab({super.key, this.version = '3.0.1'});
+  const InfoTab({super.key, this.version = '3.1.0'});
   final String version;
 
   static final _apacheURL  = Uri.parse('https://www.apache.org/licenses/LICENSE-2.0');
@@ -152,8 +152,16 @@ class InfoTab extends StatelessWidget {
   }
 
   Future<void> _open(Uri url) async {
-    if (await canLaunchUrl(url)) {
+    // Skip canLaunchUrl: on Android 11+ it can return false even when the
+    // <queries> manifest entry is declared, depending on what handlers are
+    // installed. Call launchUrl directly and let it surface the failure.
+    try {
       await launchUrl(url, mode: LaunchMode.externalApplication);
+    } catch (_) {
+      // Last-resort fallback: try opening in the in-app webview.
+      try {
+        await launchUrl(url, mode: LaunchMode.inAppBrowserView);
+      } catch (_) {}
     }
   }
 }
@@ -219,8 +227,12 @@ class _AttributionBlock extends StatelessWidget {
             child: InkWell(
               onTap: () async {
                 final uri = link!.$2;
-                if (await canLaunchUrl(uri)) {
+                try {
                   await launchUrl(uri, mode: LaunchMode.externalApplication);
+                } catch (_) {
+                  try {
+                    await launchUrl(uri, mode: LaunchMode.inAppBrowserView);
+                  } catch (_) {}
                 }
               },
               child: Text(

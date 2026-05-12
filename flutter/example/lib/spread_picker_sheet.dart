@@ -201,17 +201,10 @@ class _SpreadPickerSheetState extends State<SpreadPickerSheet> {
     if (preview == null) {
       return const SizedBox(height: 88);
     }
-    final dollars = preview.upfrontDollars;
-    final mag = dollars.abs();
-    final amount = formatCurrency(mag, widget.viewModel.currency);
-    final isBuy = widget.viewModel.buySellIndex == 0;
-    final actor = isBuy ? 'BUYER' : 'SELLER';
-    String action;
-    if (mag < 0.5) {
-      action = 'AT PAR · NO UPFRONT';
-    } else {
-      action = dollars > 0 ? '$actor PAYS' : '$actor RECEIVES';
-    }
+    final dollars = preview.upfrontDollars.abs() < 0.5
+        ? 0.0
+        : preview.upfrontDollars;
+    final amount = formatSignedCurrency(dollars, widget.viewModel.currency);
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
@@ -222,7 +215,7 @@ class _SpreadPickerSheetState extends State<SpreadPickerSheet> {
       ),
       child: Column(
         children: [
-          const Text('ESTIMATED UPFRONT',
+          const Text('ESTIMATED UPFRONT FEE',
               style: TextStyle(
                 fontSize: 11, fontWeight: FontWeight.w600,
                 color: Color(0xFF666666), letterSpacing: 1.2,
@@ -233,13 +226,6 @@ class _SpreadPickerSheetState extends State<SpreadPickerSheet> {
             style: const TextStyle(
               fontSize: 22, fontFamily: 'Menlo',
               fontWeight: FontWeight.bold, color: AppTheme.orange,
-            ),
-          ),
-          Text(
-            action,
-            style: const TextStyle(
-              fontSize: 11, fontWeight: FontWeight.w600,
-              color: Color(0xFF999999), letterSpacing: 0.8,
             ),
           ),
         ],

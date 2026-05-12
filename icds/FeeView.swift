@@ -181,15 +181,14 @@ struct FeeView: View {
     private var feeCard: some View {
         Group {
             if let r = vm.result {
-                let fmt = currencyFormatter(vm.currency)
+                let fmt = signedCurrencyFormatter(vm.currency)
                 let display = noNegZero(r.upfrontDollars, eps: 0.5)
-                let labelText = directionalLabel(r.upfrontDollars)
                 VStack(spacing: 4) {
-                    Text(labelText)
+                    Text("UPFRONT FEE")
                         .font(.caption2.weight(.semibold))
                         .tracking(1)
                         .foregroundColor(Color(white: 0.30))
-                    Text(fmt.string(from: NSNumber(value: abs(display))) ?? String(format: "%.0f", abs(display)))
+                    Text(fmt.string(from: NSNumber(value: display)) ?? String(format: "%+.0f", display))
                         .font(.system(size: 28, weight: .bold, design: .monospaced))
                         .foregroundColor(.black)
                         .lineLimit(1)
@@ -326,32 +325,22 @@ struct FeeView: View {
         }
     }
 
-    /// Estimated-upfront preview card with directional caption.
+    /// Estimated-upfront preview card; signed value (+ = pay, − = receive).
     @ViewBuilder
     private func livePreviewCard(pending: Int) -> some View {
         if pending > 0,
            let preview = vm.previewUpfront(forSpread: Double(pending)) {
-            let dollars = preview.upfrontDollars
-            let mag = Swift.abs(dollars)
-            let fmt = currencyFormatter(vm.currency)
-            let amount = fmt.string(from: NSNumber(value: mag)) ?? String(format: "%.0f", mag)
-            let isBuy = vm.buySellIndex == 0
-            let actor = isBuy ? "BUYER" : "SELLER"
-            let action = mag < 0.5 ? "AT PAR · NO UPFRONT"
-                         : dollars > 0 ? "\(actor) PAYS"
-                         : "\(actor) RECEIVES"
+            let dollars = noNegZero(preview.upfrontDollars, eps: 0.5)
+            let fmt = signedCurrencyFormatter(vm.currency)
+            let amount = fmt.string(from: NSNumber(value: dollars)) ?? String(format: "%+.0f", dollars)
             VStack(spacing: 4) {
-                Text("ESTIMATED UPFRONT")
+                Text("ESTIMATED UPFRONT FEE")
                     .font(.caption2.weight(.semibold))
                     .foregroundColor(Color(white: 0.4))
                     .tracking(1.2)
                 Text(amount)
                     .font(.system(.title2, design: .monospaced).weight(.bold))
                     .foregroundColor(orange)
-                Text(action)
-                    .font(.caption.weight(.semibold))
-                    .foregroundColor(Color(white: 0.6))
-                    .tracking(0.8)
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 10)
@@ -519,15 +508,6 @@ struct FeeView: View {
         }
     }
 
-    /// Directional description based on sign + buy/sell
-    private func directionalLabel(_ upfrontDollars: Double) -> String {
-        if abs(upfrontDollars) < 0.5 { return "NO UPFRONT · AT PAR" }
-        let isBuy = vm.buySellIndex == 0
-        let actor = isBuy ? "BUYER" : "SELLER"
-        let action = upfrontDollars > 0 ? "PAYS" : "RECEIVES"
-        return "\(actor) \(action)"
-    }
-
     // MARK: - Output grid
 
     private var outputGrid: some View {
@@ -538,10 +518,6 @@ struct FeeView: View {
             }
             if let r = vm.result {
                 let fmt = currencyFormatter(vm.currency)
-                HStack {
-                    outputCell("Par Spread",  String(format: "%.0f bp", noNegZero(r.parSpreadBp, eps: 0.5)))
-                    outputCell("Upfront",     String(format: "%.1f bp", noNegZero(r.upfrontBp, eps: 0.05)))
-                }
                 HStack {
                     outputCell("Accrued", fmt.string(from: NSNumber(value: r.accrued)) ?? "")
                     outputCell("Price",   String(format: "%.4f", r.price))
@@ -605,6 +581,16 @@ struct FeeView: View {
         f.numberStyle = .currency
         f.currencyCode = code
         f.maximumFractionDigits = 0
+        return f
+    }
+
+    /// Currency formatter for the Upfront Fee. Positive values render with
+    /// no explicit "+" prefix (it's the default direction — actor pays);
+    /// negative values prepend a U+2212 MINUS SIGN so "−$X" reads as
+    /// "actor receives".
+    private func signedCurrencyFormatter(_ code: String) -> NumberFormatter {
+        let f = currencyFormatter(code)
+        f.negativePrefix = "−" + (f.currencySymbol ?? "")
         return f
     }
 

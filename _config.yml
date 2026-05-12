@@ -28,4 +28,6 @@ exclude:
   - LICENSE
   - CLAUDE.md
   - APP_STORE_SUBMISSION.md
+  - PLAY_STORE_SUBMISSION.md
   - LINKEDIN_POST.md
+  - flutter/

@@ -48,12 +48,6 @@ class _FeeTabState extends State<FeeTab> {
 
   double _noNegZero(double v, double eps) => v.abs() < eps ? 0.0 : v;
 
-  String _directionalLabel(double dollars) {
-    if (dollars.abs() < 0.5) return 'NO UPFRONT · AT PAR';
-    final actor = _vm.buySellIndex == 0 ? 'BUYER' : 'SELLER';
-    return '$actor ${dollars > 0 ? "PAYS" : "RECEIVES"}';
-  }
-
   @override
   Widget build(BuildContext context) {
     if (_vm.contracts.isEmpty) {
@@ -314,15 +308,15 @@ class _FeeTabState extends State<FeeTab> {
             )
           : Column(
               children: [
-                Text(
-                  _directionalLabel(r.upfrontDollars),
-                  style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: Color(0xFF4D4D4D), letterSpacing: 1),
+                const Text(
+                  'UPFRONT FEE',
+                  style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: Color(0xFF4D4D4D), letterSpacing: 1),
                 ),
                 const SizedBox(height: 4),
                 FittedBox(
                   fit: BoxFit.scaleDown,
                   child: Text(
-                    formatCurrency(_noNegZero(r.upfrontDollars, 0.5).abs(), _vm.currency),
+                    formatSignedCurrency(_noNegZero(r.upfrontDollars, 0.5), _vm.currency),
                     style: const TextStyle(
                       fontSize: 28, fontFamily: 'Menlo',
                       fontWeight: FontWeight.bold, color: Colors.black,
@@ -354,16 +348,6 @@ class _FeeTabState extends State<FeeTab> {
           ],
         ),
         if (r != null) ...[
-          const SizedBox(height: 6),
-          Row(
-            children: [
-              Expanded(child: _outputCell('Par Spread',
-                '${_noNegZero(r.parSpreadBp, 0.5).round()} bp')),
-              const SizedBox(width: 6),
-              Expanded(child: _outputCell('Upfront',
-                '${_noNegZero(r.upfrontBp, 0.05).toStringAsFixed(1)} bp')),
-            ],
-          ),
           const SizedBox(height: 6),
           Row(
             children: [
