@@ -28,8 +28,15 @@ Deployment target is **iOS 16.0**. The app is locked to dark mode via `SceneDele
 ## Architecture
 
 ### Swift layer
-- **`CDSCalculator.swift`** — the core calculation struct. All CDS math lives here. `FeeViewController.reCalc()` delegates to `CDSCalculator.calculate()`. This is the right place to fix or extend pricing logic.
-- **`FeeViewController.swift`** — main tab; reads UI controls, calls `CDSCalculator`, formats and displays results. Several IBOutlets are **not wired in the storyboard** (`TradeDateStepper`, `AccruedIntField`, `SettleDateField`) — access these with `?.` optional chaining.
+The app is **SwiftUI lifecycle**: `@main iCDSApp` → `ContentView` (TabView) →
+`FeeView`/`LiborView`/`InfoView`. The legacy UIKit controllers
+(`FeeViewController`, `LiborViewController`, `InfoViewController`) and the unused
+`Base.lproj/Main.storyboard` were **deleted** (dead code; nothing referenced them,
+`project.pbxproj` pruned accordingly). `LaunchScreen.storyboard` is kept.
+- **`CDSCalculator.swift`** — core calculation struct; all CDS math (`calculate`,
+  `cumulativeDefaultProb`, `riskMetrics`). `FeeViewModel.recalculate()` delegates here.
+- **`FeeView.swift` / `FeeViewModel.swift`** — the live Calc tab (SwiftUI + Combine).
+  `FeeView` is the screen; `FeeViewModel` holds inputs and derived `result`/`risk`.
 - **`ISDAContract.swift` / `Recovery.swift`** — data models loaded from `contracts.plist` (7 regional contracts: NA, EU, EM, Asia, Japan, AUS, LCDS).
 
 ### C library bridge
@@ -107,8 +114,7 @@ Shipped, not just mocked — Swift (`icds/`) + Flutter (`flutter/`), kept at par
 - **Tenor grid → `[1,2,3,4,5,7,10]`, 5Y default.** Swift `FeeViewModel.swift`
   (`maturityIndex` default index moved 1 → **4**); Flutter `fee_view_model.dart`
   (`_maturityIndex` 1 → 4). No engine change — `calculate(tenorYears:)` already rolls
-  any integer year to the next IMM date. (Legacy unused `FeeViewController.swift` left
-  on the old 4-tenor list; its storyboard control still has 4 segments.)
+  any integer year to the next IMM date.
 - **Fee → Calc** tab label: Swift `ContentView.swift`; Flutter `main.dart` (icons were
   already calc-themed).
 - **`CDSCalculator.cumulativeDefaultProb(spreadBp:recoveryRate:years:)`** — new pure
@@ -118,12 +124,24 @@ Shipped, not just mocked — Swift (`icds/`) + Flutter (`flutter/`), kept at par
   highlighted, tap-a-bar selects that maturity. Deliberately independent of the ISDA
   bootstrap (consistent with the app's flat-curve simplification).
 - **Trimmed copy**: "QUOTED SPREAD · tap" → "QUOTED SPREAD"; "Trade Date · tap to
-  pick" → "Trade Date" (both apps). Full v12 layout (CS01/DV01/Rec01 metrics, etc.)
-  was **out of scope** and not built.
-- **Tests** (parity, both suites): fixed the hardcoded `[1,5,7,10]` loops
-  (`icdsTests.swift`, `cds_calculator_test.dart`); added new-tenor IMM-roll +
-  upfront-monotonicity + 5Y-default-guard tests; added closed-form `cumulativeDefaultProb`
-  tests — Swift in `icdsTests.swift`, pure-Dart in `flutter/test/default_risk_test.dart`.
+  pick" → "Trade Date" (both apps).
+- **Full v12 layout (now built):** `CDSCalculator.riskMetrics` / `CdsCalculator.riskMetrics`
+  — first-order CS01 / IR DV01 / Rec01 by bump-and-reprice (forward diffs: +1 bp spread,
+  +1 bp discount, +1 pt recovery). Surfaced as `FeeView.riskRow` / `FeeTab._riskRow`
+  plus a period line (`periodRow` / `_periodRow`, accrual start → maturity + length in
+  years). VM exposes `var risk`/`get risk`.
+- **Dead-code cleanup:** legacy UIKit `FeeViewController`/`LiborViewController`/
+  `InfoViewController` + unused `Base.lproj/Main.storyboard` deleted; `project.pbxproj`
+  hand-pruned (PBXBuildFile / PBXFileReference / PBXGroup / PBXSourcesBuildPhase /
+  PBXVariantGroup). Main.storyboard was not in any build phase, so no build-input loss.
+  ⚠️ pbxproj was edited without Xcode — **open the project in Xcode to confirm it loads
+  and builds.**
+- **Tests** (parity, both suites): fixed the hardcoded `[1,5,7,10]` loops; added
+  new-tenor IMM-roll + upfront-monotonicity + 5Y-default-guard tests; closed-form
+  `cumulativeDefaultProb` tests (Swift `icdsTests.swift`, pure-Dart
+  `flutter/test/default_risk_test.dart`); risk-metrics property tests — signs,
+  notional scaling, buy/sell symmetry (`icdsTests.swift` +
+  `integration_test/cds_calculator_test.dart`).
   **Not run here** (no Xcode/Flutter toolchain on this host): verify with Xcode `⌘U`
   and `flutter test` / `flutter test integration_test`.
 

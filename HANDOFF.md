@@ -19,8 +19,12 @@ git pull
 | `cumulativeDefaultProb` (flat-hazard `1−e^(−λT)`, `λ=(spreadBp/1e4)/(1−R)`) | `CDSCalculator.swift` | `lib/cds_calculator.dart` |
 | Default-Risk-by-Maturity bar chart (7 bars, tap-to-select) | `FeeView.swift` (`defaultRiskChart`) | `example/lib/fee_tab.dart` (`_defaultRiskChart`) |
 | Trimmed copy (`· tap`, `· tap to pick`) | `FeeView.swift` | `example/lib/fee_tab.dart` |
+| **Risk metrics** CS01 / IR DV01 / Rec01 (bump-and-reprice) + period line | `CDSCalculator.riskMetrics`, `FeeView.riskRow`/`periodRow` | `CdsCalculator.riskMetrics`, `fee_tab._riskRow`/`_periodRow` |
+| **Dead-code cleanup** — deleted legacy UIKit `FeeViewController`/`LiborViewController`/`InfoViewController` + unused `Main.storyboard`; `project.pbxproj` hand-pruned | yes | n/a (Flutter had no equivalent) |
 
-No pricing-engine change — `calculate(tenorYears:)` already rolls any integer year to the next IMM date.
+No pricing-engine change — `calculate(tenorYears:)` already rolls any integer year to the next IMM date. App is SwiftUI-lifecycle (`@main iCDSApp → ContentView`); the deleted controllers/storyboard were unreferenced.
+
+**⚠️ `project.pbxproj` was edited by hand (no Xcode here).** First thing on the laptop: open `icds.xcodeproj` and confirm it loads + builds before anything else. Main.storyboard was not in any build phase, so removal should be clean, but verify.
 
 Locked design reference (open in a browser): `docs/mocks/fee_v12_locked_design.html`.
 
@@ -54,13 +58,21 @@ Closed-form check values (λ=0.025 at 150bp/40%): 1Y 0.024690 · 2Y 0.048771 · 
 
 ## Scope boundaries / open items
 
-- **Full v12 layout NOT built** — no CS01/IR-DV01/Rec01 metrics, no "BUYER PAYS"/period-line restructure. Those need risk calcs that don't exist on `CDSResult`; out of agreed scope. Decide if you want this next.
-- **Legacy `FeeViewController.swift`** intentionally left on the old 4-tenor list — it's dead code (`@main → ContentView → FeeView`) and its storyboard control only has 4 segments.
+- **Full v12 layout — now built.** CS01 / IR DV01 / Rec01 are computed by
+  bump-and-reprice (forward diffs) in `CDSCalculator.riskMetrics` /
+  `CdsCalculator.riskMetrics`; period line added. The "BUYER PAYS" card already
+  existed via `directionalLabel`. Risk numbers are bump-derived, not analytic Greeks
+  (consistent with the app's flat-curve simplification) — sanity-check magnitudes on
+  device.
+- **Legacy dead code removed** (see warning above re: pbxproj).
 - No PR opened (per instructions). Open one when the local builds pass.
 
 ## Suggested next steps
 
-1. Build/test both apps locally (commands above); fix any compile nits.
-2. Eyeball the chart on a simulator/emulator (tap a bar → maturity + outputs update).
-3. Decide on the full-v12-layout question.
+1. **Open `icds.xcodeproj` in Xcode — confirm it loads and builds** (pbxproj was
+   hand-edited). Then ⌘U.
+2. `cd flutter && flutter test test/default_risk_test.dart test/imm_test.dart`;
+   then `cd example && flutter test integration_test -d <device>`.
+3. Eyeball on a sim/emulator: tap a chart bar → maturity + outputs update; check the
+   RISK row signs (CS01 > 0 for a buyer above coupon, Rec01 < 0) and the period line.
 4. Open the PR.
