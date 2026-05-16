@@ -20,6 +20,12 @@ struct CDSResult {
     let endDate: TDate
 }
 
+struct CDSRisk {
+    let cs01:   Double   // Δ upfront $ for +1 bp credit spread
+    let irDV01: Double   // Δ upfront $ for +1 bp discount rate
+    let rec01:  Double   // Δ upfront $ for +1 pt recovery
+}
+
 struct CDSCalculator {
 
     // Next IMM date (20th of Mar/Jun/Sep/Dec) at or after the given date
@@ -66,6 +72,37 @@ struct CDSCalculator {
         let lambda = (spreadBp / 10_000.0) / (1.0 - recoveryRate)
         let p = 1.0 - exp(-lambda * years)
         return min(max(p, 0.0), 1.0)
+    }
+
+    /// First-order risk by bump-and-reprice on the same inputs as
+    /// `calculate`. Forward differences (+1 bp spread / +1 bp discount /
+    /// +1 pt recovery) so the figures line up with the "per +1 bp" /
+    /// "per +1 pt" screen labels. No analytic Greeks — consistent with the
+    /// app's flat-curve simplification.
+    static func riskMetrics(tradeDate: Date,
+                            tenorYears: Int,
+                            parSpreadBp: Double,
+                            couponBp: Double,
+                            recoveryRate: Double,
+                            notional: Double,
+                            isBuy: Bool,
+                            settleDays: Int = 1,
+                            calendarName: String = "nyFed",
+                            discountRate: Double = SOFRFetcher.fallbackRate,
+                            minSettle: Date? = nil) -> CDSRisk? {
+        func px(_ spread: Double, _ rec: Double, _ disc: Double) -> Double? {
+            calculate(tradeDate: tradeDate, tenorYears: tenorYears,
+                      parSpreadBp: spread, couponBp: couponBp,
+                      recoveryRate: rec, notional: notional, isBuy: isBuy,
+                      settleDays: settleDays, calendarName: calendarName,
+                      discountRate: disc, minSettle: minSettle)?.upfrontDollars
+        }
+        guard let base  = px(parSpreadBp, recoveryRate, discountRate),
+              let bumpS  = px(parSpreadBp + 1.0, recoveryRate, discountRate),
+              let bumpR  = px(parSpreadBp, min(recoveryRate + 0.01, 0.999), discountRate),
+              let bumpD  = px(parSpreadBp, recoveryRate, discountRate + 0.0001)
+        else { return nil }
+        return CDSRisk(cs01: bumpS - base, irDV01: bumpD - base, rec01: bumpR - base)
     }
 
     static func tdate(from date: Date) -> TDate {

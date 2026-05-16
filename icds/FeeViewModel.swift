@@ -212,6 +212,24 @@ final class FeeViewModel: ObservableObject {
         }
     }
 
+    /// First-order risk (CS01 / IR DV01 / Rec01) for the current inputs,
+    /// via bump-and-reprice. Recomputed on demand from the live inputs.
+    var risk: CDSRisk? {
+        CDSCalculator.riskMetrics(
+            tradeDate:    tradeDate,
+            tenorYears:   tenorYears[maturityIndex],
+            parSpreadBp:  spreadBp,
+            couponBp:     couponBp,
+            recoveryRate: Double(recoveryPct) / 100.0,
+            notional:     notionalValues[notionalIndex],
+            isBuy:        buySellIndex == 0,
+            settleDays:   contract?.settleDays   ?? 1,
+            calendarName: contract?.calendarName ?? "nyFed",
+            discountRate: discountRate,
+            minSettle:    Date()
+        )
+    }
+
     /// Recompute upfront for a hypothetical spread without committing it.
     /// Used by the spread picker sheet to preview the dollar impact live.
     func previewUpfront(forSpread spread: Double) -> CDSResult? {

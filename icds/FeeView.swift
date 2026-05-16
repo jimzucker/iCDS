@@ -28,8 +28,10 @@ struct FeeView: View {
                 regionRow
                 termRows
                 spreadFeeRow
+                periodRow
                 outputGrid
                 defaultRiskChart
+                riskRow
             }
             .padding(.horizontal, 12)
             .padding(.vertical, 8)
@@ -590,6 +592,56 @@ struct FeeView: View {
         .padding(10)
         .background(Color(white: 0.07))
         .cornerRadius(8)
+    }
+
+    // MARK: - Period (accrual start → maturity)
+
+    @ViewBuilder
+    private var periodRow: some View {
+        if let r = vm.result {
+            let years = Double(r.endDate - r.startDate) / 365.25
+            Text("\(formatTDate(r.startDate)) → \(formatTDate(r.endDate))  (\(String(format: "%.2f", years))y)")
+                .font(.system(.caption2, design: .monospaced))
+                .foregroundColor(Color(white: 0.55))
+                .frame(maxWidth: .infinity)
+        }
+    }
+
+    // MARK: - First-order risk (CS01 / IR DV01 / Rec01)
+
+    @ViewBuilder
+    private var riskRow: some View {
+        if let rk = vm.risk {
+            let fmt = currencyFormatter(vm.currency)
+            func money(_ v: Double) -> String {
+                let s = fmt.string(from: NSNumber(value: abs(v))) ?? String(format: "%.0f", abs(v))
+                return (v < 0 ? "−" : "") + s
+            }
+            VStack(alignment: .leading, spacing: 4) {
+                Text("RISK")
+                    .font(.caption2.weight(.bold)).tracking(1)
+                    .foregroundColor(orange.opacity(0.85))
+                HStack(spacing: 6) {
+                    riskCell("CS01",    money(rk.cs01),   "per +1 bp")
+                    riskCell("IR DV01", money(rk.irDV01), "per +1 bp")
+                    riskCell("Rec01",   money(rk.rec01),  "per +1 pt")
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+    }
+
+    private func riskCell(_ k: String, _ v: String, _ s: String) -> some View {
+        VStack(alignment: .leading, spacing: 1) {
+            Text(k).font(.caption2.weight(.semibold)).foregroundColor(Color(white: 0.55))
+            Text(v).font(.system(.callout, design: .monospaced))
+                .foregroundColor(orange).lineLimit(1).minimumScaleFactor(0.6)
+            Text(s).font(.system(size: 9)).foregroundColor(Color(white: 0.35))
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(7)
+        .background(Color(white: 0.07))
+        .cornerRadius(6)
     }
 
     // MARK: - Helpers

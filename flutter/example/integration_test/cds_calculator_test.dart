@@ -132,6 +132,38 @@ void main() {
     });
   });
 
+  group('First-order risk (bump-and-reprice)', () {
+    CdsRisk risk({bool isBuy = true, double notional = 10_000_000}) =>
+        CdsCalculator.riskMetrics(
+          tradeDate: refDate,
+          tenorYears: 5,
+          parSpreadBp: 300,
+          couponBp: 100,
+          recoveryRate: 0.40,
+          notional: notional,
+          isBuy: isBuy,
+        )!;
+
+    test('signs and notional scaling', () {
+      final rk = risk();
+      expect(rk.cs01, greaterThan(0), reason: 'CS01 > 0 for a buyer');
+      expect(rk.rec01, lessThan(0), reason: 'Rec01 < 0 (higher recovery)');
+      expect(rk.irDV01.isFinite, isTrue);
+      expect(rk.irDV01.abs(), lessThan(rk.cs01.abs()));
+      final half = risk(notional: 5_000_000);
+      expect((rk.cs01 - half.cs01 * 2.0).abs(),
+          lessThan((half.cs01.abs() * 0.02).clamp(1.0, double.infinity)));
+    });
+
+    test('buy/sell symmetry', () {
+      final b = risk(isBuy: true);
+      final s = risk(isBuy: false);
+      expect((b.cs01 + s.cs01).abs(), lessThan(1.0));
+      expect((b.rec01 + s.rec01).abs(), lessThan(1.0));
+      expect((b.irDV01 + s.irDV01).abs(), lessThan(1.0));
+    });
+  });
+
   group('Pricing — 500bp coupon (NA distressed)', () {
     test('at-par 500bp → upfront fraction zero', () {
       final r = calc(parSpread: 500, coupon: 500)!;

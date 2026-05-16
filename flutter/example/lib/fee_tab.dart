@@ -72,10 +72,14 @@ class _FeeTabState extends State<FeeTab> {
               _termRows(),
               const SizedBox(height: 12),
               _spreadFeeRow(),
+              const SizedBox(height: 8),
+              _periodRow(),
               const SizedBox(height: 12),
               _outputGrid(),
               const SizedBox(height: 12),
               _defaultRiskChart(),
+              const SizedBox(height: 12),
+              _riskRow(),
             ],
           ),
         ),
@@ -495,6 +499,79 @@ class _FeeTabState extends State<FeeTab> {
           Text(label, style: const TextStyle(fontSize: 11, color: Color(0xFF8C8C8C))),
           const SizedBox(height: 2),
           Text(value, style: const TextStyle(fontSize: 14, fontFamily: 'Menlo', color: AppTheme.orange)),
+        ],
+      ),
+    );
+  }
+
+  /// Accrual start → maturity with the period length in years.
+  /// Port of Swift `FeeView.periodRow`.
+  Widget _periodRow() {
+    final r = _vm.result;
+    if (r == null) return const SizedBox.shrink();
+    final years = r.endDate.difference(r.startDate).inDays / 365.25;
+    return Center(
+      child: Text(
+        '${formatDdMmmYy(r.startDate)} → ${formatDdMmmYy(r.endDate)}  '
+        '(${years.toStringAsFixed(2)}y)',
+        style: const TextStyle(
+          fontSize: 11, fontFamily: 'Menlo', color: Color(0xFF8C8C8C),
+        ),
+      ),
+    );
+  }
+
+  /// First-order risk (CS01 / IR DV01 / Rec01) by bump-and-reprice.
+  /// Port of Swift `FeeView.riskRow`.
+  Widget _riskRow() {
+    final rk = _vm.risk;
+    if (rk == null) return const SizedBox.shrink();
+    String money(double v) {
+      final s = formatCurrency(v.abs(), _vm.currency);
+      return v < 0 ? '−$s' : s;
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text('RISK',
+          style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold,
+            letterSpacing: 1, color: AppTheme.orange)),
+        const SizedBox(height: 4),
+        Row(
+          children: [
+            Expanded(child: _riskCell('CS01', money(rk.cs01), 'per +1 bp')),
+            const SizedBox(width: 6),
+            Expanded(child: _riskCell('IR DV01', money(rk.irDV01), 'per +1 bp')),
+            const SizedBox(width: 6),
+            Expanded(child: _riskCell('Rec01', money(rk.rec01), 'per +1 pt')),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _riskCell(String k, String v, String s) {
+    return Container(
+      padding: const EdgeInsets.all(7),
+      decoration: BoxDecoration(
+        color: const Color(0xFF121212),
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(k, style: const TextStyle(
+            fontSize: 10, fontWeight: FontWeight.w600, color: Color(0xFF8C8C8C))),
+          const SizedBox(height: 1),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerLeft,
+            child: Text(v, style: const TextStyle(
+              fontSize: 14, fontFamily: 'Menlo', color: AppTheme.orange)),
+          ),
+          const SizedBox(height: 1),
+          Text(s, style: const TextStyle(fontSize: 9, color: Color(0xFF595959))),
         ],
       ),
     );

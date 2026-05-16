@@ -189,6 +189,28 @@ class FeeViewModel extends ChangeNotifier {
     _spreadBp = couponBp;
   }
 
+  /// First-order risk (CS01 / IR DV01 / Rec01) for the current inputs,
+  /// via bump-and-reprice. Recomputed on demand. Parity with Swift
+  /// `FeeViewModel.risk`.
+  CdsRisk? get risk {
+    final c = contract;
+    if (c == null) return null;
+    final today = DateTime.now();
+    return CdsCalculator.riskMetrics(
+      tradeDate: tradeDate,
+      tenorYears: tenorYearsList[_maturityIndex],
+      parSpreadBp: _spreadBp,
+      couponBp: couponBp,
+      recoveryRate: recoveryPct / 100.0,
+      notional: notionalValues[_notionalIndex],
+      isBuy: _buySellIndex == 0,
+      settleDays: c.settleDays,
+      discountRate: discountRate,
+      region: calendar,
+      minSettle: DateTime(today.year, today.month, today.day),
+    );
+  }
+
   /// Hypothetical-spread preview (used by the spread-edit dialog).
   CdsResult? previewUpfront(double spread) {
     final c = contract;

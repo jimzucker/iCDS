@@ -308,6 +308,43 @@ class icdsTests: XCTestCase {
         XCTAssertEqual(CDSCalculator.cumulativeDefaultProb(spreadBp: 150, recoveryRate: 1.0, years: 5), 0)
     }
 
+    // MARK: - First-order risk (CS01 / IR DV01 / Rec01, bump-and-reprice)
+
+    func testRiskMetricsSignsAndNotionalScaling() {
+        let rk = CDSCalculator.riskMetrics(tradeDate: refDate, tenorYears: 5,
+                                           parSpreadBp: 300, couponBp: 100,
+                                           recoveryRate: 0.40, notional: 10_000_000,
+                                           isBuy: true)!
+        // Buyer, spread above coupon: wider spread → buyer pays more.
+        XCTAssertGreaterThan(rk.cs01, 0, "CS01 > 0 for a protection buyer")
+        // Higher recovery → less loss given default → smaller upfront.
+        XCTAssertLessThan(rk.rec01, 0, "Rec01 < 0 (higher recovery lowers upfront)")
+        // IR sensitivity is a second-order effect here: finite and small.
+        XCTAssertTrue(rk.irDV01.isFinite)
+        XCTAssertLessThan(abs(rk.irDV01), abs(rk.cs01))
+        // Linear in notional.
+        let half = CDSCalculator.riskMetrics(tradeDate: refDate, tenorYears: 5,
+                                             parSpreadBp: 300, couponBp: 100,
+                                             recoveryRate: 0.40, notional: 5_000_000,
+                                             isBuy: true)!
+        XCTAssertEqual(rk.cs01, half.cs01 * 2.0,
+                       accuracy: max(1.0, abs(half.cs01) * 0.02))
+    }
+
+    func testRiskMetricsBuySellSymmetry() {
+        let buy  = CDSCalculator.riskMetrics(tradeDate: refDate, tenorYears: 5,
+                                             parSpreadBp: 300, couponBp: 100,
+                                             recoveryRate: 0.40, notional: 10_000_000,
+                                             isBuy: true)!
+        let sell = CDSCalculator.riskMetrics(tradeDate: refDate, tenorYears: 5,
+                                             parSpreadBp: 300, couponBp: 100,
+                                             recoveryRate: 0.40, notional: 10_000_000,
+                                             isBuy: false)!
+        XCTAssertEqual(buy.cs01,   -sell.cs01,   accuracy: 1.0)
+        XCTAssertEqual(buy.rec01,  -sell.rec01,  accuracy: 1.0)
+        XCTAssertEqual(buy.irDV01, -sell.irDV01, accuracy: 1.0)
+    }
+
     func testAllRegionRecoveryRatesProduceResults() {
         let contracts = ISDAContract.readFromPlist()
         for contract in contracts {
