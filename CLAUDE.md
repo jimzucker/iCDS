@@ -66,6 +66,34 @@ Standard CDS maturity dates are the **20th of March, June, September, December**
 
 The `.gitignore` now correctly tracks `project.pbxproj`. The C source files were added to the build via a Python script that bulk-inserted `PBXFileReference`, `PBXBuildFile`, and Sources build phase entries. `OTHER_CFLAGS = "-w"` suppresses C library warnings. `HEADER_SEARCH_PATHS` points to `isdamodel/include/isda`, `isdamodel/include`, and `isdamodel/src`.
 
+## UI design — FeeView mock iteration
+
+Active design work on the **Fee tab UI** (SwiftUI `icds/FeeView.swift`). Mock series
+lives at `/tmp/icds_final_mock_v1..v9.html` — static HTML phone frames (393pt iPhone
+width). No HTML renderer is available in this environment, so mocks are delivered as
+`.html` and opened directly in a browser. **v9 is current.**
+
+Decisions locked in v9:
+- **SNAC tenor grid = 1Y · 2Y · 3Y · 4Y · 5Y · 7Y · 10Y.** All engine-supported:
+  `CDSCalculator.calculate(tenorYears: Int)` accepts any integer year and rolls to the
+  next IMM date. **6M is intentionally excluded** — would need a sub-year/fractional
+  tenor signature change.
+- **Notional is not a SNAC constraint** (any positive amount is valid) → it becomes a
+  single **editable field**, not fixed 1M/5M/10M/20M buttons.
+- **Coupon stays region-driven** (NA = 100/500 bp only; other running coupons such as
+  25/300/750/1000 are not NA-SNAC — do not expand arbitrarily).
+- Lower chart is **Default Risk by Maturity**: cumulative default prob per tenor under a
+  flat-hazard approx, h = spread / (1 − recovery). At 150 bp, R = 40% ⇒ 1Y 2.5%,
+  2Y 4.9%, 3Y 7.2%, 4Y 9.5%, 5Y 11.8%, 7Y 16.0%, 10Y 22.1%. Re-scales with spread.
+
+Open decision (NOT yet wired into `FeeView.swift`):
+- **Variant A (recommended):** Maturity as a compact dropdown paired on one row with
+  Coupon; Notional editable field promoted to top. Scales to any tenor count, saves a row.
+- **Variant B:** keep the full-width segmented bar, extended to 7 segments (~52pt each —
+  above the 44pt tap minimum but labels tight, still a dedicated row).
+- A half-width 7-segment bar (~25pt) fails the 44pt tap minimum — this is why a paired
+  layout requires the dropdown, not a bar.
+
 ## App Store requirements satisfied
 - `arm64` in `UIRequiredDeviceCapabilities`
 - `PrivacyInfo.xcprivacy` present (no data collected)
