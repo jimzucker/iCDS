@@ -17,7 +17,7 @@ It recalculates the upfront fee and intermediate results live as you change inpu
 }
 </style>
 
-<img class="bg-screenshot" src="images/JPEG_iCDSWikiScreenShoot.jpg" width="292" height="500">
+<img class="bg-screenshot" src="images/JPEG_iCDSWikiScreenShoot.jpg" width="292">
 
 I started this project when as a 'former' Mac developer I was swept up by the excitement of the iPhone App phenomenon. This led me to a drive to get a non-trivial application into the App Store. I convinced my family to buy me a MacBookPro for my birthday in Sept, 2009 and about 20 hours of effort latter I had my first GUI prototype running on the simulator.
 
