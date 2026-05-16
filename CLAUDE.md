@@ -69,10 +69,11 @@ The `.gitignore` now correctly tracks `project.pbxproj`. The C source files were
 ## UI design — FeeView mock iteration
 
 Active design work on the **Fee tab UI** (SwiftUI `icds/FeeView.swift`). Mock series
-lives at `/tmp/icds_final_mock_v1..v11.html` — static HTML phone frames (393pt iPhone
+lives at `/tmp/icds_final_mock_v1..v12.html` — static HTML phone frames (393pt iPhone
 width). No HTML renderer is available in this environment, so mocks are delivered as
-`.html` and opened directly in a browser. **v11 is the chosen/locked design** (not
-yet wired into `FeeView.swift`).
+`.html` and opened directly in a browser. **v12 is the chosen/locked design** — same
+layout as v11 with helper micro-copy stripped (bare labels; affordances are icon-only
+✎/📅; per-metric unit captions kept). Not yet wired into `FeeView.swift`.
 
 Decisions locked in v9:
 - **SNAC tenor grid = 1Y · 2Y · 3Y · 4Y · 5Y · 7Y · 10Y.** All engine-supported:
