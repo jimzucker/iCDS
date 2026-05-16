@@ -229,4 +229,75 @@ final class FeeViewModel: ObservableObject {
             minSettle:    Date()
         )
     }
+
+    // MARK: - Prototype helpers (space-utilization candidates)
+    //
+    // All reuse CDSCalculator with one bumped input (finite difference).
+    // These are computed on demand by the prototype views; they are not
+    // cached, so stacking all four re-prices the trade ~30× per state
+    // change. Acceptable for an on-device eyeball test, not for ship.
+
+    struct RiskMeasures { let cs01: Double; let ir01: Double; let rec01: Double }
+    struct CurvePoint   { let spread: Double; let dollars: Double }
+    struct Scenario     { let label: String; let spread: Double; let dollars: Double }
+
+    private func calc(spreadBp s: Double,
+                      recoveryRate rec: Double,
+                      discountRate disc: Double) -> CDSResult? {
+        CDSCalculator.calculate(
+            tradeDate:    tradeDate,
+            tenorYears:   tenorYears[maturityIndex],
+            parSpreadBp:  s,
+            couponBp:     couponBp,
+            recoveryRate: rec,
+            notional:     notionalValues[notionalIndex],
+            isBuy:        buySellIndex == 0,
+            settleDays:   contract?.settleDays   ?? 1,
+            calendarName: contract?.calendarName ?? "nyFed",
+            discountRate: disc,
+            minSettle:    Date()
+        )
+    }
+
+    /// Finite-difference sensitivities of the upfront ($), trade-direction signed.
+    /// CS01: +1 bp spread. IR DV01: +1 bp discount rate. Rec01: +1 pt recovery.
+    var riskMeasures: RiskMeasures? {
+        let rec = Double(recoveryPct) / 100.0
+        guard
+            let base = calc(spreadBp: spreadBp,       recoveryRate: rec,        discountRate: discountRate),
+            let sUp  = calc(spreadBp: spreadBp + 1.0, recoveryRate: rec,        discountRate: discountRate),
+            let iUp  = calc(spreadBp: spreadBp,       recoveryRate: rec,        discountRate: discountRate + 0.0001),
+            let rUp  = calc(spreadBp: spreadBp,       recoveryRate: rec + 0.01, discountRate: discountRate)
+        else { return nil }
+        return RiskMeasures(
+            cs01:  sUp.upfrontDollars - base.upfrontDollars,
+            ir01:  iUp.upfrontDollars - base.upfrontDollars,
+            rec01: rUp.upfrontDollars - base.upfrontDollars
+        )
+    }
+
+    /// Upfront ($) sampled across a ±150 bp window for the sensitivity sparkline.
+    func sensitivityCurve(samples: Int = 24) -> [CurvePoint] {
+        guard samples > 1 else { return [] }
+        let rec  = Double(recoveryPct) / 100.0
+        let lo   = max(1.0, spreadBp - 150)
+        let hi   = spreadBp + 150
+        let step = (hi - lo) / Double(samples - 1)
+        return (0..<samples).compactMap { i in
+            let s = lo + Double(i) * step
+            guard let r = calc(spreadBp: s, recoveryRate: rec, discountRate: discountRate) else { return nil }
+            return CurvePoint(spread: s, dollars: r.upfrontDollars)
+        }
+    }
+
+    /// Upfront ($) at spread offsets from the current quote for the scenario row.
+    func scenarioUpfronts(offsets: [Int]) -> [Scenario] {
+        let rec = Double(recoveryPct) / 100.0
+        return offsets.compactMap { off in
+            let s = max(1.0, spreadBp + Double(off))
+            guard let r = calc(spreadBp: s, recoveryRate: rec, discountRate: discountRate) else { return nil }
+            let sign = off > 0 ? "+" : ""
+            return Scenario(label: "\(sign)\(off)", spread: s, dollars: r.upfrontDollars)
+        }
+    }
 }

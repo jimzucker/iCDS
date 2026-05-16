@@ -29,6 +29,7 @@ struct FeeView: View {
                 termRows
                 spreadFeeRow
                 outputGrid
+                prototypesSection
             }
             .padding(.horizontal, 12)
             .padding(.vertical, 8)
@@ -212,6 +213,218 @@ struct FeeView: View {
                 .padding(.vertical, 10)
                 .background(Color(red: 1, green: 0.999, blue: 0.397))
                 .cornerRadius(8)
+            }
+        }
+    }
+
+    // MARK: - Prototypes (space-utilization candidates, stacked for comparison)
+    //
+    // Four ideas for the empty lower third, shown together so they can be
+    // compared on-device. Each is headed by a numbered chip. Final design
+    // would pick one (or one + the cash footer); this is throwaway scaffolding.
+
+    private var prototypesSection: some View {
+        VStack(spacing: 14) {
+            protoDivider()
+            protoHeader("1 · RISK STRIP")
+            riskStripProto
+            protoHeader("2 · CASH SETTLEMENT")
+            cashSettlementProto
+            protoHeader("3 · SPREAD SENSITIVITY")
+            sparklineProto
+            protoHeader("4 · SCENARIO ROW")
+            scenarioRowProto
+        }
+        .padding(.top, 4)
+    }
+
+    private func protoDivider() -> some View {
+        HStack(spacing: 8) {
+            Rectangle().fill(Color(white: 0.2)).frame(height: 1)
+            Text("PROTOTYPES").font(.system(size: 9, weight: .bold)).tracking(2).foregroundColor(Color(white: 0.4))
+            Rectangle().fill(Color(white: 0.2)).frame(height: 1)
+        }
+    }
+
+    private func protoHeader(_ t: String) -> some View {
+        HStack {
+            Text(t)
+                .font(.caption2.weight(.bold))
+                .tracking(1.5)
+                .foregroundColor(orange.opacity(0.85))
+            Spacer()
+        }
+    }
+
+    // 1 — Risk strip: CS01 / IR DV01 / Rec01 as three dense metric cells.
+    private var riskStripProto: some View {
+        Group {
+            if let rm = vm.riskMeasures {
+                let fmt = signedCurrencyFormatter(vm.currency)
+                HStack(spacing: 6) {
+                    metricCell("CS01", "per +1 bp", fmt.string(from: NSNumber(value: rm.cs01)) ?? "")
+                    metricCell("IR DV01", "per +1 bp", fmt.string(from: NSNumber(value: rm.ir01)) ?? "")
+                    metricCell("Rec01", "per +1 pt", fmt.string(from: NSNumber(value: rm.rec01)) ?? "")
+                }
+            } else {
+                Color.clear.frame(height: 58)
+            }
+        }
+    }
+
+    private func metricCell(_ title: String, _ sub: String, _ value: String) -> some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text(title)
+                .font(.caption2.weight(.semibold))
+                .foregroundColor(Color(white: 0.55))
+            Text(value)
+                .font(.system(.callout, design: .monospaced).weight(.semibold))
+                .foregroundColor(orange)
+                .lineLimit(1)
+                .minimumScaleFactor(0.5)
+            Text(sub)
+                .font(.system(size: 9))
+                .foregroundColor(Color(white: 0.4))
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(8)
+        .background(Color(white: 0.07))
+        .cornerRadius(6)
+    }
+
+    // 2 — Cash settlement: clean upfront + accrued = dirty, with direction.
+    private var cashSettlementProto: some View {
+        Group {
+            if let r = vm.result {
+                let fmt = signedCurrencyFormatter(vm.currency)
+                let signedAccrued = (vm.buySellIndex == 0) ? r.accrued : -r.accrued
+                let dirty = r.upfrontDollars + signedAccrued
+                let isBuy = vm.buySellIndex == 0
+                let actor = isBuy ? "BUYER" : "SELLER"
+                let action = abs(dirty) < 0.5 ? "NETS FLAT"
+                             : dirty > 0 ? "\(actor) PAYS"
+                             : "\(actor) RECEIVES"
+                VStack(spacing: 6) {
+                    cashRow("Clean Upfront", fmt.string(from: NSNumber(value: r.upfrontDollars)) ?? "")
+                    cashRow("+ Accrued",     fmt.string(from: NSNumber(value: signedAccrued)) ?? "")
+                    Divider().background(Color(white: 0.25))
+                    HStack {
+                        Text(action)
+                            .font(.caption.weight(.bold))
+                            .foregroundColor(Color(white: 0.6))
+                            .tracking(0.5)
+                        Spacer()
+                        Text(fmt.string(from: NSNumber(value: dirty)) ?? "")
+                            .font(.system(.title3, design: .monospaced).weight(.bold))
+                            .foregroundColor(orange)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.6)
+                    }
+                }
+                .padding(10)
+                .background(Color(white: 0.07))
+                .cornerRadius(8)
+            } else {
+                Color.clear.frame(height: 92)
+            }
+        }
+    }
+
+    private func cashRow(_ l: String, _ v: String) -> some View {
+        HStack {
+            Text(l).font(.caption).foregroundColor(Color(white: 0.55))
+            Spacer()
+            Text(v).font(.system(.callout, design: .monospaced)).foregroundColor(Color(white: 0.8))
+        }
+    }
+
+    // 3 — Spread sensitivity sparkline: upfront vs spread over a ±150 bp window.
+    private var sparklineProto: some View {
+        Group {
+            let pts = vm.sensitivityCurve(samples: 24)
+            if pts.count > 1 {
+                let xs = pts.map { $0.spread }
+                let ys = pts.map { $0.dollars }
+                let minX = xs.min() ?? 0, maxX = xs.max() ?? 1
+                let minY = ys.min() ?? 0, maxY = ys.max() ?? 1
+                let fmt = signedCurrencyFormatter(vm.currency)
+                VStack(alignment: .leading, spacing: 6) {
+                    HStack {
+                        Text("Upfront vs Spread").font(.caption2).foregroundColor(Color(white: 0.55))
+                        Spacer()
+                        Text("\(Int(minX))–\(Int(maxX)) bp").font(.caption2).foregroundColor(Color(white: 0.4))
+                    }
+                    GeometryReader { geo in
+                        let w = geo.size.width
+                        let h = geo.size.height
+                        let nx: (Double) -> CGFloat = { x in
+                            maxX == minX ? 0 : CGFloat((x - minX) / (maxX - minX)) * w
+                        }
+                        let ny: (Double) -> CGFloat = { y in
+                            maxY == minY ? h / 2 : h - CGFloat((y - minY) / (maxY - minY)) * h
+                        }
+                        ZStack {
+                            Path { p in
+                                for (i, pt) in pts.enumerated() {
+                                    let cgp = CGPoint(x: nx(pt.spread), y: ny(pt.dollars))
+                                    if i == 0 { p.move(to: cgp) } else { p.addLine(to: cgp) }
+                                }
+                            }
+                            .stroke(orange, style: StrokeStyle(lineWidth: 2, lineJoin: .round))
+                            let cx = nx(min(maxX, max(minX, vm.spreadBp)))
+                            Path { p in
+                                p.move(to: CGPoint(x: cx, y: 0))
+                                p.addLine(to: CGPoint(x: cx, y: h))
+                            }
+                            .stroke(Color(white: 0.45), style: StrokeStyle(lineWidth: 1, dash: [3, 3]))
+                        }
+                    }
+                    .frame(height: 70)
+                    HStack {
+                        Text(fmt.string(from: NSNumber(value: minY)) ?? "")
+                            .font(.system(size: 9, design: .monospaced))
+                            .foregroundColor(Color(white: 0.4))
+                        Spacer()
+                        Text(fmt.string(from: NSNumber(value: maxY)) ?? "")
+                            .font(.system(size: 9, design: .monospaced))
+                            .foregroundColor(Color(white: 0.4))
+                    }
+                }
+                .padding(10)
+                .background(Color(white: 0.07))
+                .cornerRadius(8)
+            } else {
+                Color.clear.frame(height: 112)
+            }
+        }
+    }
+
+    // 4 — Scenario row: upfront at ±25 / ±50 bp from the current quote.
+    private var scenarioRowProto: some View {
+        Group {
+            let scen = vm.scenarioUpfronts(offsets: [-50, -25, 25, 50])
+            if !scen.isEmpty {
+                let fmt = signedCurrencyFormatter(vm.currency)
+                HStack(spacing: 6) {
+                    ForEach(scen.indices, id: \.self) { i in
+                        VStack(spacing: 3) {
+                            Text("\(scen[i].label) bp")
+                                .font(.caption2.weight(.semibold))
+                                .foregroundColor(Color(white: 0.55))
+                            Text(fmt.string(from: NSNumber(value: scen[i].dollars)) ?? "")
+                                .font(.system(size: 13, weight: .semibold, design: .monospaced))
+                                .foregroundColor(orange)
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.5)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 8)
+                        .background(Color(white: 0.07))
+                        .cornerRadius(6)
+                    }
+                }
+            } else {
+                Color.clear.frame(height: 50)
             }
         }
     }
