@@ -60,7 +60,7 @@ class _ShellState extends State<_Shell> {
         currentIndex: _index,
         onTap: (i) => setState(() => _index = i),
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.calculate_outlined), label: 'Fee'),
+          BottomNavigationBarItem(icon: Icon(Icons.calculate_outlined), label: 'Calc'),
           BottomNavigationBarItem(icon: Icon(Icons.show_chart), label: 'Curves'),
           BottomNavigationBarItem(icon: Icon(Icons.info_outline), label: 'Info'),
           BottomNavigationBarItem(icon: Icon(Icons.science_outlined), label: 'Diag'),

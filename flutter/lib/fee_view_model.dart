@@ -17,14 +17,14 @@ class FeeViewModel extends ChangeNotifier {
   static const notionalValues = <double>[
     1_000_000, 5_000_000, 10_000_000, 20_000_000,
   ];
-  static const tenorLabels = <String>['1Y', '5Y', '7Y', '10Y'];
-  static const tenorYearsList = <int>[1, 5, 7, 10];
+  static const tenorLabels = <String>['1Y', '2Y', '3Y', '4Y', '5Y', '7Y', '10Y'];
+  static const tenorYearsList = <int>[1, 2, 3, 4, 5, 7, 10];
 
   // Inputs
   int _regionIndex = 0;
   int _buySellIndex = 0;       // 0=Buy 1=Sell
   int _notionalIndex = 2;      // 10M default
-  int _maturityIndex = 1;      // 5Y default
+  int _maturityIndex = 4;      // 5Y default (index into tenorYearsList)
   int _couponIndex = 0;
   int _recoveryIndex = 0;
   double _spreadBp = 100;

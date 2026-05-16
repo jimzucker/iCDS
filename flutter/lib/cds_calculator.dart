@@ -3,6 +3,8 @@
 /// business-day adder, and a CdsResult that carries the same set of
 /// outputs as the Swift app's CDSResult.
 
+import 'dart:math' as math;
+
 import 'cds_holiday_calendar.dart';
 import 'icds_spike.dart' as icds_spike;
 
@@ -66,6 +68,22 @@ class CdsCalculator {
   static DateTime lastValidTradeDate(DateTime date,
       {CdsRegion region = CdsRegion.nyFed}) {
     return CDSHolidayCalendar.prevBusinessDay(date, region);
+  }
+
+  /// Cumulative probability of default by [years] under a flat-hazard
+  /// (credit-triangle) approximation: λ = (spreadBp/1e4) / (1 − recovery),
+  /// P(default ≤ T) = 1 − e^(−λ·T). Parity with Swift
+  /// `CDSCalculator.cumulativeDefaultProb` — drives the Default-Risk-by-
+  /// Maturity chart and is intentionally independent of the ISDA bootstrap.
+  static double cumulativeDefaultProb({
+    required double spreadBp,
+    required double recoveryRate,
+    required num years,
+  }) {
+    if (years <= 0 || spreadBp <= 0 || recoveryRate >= 1) return 0;
+    final lambda = (spreadBp / 10000.0) / (1.0 - recoveryRate);
+    final p = 1.0 - math.exp(-lambda * years);
+    return math.min(1.0, math.max(0.0, p));
   }
 
   /// Compute the upfront fee for a SNAC CDS trade. Mirrors the inputs of

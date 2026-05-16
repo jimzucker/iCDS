@@ -214,12 +214,98 @@ class icdsTests: XCTestCase {
     }
 
     func testAllTenorsSucceed() {
-        for tenor in [1, 5, 7, 10] {
+        for tenor in [1, 2, 3, 4, 5, 7, 10] {
             let r = CDSCalculator.calculate(tradeDate: refDate, tenorYears: tenor,
                                             parSpreadBp: 200, couponBp: 100,
                                             recoveryRate: 0.40, notional: 10_000_000, isBuy: true)
             XCTAssertNotNil(r, "\(tenor)Y tenor should succeed")
         }
+    }
+
+    // MARK: - SNAC tenor grid (1/2/3/4/5/7/10Y)
+
+    /// The newly added short tenors (2Y/3Y/4Y) must roll to the next IMM
+    /// date just like the original grid does.
+    func testNewShortTenorsRollToNextIMM() {
+        // refDate = 15-Apr-2024 → +N years, then next IMM (20 Jun of that year,
+        // since Apr is before the Jun-20 IMM).
+        for (tenor, expectedYear) in [(2, 2026), (3, 2027), (4, 2028)] {
+            let r = CDSCalculator.calculate(tradeDate: refDate, tenorYears: tenor,
+                                            parSpreadBp: 200, couponBp: 100,
+                                            recoveryRate: 0.40, notional: 10_000_000, isBuy: true)
+            let r2 = try? XCTUnwrap(r, "\(tenor)Y should price")
+            guard let res = r2 else { continue }
+            var mdy = TMonthDayYear()
+            JpmcdsDateToMDY(res.endDate, &mdy)
+            XCTAssertEqual(Int(mdy.month), 6, "\(tenor)Y maturity should land on the Jun IMM")
+            XCTAssertEqual(Int(mdy.day), 20, "\(tenor)Y maturity day should be the 20th")
+            XCTAssertEqual(Int(mdy.year), expectedYear, "\(tenor)Y maturity year")
+        }
+    }
+
+    /// With spread above coupon the buyer pays upfront, and longer
+    /// protection costs strictly more — upfront must increase monotonically
+    /// across the full SNAC tenor ladder.
+    func testUpfrontMonotonicAcrossTenorLadder() {
+        var prev = -Double.greatestFiniteMagnitude
+        for tenor in [1, 2, 3, 4, 5, 7, 10] {
+            let r = CDSCalculator.calculate(tradeDate: refDate, tenorYears: tenor,
+                                            parSpreadBp: 300, couponBp: 100,
+                                            recoveryRate: 0.40, notional: 10_000_000, isBuy: true)!
+            XCTAssertGreaterThan(r.upfrontDollars, prev,
+                                 "\(tenor)Y upfront should exceed the shorter tenor's")
+            prev = r.upfrontDollars
+        }
+    }
+
+    /// Guards the default selection: 5Y must remain the default maturity
+    /// after expanding the grid (index 4), and the label/year arrays must
+    /// stay the same length and aligned.
+    @MainActor
+    func testFeeViewModelTenorGridAndDefault() {
+        let vm = FeeViewModel()
+        XCTAssertEqual(vm.tenorYears, [1, 2, 3, 4, 5, 7, 10])
+        XCTAssertEqual(vm.tenorLabels.count, vm.tenorYears.count)
+        XCTAssertEqual(vm.tenorLabels[vm.maturityIndex], "5Y",
+                       "5Y must remain the default maturity")
+        XCTAssertEqual(vm.tenorYears[vm.maturityIndex], 5)
+    }
+
+    // MARK: - Default-risk (flat-hazard cumulative default probability)
+
+    /// Closed-form values: λ = (150/1e4)/(1−0.40) = 0.025,
+    /// P(T) = 1 − e^(−0.025·T).
+    func testCumulativeDefaultProbClosedForm() {
+        func pd(_ t: Double) -> Double {
+            CDSCalculator.cumulativeDefaultProb(spreadBp: 150, recoveryRate: 0.40, years: t)
+        }
+        XCTAssertEqual(pd(1),  0.0246901, accuracy: 1e-6)
+        XCTAssertEqual(pd(2),  0.0487706, accuracy: 1e-6)
+        XCTAssertEqual(pd(5),  0.1175031, accuracy: 1e-6)
+        XCTAssertEqual(pd(10), 0.2211992, accuracy: 1e-6)
+    }
+
+    func testCumulativeDefaultProbProperties() {
+        // Monotonic increasing in maturity
+        var prev = 0.0
+        for t in [1.0, 2, 3, 4, 5, 7, 10] {
+            let p = CDSCalculator.cumulativeDefaultProb(spreadBp: 150, recoveryRate: 0.40, years: t)
+            XCTAssertGreaterThan(p, prev, "PD should increase with maturity")
+            XCTAssertLessThan(p, 1.0, "PD must stay below 1")
+            prev = p
+        }
+        // Monotonic increasing in spread
+        let pLow  = CDSCalculator.cumulativeDefaultProb(spreadBp: 100, recoveryRate: 0.40, years: 5)
+        let pHigh = CDSCalculator.cumulativeDefaultProb(spreadBp: 400, recoveryRate: 0.40, years: 5)
+        XCTAssertGreaterThan(pHigh, pLow, "Wider spread → higher implied default prob")
+        // Lower recovery → higher implied default prob
+        let pRecLow  = CDSCalculator.cumulativeDefaultProb(spreadBp: 150, recoveryRate: 0.20, years: 5)
+        let pRecHigh = CDSCalculator.cumulativeDefaultProb(spreadBp: 150, recoveryRate: 0.60, years: 5)
+        XCTAssertGreaterThan(pRecLow, pRecHigh)
+        // Degenerate inputs return 0
+        XCTAssertEqual(CDSCalculator.cumulativeDefaultProb(spreadBp: 150, recoveryRate: 0.40, years: 0), 0)
+        XCTAssertEqual(CDSCalculator.cumulativeDefaultProb(spreadBp: 0,   recoveryRate: 0.40, years: 5), 0)
+        XCTAssertEqual(CDSCalculator.cumulativeDefaultProb(spreadBp: 150, recoveryRate: 1.0, years: 5), 0)
     }
 
     func testAllRegionRecoveryRatesProduceResults() {

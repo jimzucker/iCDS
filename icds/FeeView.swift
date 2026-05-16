@@ -29,6 +29,7 @@ struct FeeView: View {
                 termRows
                 spreadFeeRow
                 outputGrid
+                defaultRiskChart
             }
             .padding(.horizontal, 12)
             .padding(.vertical, 8)
@@ -148,7 +149,7 @@ struct FeeView: View {
             showSpreadPicker = true
         } label: {
             VStack(spacing: 4) {
-                Text("QUOTED SPREAD · tap")
+                Text("QUOTED SPREAD")
                     .font(.caption2.weight(.semibold))
                     .tracking(1)
                     .foregroundColor(Color(white: 0.55))
@@ -443,7 +444,7 @@ struct FeeView: View {
     private var tradeDateCell: some View {
         Button { showDatePicker = true } label: {
             VStack(alignment: .leading, spacing: 2) {
-                Text("Trade Date  ·  tap to pick")
+                Text("Trade Date")
                     .font(.caption2)
                     .foregroundColor(Color(white: 0.55))
                 HStack(spacing: 6) {
@@ -529,6 +530,66 @@ struct FeeView: View {
             }
         }
         .sheet(isPresented: $showDatePicker) { datePickerSheet }
+    }
+
+    // MARK: - Default-risk-by-maturity chart
+    //
+    // Flat-hazard cumulative default probability at each SNAC tenor.
+    // Bars scale to the longest-tenor probability so the shape stays
+    // readable at any spread; tapping a bar selects that maturity.
+
+    private var defaultRiskChart: some View {
+        let recovery = Double(vm.recoveryPct) / 100.0
+        let probs = vm.tenorYears.map {
+            CDSCalculator.cumulativeDefaultProb(spreadBp: vm.spreadBp,
+                                                recoveryRate: recovery,
+                                                years: Double($0))
+        }
+        let maxP = max(probs.max() ?? 0, 0.0001)
+        let sel = min(max(vm.maturityIndex, 0), probs.count - 1)
+        return VStack(alignment: .leading, spacing: 6) {
+            HStack(spacing: 4) {
+                Text("DEFAULT RISK")
+                    .font(.caption2.weight(.bold)).tracking(1)
+                    .foregroundColor(orange.opacity(0.85))
+                Text("· by maturity")
+                    .font(.caption2)
+                    .foregroundColor(Color(white: 0.55))
+                Spacer()
+                Text(String(format: "%@  ≈ %.1f%% to default",
+                            vm.tenorLabels[sel], probs[sel] * 100))
+                    .font(.system(.caption2, design: .monospaced))
+                    .foregroundColor(orange)
+            }
+            HStack(alignment: .bottom, spacing: 6) {
+                ForEach(vm.tenorYears.indices, id: \.self) { i in
+                    let isSel = i == sel
+                    VStack(spacing: 3) {
+                        Text(String(format: "%.1f%%", probs[i] * 100))
+                            .font(.system(size: 9, design: .monospaced))
+                            .foregroundColor(isSel ? orange : Color(white: 0.55))
+                            .lineLimit(1).minimumScaleFactor(0.6)
+                        RoundedRectangle(cornerRadius: 2)
+                            .fill(isSel ? orange : Color(white: 0.23))
+                            .frame(height: max(4, CGFloat(probs[i] / maxP) * 64))
+                        Text(vm.tenorLabels[i])
+                            .font(.system(size: 10, design: .monospaced))
+                            .foregroundColor(isSel ? orange : Color(white: 0.4))
+                    }
+                    .frame(maxWidth: .infinity)
+                    .contentShape(Rectangle())
+                    .onTapGesture { vm.maturityIndex = i }
+                }
+            }
+            .frame(height: 96, alignment: .bottom)
+            Text("Cumulative default prob · flat-hazard")
+                .font(.system(size: 9))
+                .foregroundColor(Color(white: 0.4))
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(10)
+        .background(Color(white: 0.07))
+        .cornerRadius(8)
     }
 
     // MARK: - Helpers

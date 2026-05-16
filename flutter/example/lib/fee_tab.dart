@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:icds_spike/cds_calculator.dart';
 import 'package:icds_spike/fee_view_model.dart';
 import 'package:icds_spike/sofr_fetcher.dart';
 
@@ -73,6 +74,8 @@ class _FeeTabState extends State<FeeTab> {
               _spreadFeeRow(),
               const SizedBox(height: 12),
               _outputGrid(),
+              const SizedBox(height: 12),
+              _defaultRiskChart(),
             ],
           ),
         ),
@@ -253,7 +256,7 @@ class _FeeTabState extends State<FeeTab> {
         alignment: Alignment.center,
         child: Column(
           children: [
-            const Text('QUOTED SPREAD · tap',
+            const Text('QUOTED SPREAD',
               style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: AppTheme.captionText, letterSpacing: 1)),
             const SizedBox(height: 4),
             Row(
@@ -391,7 +394,7 @@ class _FeeTabState extends State<FeeTab> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Trade Date  ·  tap to pick',
+                    const Text('Trade Date',
                       style: TextStyle(fontSize: 11, color: Color(0xFF8C8C8C))),
                     const SizedBox(height: 2),
                     Row(
@@ -492,6 +495,102 @@ class _FeeTabState extends State<FeeTab> {
           Text(label, style: const TextStyle(fontSize: 11, color: Color(0xFF8C8C8C))),
           const SizedBox(height: 2),
           Text(value, style: const TextStyle(fontSize: 14, fontFamily: 'Menlo', color: AppTheme.orange)),
+        ],
+      ),
+    );
+  }
+
+  /// Flat-hazard cumulative default probability at each SNAC tenor.
+  /// Bars scale to the longest-tenor probability; tapping a bar selects
+  /// that maturity. Port of Swift `FeeView.defaultRiskChart`.
+  Widget _defaultRiskChart() {
+    final recovery = _vm.recoveryPct / 100.0;
+    const years = FeeViewModel.tenorYearsList;
+    const labels = FeeViewModel.tenorLabels;
+    final probs = [
+      for (final y in years)
+        CdsCalculator.cumulativeDefaultProb(
+          spreadBp: _vm.spreadBp,
+          recoveryRate: recovery,
+          years: y,
+        ),
+    ];
+    final maxP = probs.fold<double>(0.0001, (m, p) => p > m ? p : m);
+    final sel = _vm.maturityIndex.clamp(0, probs.length - 1).toInt();
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: const Color(0xFF121212),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Text('DEFAULT RISK',
+                style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold,
+                  letterSpacing: 1, color: AppTheme.orange)),
+              const SizedBox(width: 4),
+              const Text('· by maturity',
+                style: TextStyle(fontSize: 10, color: Color(0xFF8C8C8C))),
+              const Spacer(),
+              Text(
+                '${labels[sel]}  ≈ ${(probs[sel] * 100).toStringAsFixed(1)}% to default',
+                style: const TextStyle(fontSize: 10, fontFamily: 'Menlo', color: AppTheme.orange),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          SizedBox(
+            height: 112,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                for (var i = 0; i < years.length; i++) ...[
+                  Expanded(
+                    child: GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: () => _vm.maturityIndex = i,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Text(
+                            '${(probs[i] * 100).toStringAsFixed(1)}%',
+                            style: TextStyle(
+                              fontSize: 9, fontFamily: 'Menlo',
+                              color: i == sel ? AppTheme.orange : const Color(0xFF8C8C8C),
+                            ),
+                          ),
+                          const SizedBox(height: 3),
+                          Container(
+                            height: (probs[i] / maxP * 70).clamp(4.0, 70.0).toDouble(),
+                            decoration: BoxDecoration(
+                              color: i == sel ? AppTheme.orange : const Color(0xFF3A3A3A),
+                              borderRadius: BorderRadius.circular(2),
+                            ),
+                          ),
+                          const SizedBox(height: 3),
+                          Text(
+                            labels[i],
+                            style: TextStyle(
+                              fontSize: 10, fontFamily: 'Menlo',
+                              color: i == sel ? AppTheme.orange : const Color(0xFF666666),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  if (i != years.length - 1) const SizedBox(width: 6),
+                ],
+              ],
+            ),
+          ),
+          const SizedBox(height: 6),
+          const Text('Cumulative default prob · flat-hazard',
+            style: TextStyle(fontSize: 9, color: Color(0xFF666666))),
         ],
       ),
     );

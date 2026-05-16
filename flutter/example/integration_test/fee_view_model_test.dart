@@ -52,6 +52,21 @@ void main() {
     });
   });
 
+  group('FeeViewModel — SNAC tenor grid', () {
+    test('grid is 1/2/3/4/5/7/10Y and 5Y stays the default', () {
+      // Static lists + default index are set synchronously at construction.
+      // Parity with Swift testFeeViewModelTenorGridAndDefault.
+      final vm = FeeViewModel();
+      expect(FeeViewModel.tenorYearsList, [1, 2, 3, 4, 5, 7, 10]);
+      expect(FeeViewModel.tenorLabels.length,
+          FeeViewModel.tenorYearsList.length);
+      expect(FeeViewModel.tenorLabels[vm.maturityIndex], '5Y',
+          reason: '5Y must remain the default maturity');
+      expect(FeeViewModel.tenorYearsList[vm.maturityIndex], 5);
+      vm.dispose();
+    });
+  });
+
   group('FeeViewModel — spread initialization', () {
     test('spreadBp positive at construction (defaulted from coupon list)', () async {
       final vm = FeeViewModel();

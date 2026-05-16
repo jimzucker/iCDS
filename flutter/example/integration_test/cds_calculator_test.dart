@@ -103,10 +103,31 @@ void main() {
       expect((r.parSpreadBp - 150.0).abs(), lessThan(1.0));
     });
 
-    test('all SNAC tenors (1Y/5Y/7Y/10Y) succeed', () {
-      for (final t in [1, 5, 7, 10]) {
+    test('all SNAC tenors (1/2/3/4/5/7/10Y) succeed', () {
+      for (final t in [1, 2, 3, 4, 5, 7, 10]) {
         expect(calc(parSpread: 200, coupon: 100, tenor: t), isNotNull,
             reason: '${t}Y tenor');
+      }
+    });
+
+    test('new short tenors (2/3/4Y) roll to the next IMM date', () {
+      // refDate = 15-Apr-2024 → +N years, then next IMM (20 Jun of that year,
+      // since Apr precedes the Jun-20 IMM). Parity with Swift
+      // testNewShortTenorsRollToNextIMM.
+      for (final tc in [(2, 2026), (3, 2027), (4, 2028)]) {
+        final r = calc(parSpread: 200, coupon: 100, tenor: tc.$1)!;
+        expect(r.endDate, DateTime(tc.$2, 6, 20), reason: '${tc.$1}Y maturity');
+      }
+    });
+
+    test('upfront increases monotonically across the SNAC tenor ladder', () {
+      // Spread above coupon → buyer pays; longer protection costs more.
+      // Parity with Swift testUpfrontMonotonicAcrossTenorLadder.
+      var prev = -double.infinity;
+      for (final t in [1, 2, 3, 4, 5, 7, 10]) {
+        final r = calc(parSpread: 300, coupon: 100, tenor: t)!;
+        expect(r.upfrontDollars, greaterThan(prev), reason: '${t}Y upfront');
+        prev = r.upfrontDollars;
       }
     });
   });

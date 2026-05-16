@@ -53,6 +53,21 @@ struct CDSCalculator {
         return cal.date(from: dc) ?? date
     }
 
+    /// Cumulative probability of default by `years` under a flat-hazard
+    /// (credit-triangle) approximation: λ = (spreadBp/1e4) / (1 − recovery),
+    /// P(default ≤ T) = 1 − e^(−λ·T). Drives the Default-Risk-by-Maturity
+    /// chart. Intentionally independent of the ISDA bootstrap so it stays a
+    /// cheap closed-form indicator consistent with the app's flat-curve
+    /// simplification.
+    static func cumulativeDefaultProb(spreadBp: Double,
+                                      recoveryRate: Double,
+                                      years: Double) -> Double {
+        guard years > 0, spreadBp > 0, recoveryRate < 1 else { return 0 }
+        let lambda = (spreadBp / 10_000.0) / (1.0 - recoveryRate)
+        let p = 1.0 - exp(-lambda * years)
+        return min(max(p, 0.0), 1.0)
+    }
+
     static func tdate(from date: Date) -> TDate {
         let cal = Calendar.current
         return JpmcdsDate(

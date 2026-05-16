@@ -12,7 +12,7 @@ struct ContentView: View {
     var body: some View {
         TabView {
             FeeView()
-                .tabItem { Label("Fee", image: "CalcTabbarIcon") }
+                .tabItem { Label("Calc", image: "CalcTabbarIcon") }
             LiborView()
                 .tabItem { Label("Curves", systemImage: "chart.line.uptrend.xyaxis") }
             InfoView()

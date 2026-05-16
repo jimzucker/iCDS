@@ -73,7 +73,7 @@ lives at `/tmp/icds_final_mock_v1..v12.html` — static HTML phone frames (393pt
 width). No HTML renderer is available in this environment, so mocks are delivered as
 `.html` and opened directly in a browser. **v12 is the chosen/locked design** — same
 layout as v11 with helper micro-copy stripped (bare labels; affordances are icon-only
-✎/📅; per-metric unit captions kept). Not yet wired into `FeeView.swift`.
+✎/📅; per-metric unit captions kept). **Implemented** — see "Status" below.
 
 Decisions locked in v9:
 - **SNAC tenor grid = 1Y · 2Y · 3Y · 4Y · 5Y · 7Y · 10Y.** All engine-supported:
@@ -100,6 +100,32 @@ Decisions locked in v9:
   Coupon selector + Notional editable field on top. A half-width 7-segment bar (~25pt)
   fails the 44pt tap minimum, which is why A used a dropdown; B keeps the bar full-width
   (~52pt) so it stays a segmented control.
+
+### Status: IMPLEMENTED in both apps (branch `claude/upfront-interest-accrual-JWv90`)
+
+Shipped, not just mocked — Swift (`icds/`) + Flutter (`flutter/`), kept at parity:
+- **Tenor grid → `[1,2,3,4,5,7,10]`, 5Y default.** Swift `FeeViewModel.swift`
+  (`maturityIndex` default index moved 1 → **4**); Flutter `fee_view_model.dart`
+  (`_maturityIndex` 1 → 4). No engine change — `calculate(tenorYears:)` already rolls
+  any integer year to the next IMM date. (Legacy unused `FeeViewController.swift` left
+  on the old 4-tenor list; its storyboard control still has 4 segments.)
+- **Fee → Calc** tab label: Swift `ContentView.swift`; Flutter `main.dart` (icons were
+  already calc-themed).
+- **`CDSCalculator.cumulativeDefaultProb(spreadBp:recoveryRate:years:)`** — new pure
+  closed-form `1 − e^(−λT)`, `λ = (spreadBp/1e4)/(1−R)`. Mirrored in Dart
+  `CdsCalculator.cumulativeDefaultProb`. Drives the **Default-Risk-by-Maturity chart**
+  (`FeeView.defaultRiskChart` / `FeeTab._defaultRiskChart`): 7 bars, selected tenor
+  highlighted, tap-a-bar selects that maturity. Deliberately independent of the ISDA
+  bootstrap (consistent with the app's flat-curve simplification).
+- **Trimmed copy**: "QUOTED SPREAD · tap" → "QUOTED SPREAD"; "Trade Date · tap to
+  pick" → "Trade Date" (both apps). Full v12 layout (CS01/DV01/Rec01 metrics, etc.)
+  was **out of scope** and not built.
+- **Tests** (parity, both suites): fixed the hardcoded `[1,5,7,10]` loops
+  (`icdsTests.swift`, `cds_calculator_test.dart`); added new-tenor IMM-roll +
+  upfront-monotonicity + 5Y-default-guard tests; added closed-form `cumulativeDefaultProb`
+  tests — Swift in `icdsTests.swift`, pure-Dart in `flutter/test/default_risk_test.dart`.
+  **Not run here** (no Xcode/Flutter toolchain on this host): verify with Xcode `⌘U`
+  and `flutter test` / `flutter test integration_test`.
 
 ## App Store requirements satisfied
 - `arm64` in `UIRequiredDeviceCapabilities`
