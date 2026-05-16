@@ -25,6 +25,11 @@ This is an Xcode project — there is no CLI build script. Open `icds.xcodeproj`
 
 Deployment target is **iOS 16.0**. The app is locked to dark mode via `SceneDelegate`.
 
+**Claude Code on the web:** `.claude/hooks/session-start.sh` (async SessionStart
+hook) installs Flutter stable so web sessions can run the **pure-Dart suite**
+(`cd flutter && flutter test test/`) and `dart analyze`. iOS (Xcode) and Flutter
+**integration** tests still require a Mac / device — not runnable on the web host.
+
 ## Architecture
 
 ### Swift layer

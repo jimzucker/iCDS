@@ -28,24 +28,43 @@ No pricing-engine change — `calculate(tenorYears:)` already rolls any integer 
 
 Locked design reference (open in a browser): `docs/mocks/fee_v12_locked_design.html`.
 
-## NOT verified — must build on your laptop
+## Verification status
 
-This was done on a host with **no Xcode and no Flutter/Dart SDK**, so nothing was compiled or run.
+A SessionStart hook (`.claude/hooks/session-start.sh`, async) now installs
+Flutter stable in Claude Code web sessions, so part of this is **validated**:
 
-- **iOS:** open `icds.xcodeproj`, ⌘B then ⌘U (runs `icdsTests` + `icdsUITests`).
-- **Flutter pure-Dart** (no device):
-  ```
-  cd flutter
-  flutter test test/default_risk_test.dart
-  flutter test test/imm_test.dart
-  ```
-- **Flutter integration** (needs sim/emulator, loads FFI):
+- ✅ **Flutter pure-Dart suite GREEN here:** `flutter test test/default_risk_test.dart
+  test/imm_test.dart` → 10/10 pass (Flutter 3.41.9 stable).
+- ✅ **`dart analyze` clean** on changed Dart: `lib/cds_calculator.dart`,
+  `lib/fee_view_model.dart` (only 2 pre-existing `info` lints), and
+  `example/lib/fee_tab.dart`, `example/lib/main.dart` → no issues. This de-risks
+  the Flutter UI that couldn't be compiled before.
+- ⚠️ The pure-Dart run caught a backwards assertion in the recovery-direction
+  test (formula was right: credit triangle λ=S/(1−R) ⇒ higher R ⇒ higher implied
+  PD for fixed spread). Fixed in both `default_risk_test.dart` and
+  `icdsTests.swift`.
+
+**Still must be verified on your Mac (no Xcode/no device here):**
+
+- **iOS:** open `icds.xcodeproj`, confirm it loads (pbxproj hand-edited — see
+  warning above), ⌘B then ⌘U (`icdsTests` + `icdsUITests`).
+- **Flutter integration** (needs sim/emulator, loads FFI) — incl. the new
+  risk-metric parity tests in `integration_test/cds_calculator_test.dart`:
   ```
   cd flutter/example
   flutter test integration_test -d "iPhone 17 Pro"      # or: -d emulator-5554
   ```
 
-During self-review I fixed two Dart return-type issues (`.clamp()` returns `num`, not `double`) in `cds_calculator.dart` and `fee_tab.dart` — worth a glance if Dart analyze flags anything.
+## SessionStart hook (Claude Code on the web)
+
+`.claude/hooks/session-start.sh` (registered in `.claude/settings.json`) runs
+**async** on web sessions: clones Flutter stable to `~/flutter`, persists PATH,
+runs `flutter pub get` in `flutter/` and `flutter/example/`. Async = the session
+starts immediately; a `flutter test` issued before the install finishes will
+fail (wait ~1–2 min on a cold container; instant once the container is cached).
+Local runs are a no-op (guarded by `CLAUDE_CODE_REMOTE`).
+
+**Once this branch merges to the default branch, all future web sessions get it.**
 
 ## New / changed tests
 

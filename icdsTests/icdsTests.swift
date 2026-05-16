@@ -298,10 +298,11 @@ class icdsTests: XCTestCase {
         let pLow  = CDSCalculator.cumulativeDefaultProb(spreadBp: 100, recoveryRate: 0.40, years: 5)
         let pHigh = CDSCalculator.cumulativeDefaultProb(spreadBp: 400, recoveryRate: 0.40, years: 5)
         XCTAssertGreaterThan(pHigh, pLow, "Wider spread → higher implied default prob")
-        // Lower recovery → higher implied default prob
-        let pRecLow  = CDSCalculator.cumulativeDefaultProb(spreadBp: 150, recoveryRate: 0.20, years: 5)
-        let pRecHigh = CDSCalculator.cumulativeDefaultProb(spreadBp: 150, recoveryRate: 0.60, years: 5)
-        XCTAssertGreaterThan(pRecLow, pRecHigh)
+        // Credit triangle λ = S/(1−R): for a fixed spread, higher recovery
+        // ⇒ smaller (1−R) ⇒ larger λ ⇒ higher implied default probability.
+        let pRec20 = CDSCalculator.cumulativeDefaultProb(spreadBp: 150, recoveryRate: 0.20, years: 5)
+        let pRec60 = CDSCalculator.cumulativeDefaultProb(spreadBp: 150, recoveryRate: 0.60, years: 5)
+        XCTAssertGreaterThan(pRec60, pRec20)
         // Degenerate inputs return 0
         XCTAssertEqual(CDSCalculator.cumulativeDefaultProb(spreadBp: 150, recoveryRate: 0.40, years: 0), 0)
         XCTAssertEqual(CDSCalculator.cumulativeDefaultProb(spreadBp: 0,   recoveryRate: 0.40, years: 5), 0)

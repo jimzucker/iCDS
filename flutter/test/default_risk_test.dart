@@ -39,12 +39,13 @@ void main() {
       expect(high, greaterThan(low));
     });
 
-    test('lower recovery → higher implied default probability', () {
-      final recLow = CdsCalculator.cumulativeDefaultProb(
+    test('higher recovery → higher implied default prob (fixed spread)', () {
+      // Credit triangle: λ = S / (1 − R); larger R ⇒ smaller (1−R) ⇒ larger λ.
+      final r20 = CdsCalculator.cumulativeDefaultProb(
           spreadBp: 150, recoveryRate: 0.20, years: 5);
-      final recHigh = CdsCalculator.cumulativeDefaultProb(
+      final r60 = CdsCalculator.cumulativeDefaultProb(
           spreadBp: 150, recoveryRate: 0.60, years: 5);
-      expect(recLow, greaterThan(recHigh));
+      expect(r60, greaterThan(r20));
     });
 
     test('degenerate inputs return 0', () {
