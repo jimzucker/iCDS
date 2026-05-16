@@ -69,9 +69,9 @@ The `.gitignore` now correctly tracks `project.pbxproj`. The C source files were
 ## UI design — FeeView mock iteration
 
 Active design work on the **Fee tab UI** (SwiftUI `icds/FeeView.swift`). Mock series
-lives at `/tmp/icds_final_mock_v1..v9.html` — static HTML phone frames (393pt iPhone
+lives at `/tmp/icds_final_mock_v1..v10.html` — static HTML phone frames (393pt iPhone
 width). No HTML renderer is available in this environment, so mocks are delivered as
-`.html` and opened directly in a browser. **v9 is current.**
+`.html` and opened directly in a browser. **v10 is current.**
 
 Decisions locked in v9:
 - **SNAC tenor grid = 1Y · 2Y · 3Y · 4Y · 5Y · 7Y · 10Y.** All engine-supported:
@@ -87,12 +87,15 @@ Decisions locked in v9:
   2Y 4.9%, 3Y 7.2%, 4Y 9.5%, 5Y 11.8%, 7Y 16.0%, 10Y 22.1%. Re-scales with spread.
 
 Open decision (NOT yet wired into `FeeView.swift`):
-- **Variant A (recommended):** Maturity as a compact dropdown paired on one row with
-  Coupon; Notional editable field promoted to top. Scales to any tenor count, saves a row.
+- **Variant A (recommended, refined in v10):** Maturity as a compact dropdown showing
+  just `5Y ▾` (resolved IMM date lives on the Period line, not in the control), paired
+  on one row with **Coupon as a 2-segment selector** (`100 | 500` — only Maturity needs
+  a dropdown; 2-option Coupon is the ideal segmented-control case). Notional editable
+  field promoted to top. Scales to any tenor count, saves a row.
 - **Variant B:** keep the full-width segmented bar, extended to 7 segments (~52pt each —
   above the 44pt tap minimum but labels tight, still a dedicated row).
 - A half-width 7-segment bar (~25pt) fails the 44pt tap minimum — this is why a paired
-  layout requires the dropdown, not a bar.
+  layout requires the dropdown for Maturity, not a bar.
 
 ## App Store requirements satisfied
 - `arm64` in `UIRequiredDeviceCapabilities`
