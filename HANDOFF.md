@@ -66,6 +66,30 @@ Local runs are a no-op (guarded by `CLAUDE_CODE_REMOTE`).
 
 **Once this branch merges to the default branch, all future web sessions get it.**
 
+## Enable Xcode Cloud (closes the iOS-verification gap)
+
+iOS can't be built/tested on the web host (Xcode is macOS-only). Xcode Cloud
+(Apple's hosted CI) can run `icdsTests`/`icdsUITests` on every push and gives the
+hand-edited `project.pbxproj` its first real `xcodebuild` validation. A
+`ci_scripts/ci_post_clone.sh` is already on the branch (no-op for the iOS build;
+optional Flutter behind `INSTALL_FLUTTER=1`).
+
+One-time setup (needs a Mac + Xcode signed into the Apple Developer team):
+1. Xcode → **Integrate ▸ Create Workflow** (or App Store Connect ▸ the app ▸
+   Xcode Cloud).
+2. Grant access to GitHub `jimzucker/iCDS`.
+3. Workflow: **Start Condition** = branch changes / PRs (start with
+   `claude/upfront-interest-accrual-JWv90`, later `main`); **Environment** = latest
+   Xcode; **Action = Test** → scheme `icds`, the `icds.xctestplan`, an iOS 16+
+   simulator.
+4. First run = build + tests + pbxproj validation, no laptop needed thereafter.
+5. *(Optional)* Flutter iOS-integration on Xcode Cloud: set workflow env
+   `INSTALL_FLUTTER=1` and add a post-xcodebuild step (see notes in
+   `ci_scripts/ci_post_clone.sh`). Adds compute time — skip for iOS-only.
+
+Xcode Cloud is iOS-only; it does **not** replace the Flutter pure-Dart suite
+(SessionStart hook) and won't run Flutter integration without the optional step.
+
 ## New / changed tests
 
 - `icdsTests/icdsTests.swift` — unhardcoded `[1,5,7,10]`; added: new-tenor IMM-roll, upfront monotonicity across the ladder, 5Y-default guard (`@MainActor`), closed-form `cumulativeDefaultProb` + properties.
