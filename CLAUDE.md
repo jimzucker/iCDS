@@ -69,9 +69,10 @@ The `.gitignore` now correctly tracks `project.pbxproj`. The C source files were
 ## UI design — FeeView mock iteration
 
 Active design work on the **Fee tab UI** (SwiftUI `icds/FeeView.swift`). Mock series
-lives at `/tmp/icds_final_mock_v1..v10.html` — static HTML phone frames (393pt iPhone
+lives at `/tmp/icds_final_mock_v1..v11.html` — static HTML phone frames (393pt iPhone
 width). No HTML renderer is available in this environment, so mocks are delivered as
-`.html` and opened directly in a browser. **v10 is current.**
+`.html` and opened directly in a browser. **v11 is the chosen/locked design** (not
+yet wired into `FeeView.swift`).
 
 Decisions locked in v9:
 - **SNAC tenor grid = 1Y · 2Y · 3Y · 4Y · 5Y · 7Y · 10Y.** All engine-supported:
@@ -86,16 +87,18 @@ Decisions locked in v9:
   flat-hazard approx, h = spread / (1 − recovery). At 150 bp, R = 40% ⇒ 1Y 2.5%,
   2Y 4.9%, 3Y 7.2%, 4Y 9.5%, 5Y 11.8%, 7Y 16.0%, 10Y 22.1%. Re-scales with spread.
 
-Open decision (NOT yet wired into `FeeView.swift`):
-- **Variant A (recommended, refined in v10):** Maturity as a compact dropdown showing
-  just `5Y ▾` (resolved IMM date lives on the Period line, not in the control), paired
-  on one row with **Coupon as a 2-segment selector** (`100 | 500` — only Maturity needs
-  a dropdown; 2-option Coupon is the ideal segmented-control case). Notional editable
-  field promoted to top. Scales to any tenor count, saves a row.
-- **Variant B:** keep the full-width segmented bar, extended to 7 segments (~52pt each —
-  above the 44pt tap minimum but labels tight, still a dedicated row).
-- A half-width 7-segment bar (~25pt) fails the 44pt tap minimum — this is why a paired
-  layout requires the dropdown for Maturity, not a bar.
+**Decision (v11, locked — NOT yet wired into `FeeView.swift`):** Variant B chosen.
+- **Maturity:** full-width segmented bar, extended to all 7 SNAC tenors
+  (1/2/3/4/5/7/10Y, ~52pt per segment, `font-size:11px` to keep labels readable).
+- **Coupon:** 2-segment selector (`100 | 500`, region-driven).
+- **Notional:** reverted to a 4-segment selector (`1M / 5M / 10M / 20M`) per explicit
+  user request — overrides the earlier "editable field" recommendation.
+- Structurally identical to v8 plus 3 extra Maturity segments and 3 extra chart bars —
+  no new rows, still fits one iPhone-16 screen with no scroll.
+- Rejected alternative (for context): Variant A paired Maturity dropdown (`5Y ▾`) +
+  Coupon selector + Notional editable field on top. A half-width 7-segment bar (~25pt)
+  fails the 44pt tap minimum, which is why A used a dropdown; B keeps the bar full-width
+  (~52pt) so it stays a segmented control.
 
 ## App Store requirements satisfied
 - `arm64` in `UIRequiredDeviceCapabilities`
