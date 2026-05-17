@@ -17,6 +17,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 enum RFRCurrency {
   usd, eur, gbp, jpy, aud;
@@ -72,6 +73,13 @@ class RFRFetchResult {
 
 class RFRFetcher {
   static const _timeout = Duration(seconds: 15);
+
+  /// FRED's CSV endpoint (used for JPY TONA) accepts the TLS handshake
+  /// quickly but the response body trickles in slowly. iOS's URLSession
+  /// uses an *idle* timeout so it waits as long as bytes keep arriving;
+  /// Dart's `Future.timeout` is a *total* budget. Give FRED a 60 s
+  /// budget so Android matches iOS's behaviour in practice.
+  static const _slowTimeout = Duration(seconds: 60);
 
   /// Some government APIs (BoE, ECB) reject non-browser User-Agents.
   static const _headers = {'User-Agent': 'Mozilla/5.0 (iCDS Flutter)'};
@@ -144,7 +152,8 @@ class RFRFetcher {
     final url = Uri.parse('https://fred.stlouisfed.org/graph/fredgraph.csv?id=IRSTCI01JPM156N');
     return _fetchCsv(
       tag: 'TONA', url: url, dateCol: 0, valueCol: 1,
-      fallback: RFRCurrency.jpy.fallbackRate, takeLast: true);
+      fallback: RFRCurrency.jpy.fallbackRate, takeLast: true,
+      timeout: _slowTimeout);
   }
 
   // === AUD — RBA F1 Interbank Overnight Cash Rate (CSV with header rows) ===
@@ -165,9 +174,10 @@ class RFRFetcher {
     required double fallback,
     String dateFormat = 'yyyy-MM-dd',
     bool takeLast = false,
+    Duration timeout = _timeout,
   }) async {
     try {
-      final resp = await http.get(url, headers: _headers).timeout(_timeout);
+      final resp = await http.get(url, headers: _headers).timeout(timeout);
       if (resp.statusCode != 200) {
         debugPrint('$tag fetch HTTP ${resp.statusCode}');
         return RFRFetchResult(fallback, 'unavailable');
@@ -246,6 +256,8 @@ class RFRRate {
 class SOFRRateStore extends ChangeNotifier {
   static final SOFRRateStore shared = SOFRRateStore._();
 
+  static const _prefsKey = 'icds.rfr.cache.v1';
+
   final Map<RFRCurrency, RFRRate> _rates = {};
   RFRRate? rateInfo(RFRCurrency ccy) => _rates[ccy];
 
@@ -264,8 +276,12 @@ class SOFRRateStore extends ChangeNotifier {
     for (final ccy in RFRCurrency.values) {
       _rates[ccy] = RFRRate(ccy.fallbackRate, '—', SOFRDataStatus.loading);
     }
-    // Fire async fetch (errors become per-currency .fallback statuses).
-    unawaited(refreshAll());
+    // Load persisted cache *then* fire the async refresh. The cache
+    // hydration is fire-and-forget too — if it lands before the first
+    // fetch resolves, the UI shows the last-known live rate instead of
+    // a "loading…" / fallback state. If the fetch wins the race, the
+    // live value replaces the cached one without flicker.
+    unawaited(_hydrateFromCache().then((_) => refreshAll()));
   }
 
   /// Fetch all 5 currencies concurrently. Updates listeners as each
@@ -281,11 +297,71 @@ class SOFRRateStore extends ChangeNotifier {
 
   Future<void> _refresh(RFRCurrency ccy) async {
     final r = await RFRFetcher.fetch(ccy);
-    final status = (r.effectiveDate == 'unavailable' || r.effectiveDate == 'static')
-        ? SOFRDataStatus.fallback
-        : SOFRDataStatus.live;
-    _rates[ccy] = RFRRate(r.rate, r.effectiveDate, status);
+    if (r.effectiveDate == 'unavailable' || r.effectiveDate == 'static') {
+      // Fetch failed. If we have a cached value from a prior session,
+      // keep the rate + real effective date so the user sees how stale
+      // it is — but mark it as fallback (yellow) so the UI does NOT
+      // claim we have a fresh live rate. If there's no cache either,
+      // fall back to the hardcoded fallbackRate + 'unavailable' date.
+      final existing = _rates[ccy];
+      if (existing != null && existing.status == SOFRDataStatus.live &&
+          existing.effectiveDate != '—' &&
+          existing.effectiveDate != 'unavailable') {
+        _rates[ccy] = RFRRate(
+            existing.rate, existing.effectiveDate, SOFRDataStatus.fallback);
+      } else {
+        _rates[ccy] = RFRRate(r.rate, r.effectiveDate, SOFRDataStatus.fallback);
+      }
+    } else {
+      _rates[ccy] = RFRRate(r.rate, r.effectiveDate, SOFRDataStatus.live);
+      unawaited(_persistOne(ccy, _rates[ccy]!));
+    }
     notifyListeners();
+  }
+
+  Future<void> _hydrateFromCache() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final raw = prefs.getString(_prefsKey);
+      if (raw == null) return;
+      final map = jsonDecode(raw) as Map<String, dynamic>;
+      var changed = false;
+      for (final ccy in RFRCurrency.values) {
+        final entry = map[ccy.code] as Map<String, dynamic>?;
+        if (entry == null) continue;
+        final rate = (entry['rate'] as num?)?.toDouble();
+        final date = entry['effectiveDate'] as String?;
+        if (rate == null || date == null || date.isEmpty) continue;
+        // Skip if a live fetch has already resolved for this ccy.
+        if (_rates[ccy]?.status == SOFRDataStatus.live) continue;
+        // Mark hydrated values as `loading` — the rate + date are shown
+        // to the user immediately, but the status indicator stays in
+        // its "fetching" state until the live refresh resolves. If the
+        // refresh succeeds we flip to `live` (green); if it fails we
+        // flip to `fallback` (yellow). We deliberately do NOT flip
+        // straight to `live` here, since hydrating a previously-cached
+        // value is not the same as confirming a fresh fetch.
+        _rates[ccy] = RFRRate(rate, date, SOFRDataStatus.loading);
+        changed = true;
+      }
+      if (changed) notifyListeners();
+    } catch (e) {
+      debugPrint('RFR cache hydrate failed: $e');
+    }
+  }
+
+  Future<void> _persistOne(RFRCurrency ccy, RFRRate r) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final raw = prefs.getString(_prefsKey);
+      final map = raw == null
+          ? <String, dynamic>{}
+          : (jsonDecode(raw) as Map<String, dynamic>);
+      map[ccy.code] = {'rate': r.rate, 'effectiveDate': r.effectiveDate};
+      await prefs.setString(_prefsKey, jsonEncode(map));
+    } catch (e) {
+      debugPrint('RFR cache persist failed: $e');
+    }
   }
 
   /// Refresh only USD — used when the trade date changes in the Fee tab.
