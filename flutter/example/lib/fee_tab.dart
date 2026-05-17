@@ -674,16 +674,16 @@ class _SegButton extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 8),
         decoration: BoxDecoration(
-          color: selected ? AppTheme.orange : const Color(0xFF2D2D2D),
+          color: selected ? const Color(0xFF737373) : const Color(0xFF2D2D2D),
           borderRadius: BorderRadius.circular(6),
         ),
         alignment: Alignment.center,
         child: Text(
           text,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.w500,
-            color: selected ? Colors.black : Colors.white,
+            color: Colors.white,
           ),
         ),
       ),

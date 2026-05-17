@@ -611,8 +611,8 @@ struct FeeView: View {
                 .font(.caption.weight(.medium))
                 .frame(maxWidth: .infinity)       // fill equal share of row
                 .padding(.vertical, 8)
-                .background(selected ? orange : Color(white: 0.18))
-                .foregroundColor(selected ? .black : .white)
+                .background(selected ? Color(white: 0.45) : Color(white: 0.18))
+                .foregroundColor(.white)
                 .cornerRadius(6)
         }
         .buttonStyle(.plain)
