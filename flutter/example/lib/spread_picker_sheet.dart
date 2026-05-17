@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:icds_spike/cds_calculator.dart';
 import 'package:icds_spike/fee_view_model.dart';
 
@@ -52,12 +53,16 @@ class _SpreadPickerSheetState extends State<SpreadPickerSheet> {
     _buffer = widget.viewModel.spreadBp.round().toString();
   }
 
+  static final _bpFmt = NumberFormat('#,##0');
+
   String _hint() {
-    if (_isOverCap) return 'exceeds max $_cap bp';
+    if (_isOverCap) return 'exceeds max ${_bpFmt.format(_cap)} bp';
     if (_pending == 0) return ' ';
     if (_pending == _coupon) return 'AT PAR';
     final diff = _pending - _coupon;
-    return diff > 0 ? 'Coupon + $diff bp' : 'Coupon − ${-diff} bp';
+    return diff > 0
+        ? 'Coupon + ${_bpFmt.format(diff)} bp'
+        : 'Coupon − ${_bpFmt.format(-diff)} bp';
   }
 
   void _appendDigit(String d) {
@@ -307,13 +312,13 @@ class _SpreadPickerSheetState extends State<SpreadPickerSheet> {
         row([
           chip('Coupon +200',  _coupon + 200),
           chip('Coupon +500',  _coupon + 500),
-          chip('Coupon +1000', _coupon + 1000),
+          chip('Coupon +1,000', _coupon + 1000),
         ]),
         const SizedBox(height: 6),
         row([
-          chip('Coupon +2000', _coupon + 2000),
-          chip('Coupon +5000', _coupon + 5000),
-          chip('Max $_cap',    _cap),
+          chip('Coupon +2,000', _coupon + 2000),
+          chip('Coupon +5,000', _coupon + 5000),
+          chip('Max ${_bpFmt.format(_cap)}',    _cap),
         ]),
       ],
     );

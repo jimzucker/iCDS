@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:icds_spike/cds_calculator.dart';
 import 'package:icds_spike/fee_view_model.dart';
 import 'package:icds_spike/sofr_fetcher.dart';
@@ -48,6 +49,9 @@ class _FeeTabState extends State<FeeTab> {
   }
 
   double _noNegZero(double v, double eps) => v.abs() < eps ? 0.0 : v;
+
+  static final _bpFmt = NumberFormat('#,##0');
+  String _bpWithCommas(int bp) => _bpFmt.format(bp);
 
   @override
   Widget build(BuildContext context) {
@@ -222,7 +226,7 @@ class _FeeTabState extends State<FeeTab> {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
-                  '${_vm.spreadBp.round()}',
+                  _bpWithCommas(_vm.spreadBp.round()),
                   style: const TextStyle(
                     fontSize: 22, fontFamily: 'Menlo',
                     fontWeight: FontWeight.bold, color: AppTheme.orange,

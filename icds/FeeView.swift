@@ -129,13 +129,13 @@ struct FeeView: View {
                     .tracking(1)
                     .foregroundColor(Color(white: 0.55))
                 HStack(alignment: .firstTextBaseline, spacing: 6) {
-                    Text("\(Int(vm.spreadBp))")
-                        .font(.system(size: 22, weight: .bold, design: .monospaced))
+                    Text(Self.formatBp(Int(vm.spreadBp)))
+                        .font(.system(size: 26, weight: .bold, design: .monospaced))
                         .foregroundColor(orange)
                         .lineLimit(1)
                         .minimumScaleFactor(0.6)
                     Text("bp")
-                        .font(.system(size: 13, weight: .semibold, design: .monospaced))
+                        .font(.system(size: 15, weight: .semibold, design: .monospaced))
                         .foregroundColor(orange)
                     Image(systemName: "pencil")
                         .font(.caption.weight(.semibold))
@@ -163,7 +163,7 @@ struct FeeView: View {
                         .tracking(1)
                         .foregroundColor(Color(white: 0.30))
                     Text(FeeView.signedCurrencyString(r.upfrontDollars + r.accrued, code: vm.currency))
-                        .font(.system(size: 22, weight: .bold, design: .monospaced))
+                        .font(.system(size: 26, weight: .bold, design: .monospaced))
                         .foregroundColor(.black)
                         .lineLimit(1)
                         .minimumScaleFactor(0.6)
@@ -179,7 +179,7 @@ struct FeeView: View {
                         .tracking(1)
                         .foregroundColor(Color(white: 0.30))
                     Text("…")
-                        .font(.system(size: 22, weight: .bold, design: .monospaced))
+                        .font(.system(size: 26, weight: .bold, design: .monospaced))
                         .foregroundColor(.black)
                 }
                 .frame(maxWidth: .infinity)
@@ -254,12 +254,12 @@ struct FeeView: View {
                     HStack(spacing: 8) {
                         chip("Coupon +200", value: coupon + 200,   pending: pending)
                         chip("Coupon +500", value: coupon + 500,   pending: pending)
-                        chip("Coupon +1000",value: coupon + 1000,  pending: pending)
+                        chip("Coupon +1,000",value: coupon + 1000,  pending: pending)
                     }
                     HStack(spacing: 8) {
-                        chip("Coupon +2000",value: coupon + 2000,  pending: pending)
-                        chip("Coupon +5000",value: coupon + 5000,  pending: pending)
-                        chip("Max \(cap)",  value: cap,            pending: pending)
+                        chip("Coupon +2,000",value: coupon + 2000,  pending: pending)
+                        chip("Coupon +5,000",value: coupon + 5000,  pending: pending)
+                        chip("Max \(Self.formatBp(cap))",  value: cap,            pending: pending)
                     }
                 }
                 .padding(.horizontal, 12)
@@ -552,7 +552,7 @@ struct FeeView: View {
                             .lineLimit(1).minimumScaleFactor(0.6)
                         RoundedRectangle(cornerRadius: 2)
                             .fill(isSel ? orange : Color(white: 0.23))
-                            .frame(height: max(4, CGFloat(probs[i] / maxP) * 46))
+                            .frame(height: max(4, CGFloat(probs[i] / maxP) * 56))
                         Text(vm.tenorLabels[i])
                             .font(.system(size: 10, design: .monospaced))
                             .foregroundColor(isSel ? orange : Color(white: 0.4))
@@ -562,7 +562,7 @@ struct FeeView: View {
                     .onTapGesture { vm.maturityIndex = i }
                 }
             }
-            .frame(height: 76, alignment: .bottom)
+            .frame(height: 86, alignment: .bottom)
             Text("Cumulative default prob · flat-hazard")
                 .font(.system(size: 9))
                 .foregroundColor(Color(white: 0.4))
@@ -679,7 +679,26 @@ struct FeeView: View {
         f.numberStyle = .currency
         f.currencyCode = code
         f.maximumFractionDigits = 0
+        // Force comma grouping with no whitespace — otherwise locales
+        // like fr_FR render "1 234 567" or "1, 234, 567" depending on
+        // version. en_US gives "$1,234,567" (and the equivalent for
+        // ¥/€/£). en_US_POSIX is wrong here: it inserts a space
+        // between the currency symbol and the amount.
+        f.locale = Locale(identifier: "en_US")
+        f.usesGroupingSeparator = true
+        f.groupingSeparator = ","
         return f
+    }
+
+    /// Plain bp integer with comma grouping for thousands.
+    /// "1000" → "1,000", "10000" → "10,000".
+    static func formatBp(_ bp: Int) -> String {
+        let f = NumberFormatter()
+        f.numberStyle = .decimal
+        f.usesGroupingSeparator = true
+        f.groupingSeparator = ","
+        f.maximumFractionDigits = 0
+        return f.string(from: NSNumber(value: bp)) ?? String(bp)
     }
 
     static func signedCurrencyFormatter(_ code: String) -> NumberFormatter {
