@@ -1,4 +1,4 @@
-# LinkedIn Post — iCDS 3.1.0 launch
+# LinkedIn Post — iCDS 3.2.0 launch
 
 Plain-text post below, ready to copy-paste into LinkedIn. Don't include this header line when copying — start at "In 2009...".
 
@@ -6,9 +6,9 @@ Plain-text post below, ready to copy-paste into LinkedIn. Don't include this hea
 
 In 2009, I spent 134 hours and $2,427 building my first iPhone app — a Credit Default Swap calculator (iCDS) using the official ISDA Standard Model. It's been quietly sitting in the App Store ever since.
 
-A few weeks ago I rebuilt it. Today I shipped 3.1.0 — and it now runs on Android too.
+A few weeks ago I rebuilt it. Today I shipped 3.2.0 — and it now runs on Android too.
 
-What changed in 3.1.0:
+What changed in 3.2.0:
 • Cross-platform: Flutter / Dart-FFI port of the same ISDA C engine, bit-identical numerics on iOS and Android (263 tests passing across both)
 • v12 layout: 7 SNAC tenors (1Y–10Y) in a unified segmented pill, default-risk-by-maturity chart, first-order risk row (CS01 / IR DV01 / Rec01)
 • Diag tab: in-app deterministic self-tests so you can verify the C library, IMM helpers, regional holiday calendars, and live RFR fetcher on any device
@@ -24,6 +24,6 @@ What surprised me again: the bottleneck wasn't generating code. It was knowing w
 
 If you've been holding off on revisiting an old project because you don't have time or the relevant stack experience anymore — that calculus is different now.
 
-iCDS 3.1.0 — Android on Google Play (Internal testing), iOS update prepared. Source: github.com/jimzucker/iCDS
+iCDS 3.2.0 — Android on Google Play (Internal testing), iOS update prepared. Source: github.com/jimzucker/iCDS
 
 #AI #ClaudeCode #iOS #Android #Flutter #BuilderMode

@@ -31,8 +31,8 @@ For support please create a ticket at: https://github.com/jimzucker/iCDS/issues
 
 # Release Notes
 
-## 3.1.0
-- **Flutter / Dart-FFI port** at `flutter/` running on Android arm64 + iOS arm64 with bit-identical numerical results to the Swift app. Live on Google Play Internal testing (versionCode 7).
+## 3.2.0
+- **Flutter / Dart-FFI port** at `flutter/` running on Android arm64 + iOS arm64 with bit-identical numerical results to the Swift app. Live on Google Play Internal testing (versionCode 8).
 - **v12 layout**: 7 SNAC tenors (1Y, 2Y, 3Y, 4Y, 5Y, 7Y, 10Y) in a unified segmented pill; default-risk-by-maturity chart with the selected tenor highlighted; first-order risk row showing CS01, IR DV01, and Rec01 (bump-and-reprice).
 - **Diag tab**: in-app deterministic self-tests (JpmcdsDate sanity, CDSCalculator par/wide/tight, IMM helpers, regional holiday calendars, and live RFR fetcher status). Useful for verifying the C library and endpoints on a new device.
 - **Tab rename**: "Fee" → "Calc"; "Libor" → "Curves".

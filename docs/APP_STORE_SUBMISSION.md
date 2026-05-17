@@ -1,4 +1,4 @@
-# App Store Submission — iCDS 3.1.0
+# App Store Submission — iCDS 3.2.0
 
 Each section below is the field's content as plain text, ready to copy-paste into App Store Connect.
 
@@ -46,7 +46,7 @@ Source code: Apache 2.0. Pricing engine: ISDA CDS Standard Model Public License 
 
 ---
 
-## What's New in This Version (3.1.0)
+## What's New in This Version (3.2.0)
 
 • v12 layout — extended tenor row (1Y/2Y/3Y/4Y/5Y/7Y/10Y), default-risk-by-maturity chart, and a first-order risk row (CS01 / IR DV01 / Rec01)
 • "Calc" / "Curves" / "Info" / "Diag" tab structure — Diag is an in-app deterministic self-test surface for verifying the C library and endpoints on a new device

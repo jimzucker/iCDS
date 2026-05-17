@@ -8,8 +8,8 @@ iCDS is a CDS (Credit Default Swap) upfront fee calculator implementing the SNAC
 
 This repository contains **two parallel implementations** of the same product:
 
-- **`icds/` + `icds.xcodeproj/`** — the iOS Swift / SwiftUI app. 3.0.1 is in the App Store; 3.1.0 (build 6, v12 layout) is prepared but not yet submitted. Use Xcode to build and run.
-- **`flutter/`** — a Flutter / Dart-FFI port that runs on iOS arm64 + Android arm64 with bit-identical numerical results. Self-contained subdirectory; see `flutter/README.md` for build instructions. 130+ Dart tests at parity with the Swift suite; reference grids match ISDA's published values within 2.5e-5 across 6 currencies. Android versionCode 7 is in Play Store Internal testing.
+- **`icds/` + `icds.xcodeproj/`** — the iOS Swift / SwiftUI app. 3.0.1 is in the App Store; 3.2.0 (build 7, v12 layout + UX cleanup) is prepared. Use Xcode to build and run.
+- **`flutter/`** — a Flutter / Dart-FFI port that runs on iOS arm64 + Android arm64 with bit-identical numerical results. Self-contained subdirectory; see `flutter/README.md` for build instructions. 130+ Dart tests at parity with the Swift suite; reference grids match ISDA's published values within 2.5e-5 across 6 currencies. Android version is 3.2.0+8 (versionCode 8); versionCode 7 was in Internal testing.
 
 When the user asks about "the iOS app" or "the App Store build" they mean the Swift one at the root. When they ask about "the Flutter version" or "Android" they mean the port at `flutter/`. The two are independent — touching one doesn't affect the other.
 
