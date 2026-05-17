@@ -323,7 +323,7 @@ class _FeeTabState extends State<FeeTab> {
                 formatCurrency(r.accruedDollars, _vm.currency))),
               const SizedBox(width: 6),
               Expanded(child: _outputCell('Unsettled',
-                r.price.toStringAsFixed(4))),
+                formatSignedCurrency(r.upfrontDollars - r.accruedDollars, _vm.currency))),
             ],
           ),
           const SizedBox(height: 6),

@@ -492,10 +492,12 @@ struct FeeView: View {
                 settleDateCell
             }
             if let r = vm.result {
-                let fmt = currencyFormatter(vm.currency)
+                let fmt  = currencyFormatter(vm.currency)
+                let sfmt = signedCurrencyFormatter(vm.currency)
+                let unsettled = r.upfrontDollars - r.accrued
                 HStack {
                     outputCell("Accrued",   fmt.string(from: NSNumber(value: r.accrued)) ?? "")
-                    outputCell("Unsettled", String(format: "%.4f", r.price))
+                    outputCell("Unsettled", sfmt.string(from: NSNumber(value: unsettled)) ?? "")
                 }
                 HStack {
                     outputCell("Start",    formatTDate(r.startDate))
