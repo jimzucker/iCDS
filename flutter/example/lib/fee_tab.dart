@@ -89,19 +89,10 @@ class _FeeTabState extends State<FeeTab> {
       children: [
         const _FieldLabel('Region'),
         const SizedBox(height: 4),
-        Row(
-          children: [
-            for (var i = 0; i < _vm.contracts.length; i++) ...[
-              Expanded(
-                child: _SegButton(
-                  text: _vm.contracts[i].region,
-                  selected: _vm.regionIndex == i,
-                  onTap: () => _vm.regionIndex = i,
-                ),
-              ),
-              if (i != _vm.contracts.length - 1) const SizedBox(width: 6),
-            ],
-          ],
+        _SegRow(
+          options: _vm.contracts.map((c) => c.region).toList(),
+          selected: _vm.regionIndex,
+          onChange: (i) => _vm.regionIndex = i,
         ),
       ],
     );
@@ -635,6 +626,9 @@ class _FieldLabel extends StatelessWidget {
 /// underlying InkWell/Container nodes — but if jank ever shows up the
 /// optimization is to wrap each input group in its own `ListenableBuilder`
 /// listening to a Selector slice of FeeViewModel rather than the whole VM.
+/// iOS-style segmented control: a single rounded "pill" containing
+/// all options with one inset highlight on the selected cell. Matches
+/// SwiftUI's `Picker(.segmented)` look (no internal dividers).
 class _SegRow extends StatelessWidget {
   final List<String> options;
   final int selected;
@@ -643,49 +637,40 @@ class _SegRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        for (var i = 0; i < options.length; i++) ...[
-          Expanded(
-            child: _SegButton(
-              text: options[i],
-              selected: i == selected,
-              onTap: () => onChange(i),
+    return Container(
+      padding: const EdgeInsets.all(2),
+      decoration: BoxDecoration(
+        color: const Color(0xFF2D2D2D),
+        borderRadius: BorderRadius.circular(7),
+      ),
+      child: Row(
+        children: [
+          for (var i = 0; i < options.length; i++)
+            Expanded(
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () => onChange(i),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 6),
+                  decoration: BoxDecoration(
+                    color: i == selected
+                      ? const Color(0xFF737373)
+                      : Colors.transparent,
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  alignment: Alignment.center,
+                  child: Text(
+                    options[i],
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
             ),
-          ),
-          if (i != options.length - 1) const SizedBox(width: 6),
         ],
-      ],
-    );
-  }
-}
-
-class _SegButton extends StatelessWidget {
-  final String text;
-  final bool selected;
-  final VoidCallback onTap;
-  const _SegButton({required this.text, required this.selected, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(6),
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 8),
-        decoration: BoxDecoration(
-          color: selected ? const Color(0xFF737373) : const Color(0xFF2D2D2D),
-          borderRadius: BorderRadius.circular(6),
-        ),
-        alignment: Alignment.center,
-        child: Text(
-          text,
-          style: const TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w500,
-            color: Colors.white,
-          ),
-        ),
       ),
     );
   }
