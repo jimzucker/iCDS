@@ -46,23 +46,16 @@ Source code: Apache 2.0. Pricing engine: ISDA CDS Standard Model Public License 
 
 ---
 
-## What's New in This Version (3.2.1)
+## What's New in This Version (3.2.x)
 
-• CACHED status badge on the Curves tab — a cyan "CACHED · {source}" banner now distinguishes data from persisted cache or a pre-seed (e.g. JPY's monthly TONA proxy) from a freshly fetched live value (green "LIVE"). The yellow fallback banner is reserved for true offline-with-no-cache state.
-• Calc tab — QUOTED SPREAD and DIRTY UPFRONT 28pt headlines switched to proportional bold, so commas in large dollar values read tightly. Smaller dollar cells stay monospaced for vertical column alignment.
-• Curves tab — header chunk halved (cleaner rhythm, subtitle removed), swap-curve list switched to a tight 15pt LazyVStack so all 19 USD tenors fit without scrolling, refresh icon top-right, all-fallback offline retry banner.
-• Default-risk chart — percent and tenor labels bumped to a semibold 11/12pt with lighter greys for contrast on black.
-• JPY TONA reliability — 5 retries with exponential backoff (2/4/8/16s) and a 60s per-attempt budget on both platforms; closes the iOS-LIVE / Android-CACHED asymmetry caused by FRED's slow-backend HTTP/1.1 routing.
-• Currency formatter pinned to `en_US` locale with explicit positive/negative prefixes (`$` and `−$`) to suppress narrow-no-break-space artefacts on certain locales.
-
-## What's New in This Version (3.2.0)
-
-• v12 layout — extended tenor row (1Y/2Y/3Y/4Y/5Y/7Y/10Y), default-risk-by-maturity chart, and a first-order risk row (CS01 / IR DV01 / Rec01)
-• "Calc" / "Curves" / "Info" / "Diag" tab structure — Diag is an in-app deterministic self-test surface for verifying the C library and endpoints on a new device
-• DIRTY UPFRONT yellow card showing the total cash to settle (upfront fee + accrued); the unsigned Upfront Fee and Accrued components stay visible alongside
-• Modernized SNAC conventions: EM moved to T+1 settlement; subordinated recoveries lowered (EM 25→15, Japan 35→15) so SUB is always strictly less than SEN; Japan adds 500 bp coupon; AUS drops the non-standard 25 bp coupon
-• Unified segmented-pill style on every selector (Region, Buy/Sell, Recovery, Maturity, Coupon, Notional) — grey-selected, matching the native iOS segmented control
-• Quality polish: −$0 never displayed on any signed-dollar cell; comma-grouped thousands; ISO yyyy-MM-dd dates; shrink-to-fit value text on tight cells
+• 7 SNAC tenors selectable from one segmented row (1Y / 2Y / 3Y / 4Y / 5Y / 7Y / 10Y)
+• Default-risk-by-maturity chart — cumulative default probability implied by the quoted spread at each tenor; tap a bar to switch maturity
+• First-order risk row — CS01, IR DV01, Rec01 via bump-and-reprice
+• DIRTY UPFRONT card showing total cash to settle (upfront fee + accrued) in trader-floor vocabulary
+• In-app Diagnostics tab — deterministic self-tests for the C engine, IMM helpers, regional holiday calendars, and the live rate fetchers
+• Modernized SNAC conventions: EM moves to T+1 settlement; subordinated recoveries lowered (EM 25→15%, Japan 35→15%); Japan adds a 500 bp coupon
+• Curves tab — CACHED status indicator for rates from persisted cache (distinct from freshly fetched LIVE values); refresh icon and offline retry banner
+• Reliable JPY (TONA) fetching — retry strategy hardened so the monthly Japan rate consistently breaks through FRED's slow paths
 
 ---
 

@@ -31,24 +31,17 @@ For support please create a ticket at: https://github.com/jimzucker/iCDS/issues
 
 # Release Notes
 
-## 3.2.1
-- **CACHED status badge** distinguishes hydrated/synthesised data from a live fetch. The Curves tab now shows a cyan "CACHED · {source}" banner (instead of green "LIVE") for currencies whose rate is from persisted cache or a pre-seed (e.g. JPY's monthly TONA proxy before the FRED fetch returns). Yellow "Reference rate" is reserved for true offline-with-no-cache fallback.
-- **iOS Calc tab**: QUOTED SPREAD and DIRTY UPFRONT 28pt headlines switch from monospaced to proportional bold so commas in large numbers (e.g. `$3,107,282`) read tightly without the wide-glyph-cell gap. Smaller dollar cells (Accrued / Upfront Fee / risk row) stay monospaced for vertical column alignment.
-- **iOS Curves tab**: header chunk halved (subtitle dropped, padding rebalanced to a uniform 6pt rhythm). Swap-curve list switched from `SwiftUI.List` to manual `LazyVStack` rows so all 19 USD tenors fit without scrolling. Refresh icon top-right, all-fallback offline banner with retry. Body font bumped 13 → 15pt.
-- **iOS default-risk chart**: percent labels 9 → 11pt semibold, tenor labels 10 → 12pt, header line caption2 → caption, lighter greys for contrast.
-- **TONA reliability**: 5 retries with exponential backoff (2/4/8/16s) and 60s per-attempt budget on both platforms. Closes the iOS-LIVE / Android-CACHED asymmetry caused by FRED's slow-backend HTTP/1.1 connections vs URLSession's idle timeout.
-- **Comma-grouped formatter on iOS**: currency formatter pinned to `en_US` locale with explicit positive/negative prefixes (`$` and `−$`) to suppress narrow-no-break-space artefacts on certain locales.
-
-## 3.2.0
-- **Flutter / Dart-FFI port** at `flutter/` running on Android arm64 + iOS arm64 with bit-identical numerical results to the Swift app. Live on Google Play Internal testing (versionCode 8).
-- **v12 layout**: 7 SNAC tenors (1Y, 2Y, 3Y, 4Y, 5Y, 7Y, 10Y) in a unified segmented pill; default-risk-by-maturity chart with the selected tenor highlighted; first-order risk row showing CS01, IR DV01, and Rec01 (bump-and-reprice).
-- **Diag tab**: in-app deterministic self-tests (JpmcdsDate sanity, CDSCalculator par/wide/tight, IMM helpers, regional holiday calendars, and live RFR fetcher status). Useful for verifying the C library and endpoints on a new device.
-- **Tab rename**: "Fee" → "Calc"; "Libor" → "Curves".
-- **Dirty Upfront card**: yellow card now shows the total cash to settle (upfront fee + accrued) labeled DIRTY UPFRONT, matching ISDA trader-floor vocabulary. The unsigned Upfront Fee and Accrued components are shown alongside.
-- **UX polish**: grey-selected segmented chips (matching iOS native style); −$0 suppression on every signed-dollar cell; rounded date pickers; shrink-to-fit value text; hidden chips that don't make economic sense.
-- **Modernized SNAC conventions**: EM moved to T+1 settlement (was T+3); EM SUB recovery 25%→15%; Japan SUB recovery 35%→15%; Japan adds 500 bp coupon; AUS drops 25 bp coupon (kept 100, 500).
-- **Android Info-tab link fix**: Android 11+ package-visibility (`<queries>`) declaration so external URLs (Documentation, ISDA, Apache, Privacy Policy) actually launch instead of silently no-opping.
-- **Regression coverage**: 263 tests passing across iOS (125 unit + 1 UI) and Flutter (37 pure-Dart + 12 widget + 88 integration). New parity tests for risk metrics, dirty-upfront composition, SUB-recovery-lower-than-SEN invariant, and signed-currency −$0 suppression.
+## 3.2.x (combines 3.2.0 and 3.2.1)
+- **Now on Android** — full Flutter / Dart-FFI port with bit-identical numerical results to the iOS app. Available on Google Play.
+- **More maturities** — 7 SNAC tenors (1Y / 2Y / 3Y / 4Y / 5Y / 7Y / 10Y) in a single segmented selector, up from the previous fixed grid.
+- **Default-risk-by-maturity chart** — cumulative default probability implied by the quoted spread at each tenor; tap a bar to switch maturity.
+- **First-order risk row** — CS01, IR DV01, and Rec01 computed by bump-and-reprice, so you can see sensitivity at a glance.
+- **DIRTY UPFRONT card** — total cash to settle (upfront fee + accrued) labelled in trader-floor vocabulary; the unsigned components remain visible alongside.
+- **In-app Diagnostics tab** — deterministic self-tests for the C engine, IMM helpers, regional holiday calendars, and live rate fetchers — verify everything works on any device.
+- **Modernized SNAC conventions** — EM moves to T+1 settlement (was T+3); subordinated recoveries lowered (EM 25→15%, Japan 35→15%); Japan adds a 500 bp coupon.
+- **Reliable JPY (TONA)** — retry strategy hardened so the monthly Japan rate breaks through FRED's slow paths consistently across both platforms.
+- **CACHED status indicator** — Curves tab shows a cyan banner when a rate is from persisted cache (not freshly fetched), so the source of every rate is unambiguous.
+- **Android Info-tab links fixed** — external URLs (Documentation, ISDA, Apache, Privacy) now actually launch on Android 11+.
 
 ## 3.0.1
 - Apache 2.0 source license headers and full third-party attribution (ISDA model, central-bank rate sources)
