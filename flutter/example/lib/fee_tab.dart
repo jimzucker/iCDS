@@ -76,6 +76,8 @@ class _FeeTabState extends State<FeeTab> {
               _defaultRiskChart(),
               const SizedBox(height: 12),
               _riskRow(),
+              const SizedBox(height: 12),
+              _dateFooterRow(),
             ],
           ),
         ),
@@ -296,36 +298,45 @@ class _FeeTabState extends State<FeeTab> {
 
   Widget _outputGrid() {
     final r = _vm.result;
+    if (r == null) return const SizedBox.shrink();
     return Column(
       children: [
+        // Cash split — the two components of the DIRTY UPFRONT headline
+        // above. Rendered larger to mark their role in the hierarchy.
         Row(
           children: [
-            Expanded(child: _tradeDateCell()),
+            Expanded(child: _outputCell('Accrued',
+              formatCurrency(r.accruedDollars, _vm.currency),
+              emphasized: true)),
             const SizedBox(width: 6),
-            Expanded(child: _outputCell('Settle Date',
-              r != null ? formatDdMmmYy(r.valueDate) : '—')),
+            Expanded(child: _outputCell('Upfront Fee',
+              formatSignedCurrency(r.upfrontDollars, _vm.currency),
+              emphasized: true)),
           ],
         ),
-        if (r != null) ...[
-          const SizedBox(height: 6),
-          Row(
-            children: [
-              Expanded(child: _outputCell('Accrued',
-                formatCurrency(r.accruedDollars, _vm.currency))),
-              const SizedBox(width: 6),
-              Expanded(child: _outputCell('Upfront Fee',
-                formatSignedCurrency(r.upfrontDollars, _vm.currency))),
-            ],
-          ),
-          const SizedBox(height: 6),
-          Row(
-            children: [
-              Expanded(child: _outputCell('Start', formatDdMmmYy(r.startDate))),
-              const SizedBox(width: 6),
-              Expanded(child: _outputCell('Maturity', formatDdMmmYy(r.endDate))),
-            ],
-          ),
-        ],
+        const SizedBox(height: 6),
+        Row(
+          children: [
+            Expanded(child: _outputCell('Start', formatDdMmmYy(r.startDate))),
+            const SizedBox(width: 6),
+            Expanded(child: _outputCell('Maturity', formatDdMmmYy(r.endDate))),
+          ],
+        ),
+      ],
+    );
+  }
+
+  /// Trade Date / Settle Date row at the bottom of the Calc tab.
+  /// Defaults to today / T+1 and rarely changed in normal use — sits low
+  /// to keep prime real estate for the cash split and analytics above.
+  Widget _dateFooterRow() {
+    final r = _vm.result;
+    return Row(
+      children: [
+        Expanded(child: _tradeDateCell()),
+        const SizedBox(width: 6),
+        Expanded(child: _outputCell('Settle Date',
+          r != null ? formatDdMmmYy(r.valueDate) : '—')),
       ],
     );
   }
@@ -438,9 +449,12 @@ class _FeeTabState extends State<FeeTab> {
     _vm.tradeDateOffset = daysDelta;
   }
 
-  Widget _outputCell(String label, String value) {
+  /// Computed-value cell. `emphasized` bumps the value text to 18pt
+  /// semibold for the cash split (Accrued / Upfront Fee) which compose
+  /// the headline Dirty Upfront card above.
+  Widget _outputCell(String label, String value, {bool emphasized = false}) {
     return Container(
-      padding: const EdgeInsets.all(8),
+      padding: EdgeInsets.all(emphasized ? 10 : 8),
       decoration: BoxDecoration(
         color: const Color(0xFF121212),
         borderRadius: BorderRadius.circular(6),
@@ -450,7 +464,12 @@ class _FeeTabState extends State<FeeTab> {
         children: [
           Text(label, style: const TextStyle(fontSize: 11, color: Color(0xFF8C8C8C))),
           const SizedBox(height: 2),
-          Text(value, style: const TextStyle(fontSize: 14, fontFamily: 'Menlo', color: AppTheme.orange)),
+          Text(value, style: TextStyle(
+            fontSize: emphasized ? 18 : 14,
+            fontWeight: emphasized ? FontWeight.w600 : FontWeight.w400,
+            fontFamily: 'Menlo',
+            color: const Color(0xFFEBEBEB),
+          )),
         ],
       ),
     );
@@ -494,7 +513,7 @@ class _FeeTabState extends State<FeeTab> {
             fit: BoxFit.scaleDown,
             alignment: Alignment.centerLeft,
             child: Text(v, style: const TextStyle(
-              fontSize: 14, fontFamily: 'Menlo', color: AppTheme.orange)),
+              fontSize: 14, fontFamily: 'Menlo', color: Color(0xFFEBEBEB))),
           ),
           const SizedBox(height: 1),
           Text(s, style: const TextStyle(fontSize: 9, color: Color(0xFF595959))),
@@ -534,7 +553,7 @@ class _FeeTabState extends State<FeeTab> {
             children: [
               const Text('DEFAULT RISK',
                 style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold,
-                  letterSpacing: 1, color: AppTheme.orange)),
+                  letterSpacing: 1, color: Color(0xFFA6A6A6))),
               const SizedBox(width: 4),
               const Text('· by maturity',
                 style: TextStyle(fontSize: 10, color: Color(0xFF8C8C8C))),

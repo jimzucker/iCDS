@@ -30,6 +30,7 @@ struct FeeView: View {
                 outputGrid
                 defaultRiskChart
                 riskRow
+                dateFooterRow
             }
             .padding(.horizontal, 12)
             .padding(.vertical, 8)
@@ -483,15 +484,18 @@ struct FeeView: View {
 
     private var outputGrid: some View {
         VStack(spacing: 6) {
-            HStack {
-                tradeDateCell
-                settleDateCell
-            }
             if let r = vm.result {
                 let fmt  = currencyFormatter(vm.currency)
+                // Cash split — the two components of the DIRTY UPFRONT
+                // headline above. Rendered larger to mark their role in
+                // the visual hierarchy.
                 HStack {
-                    outputCell("Accrued",   fmt.string(from: NSNumber(value: r.accrued)) ?? "")
-                    outputCell("Upfront Fee", FeeView.signedCurrencyString(r.upfrontDollars, code: vm.currency))
+                    outputCell("Accrued",
+                               fmt.string(from: NSNumber(value: r.accrued)) ?? "",
+                               emphasized: true)
+                    outputCell("Upfront Fee",
+                               FeeView.signedCurrencyString(r.upfrontDollars, code: vm.currency),
+                               emphasized: true)
                 }
                 HStack {
                     outputCell("Start",    formatTDate(r.startDate))
@@ -500,6 +504,17 @@ struct FeeView: View {
             }
         }
         .sheet(isPresented: $showDatePicker) { datePickerSheet }
+    }
+
+    /// Trade Date / Settle Date row, rendered at the bottom of the Calc
+    /// tab below the risk metrics. Defaults to today / T+1 and rarely
+    /// changed in normal use — sits low to keep prime real estate for
+    /// the cash split and analytics.
+    private var dateFooterRow: some View {
+        HStack {
+            tradeDateCell
+            settleDateCell
+        }
     }
 
     // MARK: - Default-risk-by-maturity chart
@@ -521,7 +536,7 @@ struct FeeView: View {
             HStack(spacing: 4) {
                 Text("DEFAULT RISK")
                     .font(.caption2.weight(.bold)).tracking(1)
-                    .foregroundColor(orange.opacity(0.85))
+                    .foregroundColor(Color(white: 0.65))
                 Text("· by maturity")
                     .font(.caption2)
                     .foregroundColor(Color(white: 0.55))
@@ -585,7 +600,7 @@ struct FeeView: View {
         VStack(alignment: .leading, spacing: 1) {
             Text(k).font(.caption2.weight(.semibold)).foregroundColor(Color(white: 0.55))
             Text(v).font(.system(.callout, design: .monospaced))
-                .foregroundColor(orange).lineLimit(1).minimumScaleFactor(0.6)
+                .foregroundColor(Color(white: 0.92)).lineLimit(1).minimumScaleFactor(0.6)
             Text(s).font(.system(size: 9)).foregroundColor(Color(white: 0.35))
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -624,17 +639,22 @@ struct FeeView: View {
         .pickerStyle(.segmented)
     }
 
-    private func outputCell(_ label: String, _ value: String) -> some View {
+    /// Computed-value cell. `emphasized` bumps the value text up to
+     /// 18pt semibold for the cash split (Accrued / Upfront Fee) which
+     /// compose the headline Dirty Upfront card above.
+    private func outputCell(_ label: String, _ value: String, emphasized: Bool = false) -> some View {
         VStack(alignment: .leading, spacing: 2) {
             Text(label)
                 .font(.caption2)
                 .foregroundColor(Color(white: 0.55))
             Text(value)
-                .font(.system(.callout, design: .monospaced))
-                .foregroundColor(orange)
+                .font(emphasized
+                      ? .system(size: 18, weight: .semibold, design: .monospaced)
+                      : .system(.callout, design: .monospaced))
+                .foregroundColor(Color(white: 0.92))
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(8)
+        .padding(emphasized ? 10 : 8)
         .background(Color(white: 0.07))
         .cornerRadius(6)
     }
