@@ -1,4 +1,4 @@
-# App Store Submission — iCDS 3.2.0
+# App Store Submission — iCDS 3.2.1
 
 Each section below is the field's content as plain text, ready to copy-paste into App Store Connect.
 
@@ -45,6 +45,15 @@ LICENSE
 Source code: Apache 2.0. Pricing engine: ISDA CDS Standard Model Public License (© 2009 JPMorgan Chase Bank, N.A., developed with Markit). Not affiliated with, endorsed by, or sponsored by ISDA, Markit, JPMorgan Chase, or any rate provider.
 
 ---
+
+## What's New in This Version (3.2.1)
+
+• CACHED status badge on the Curves tab — a cyan "CACHED · {source}" banner now distinguishes data from persisted cache or a pre-seed (e.g. JPY's monthly TONA proxy) from a freshly fetched live value (green "LIVE"). The yellow fallback banner is reserved for true offline-with-no-cache state.
+• Calc tab — QUOTED SPREAD and DIRTY UPFRONT 28pt headlines switched to proportional bold, so commas in large dollar values read tightly. Smaller dollar cells stay monospaced for vertical column alignment.
+• Curves tab — header chunk halved (cleaner rhythm, subtitle removed), swap-curve list switched to a tight 15pt LazyVStack so all 19 USD tenors fit without scrolling, refresh icon top-right, all-fallback offline retry banner.
+• Default-risk chart — percent and tenor labels bumped to a semibold 11/12pt with lighter greys for contrast on black.
+• JPY TONA reliability — 5 retries with exponential backoff (2/4/8/16s) and a 60s per-attempt budget on both platforms; closes the iOS-LIVE / Android-CACHED asymmetry caused by FRED's slow-backend HTTP/1.1 routing.
+• Currency formatter pinned to `en_US` locale with explicit positive/negative prefixes (`$` and `−$`) to suppress narrow-no-break-space artefacts on certain locales.
 
 ## What's New in This Version (3.2.0)
 

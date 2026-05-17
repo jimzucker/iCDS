@@ -31,6 +31,14 @@ For support please create a ticket at: https://github.com/jimzucker/iCDS/issues
 
 # Release Notes
 
+## 3.2.1
+- **CACHED status badge** distinguishes hydrated/synthesised data from a live fetch. The Curves tab now shows a cyan "CACHED · {source}" banner (instead of green "LIVE") for currencies whose rate is from persisted cache or a pre-seed (e.g. JPY's monthly TONA proxy before the FRED fetch returns). Yellow "Reference rate" is reserved for true offline-with-no-cache fallback.
+- **iOS Calc tab**: QUOTED SPREAD and DIRTY UPFRONT 28pt headlines switch from monospaced to proportional bold so commas in large numbers (e.g. `$3,107,282`) read tightly without the wide-glyph-cell gap. Smaller dollar cells (Accrued / Upfront Fee / risk row) stay monospaced for vertical column alignment.
+- **iOS Curves tab**: header chunk halved (subtitle dropped, padding rebalanced to a uniform 6pt rhythm). Swap-curve list switched from `SwiftUI.List` to manual `LazyVStack` rows so all 19 USD tenors fit without scrolling. Refresh icon top-right, all-fallback offline banner with retry. Body font bumped 13 → 15pt.
+- **iOS default-risk chart**: percent labels 9 → 11pt semibold, tenor labels 10 → 12pt, header line caption2 → caption, lighter greys for contrast.
+- **TONA reliability**: 5 retries with exponential backoff (2/4/8/16s) and 60s per-attempt budget on both platforms. Closes the iOS-LIVE / Android-CACHED asymmetry caused by FRED's slow-backend HTTP/1.1 connections vs URLSession's idle timeout.
+- **Comma-grouped formatter on iOS**: currency formatter pinned to `en_US` locale with explicit positive/negative prefixes (`$` and `−$`) to suppress narrow-no-break-space artefacts on certain locales.
+
 ## 3.2.0
 - **Flutter / Dart-FFI port** at `flutter/` running on Android arm64 + iOS arm64 with bit-identical numerical results to the Swift app. Live on Google Play Internal testing (versionCode 8).
 - **v12 layout**: 7 SNAC tenors (1Y, 2Y, 3Y, 4Y, 5Y, 7Y, 10Y) in a unified segmented pill; default-risk-by-maturity chart with the selected tenor highlighted; first-order risk row showing CS01, IR DV01, and Rec01 (bump-and-reprice).

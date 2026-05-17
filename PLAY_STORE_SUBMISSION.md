@@ -5,8 +5,8 @@ the Pages site via `_config.yml`.
 
 Build to upload: `flutter/example/build/app/outputs/bundle/release/app-release.aab`
 - applicationId: `com.jimzucker.iCDS`
-- versionName: 3.2.0
-- versionCode: 8 (bump on each subsequent Play upload)
+- versionName: 3.2.1
+- versionCode: 9 (bump on each subsequent Play upload)
 - Upload key SHA-1: `3C:52:AB:CA:13:49:62:9B:87:7B:97:00:01:84:1C:C0:83:BB:32:B5`
 
 ---
