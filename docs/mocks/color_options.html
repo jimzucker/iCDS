@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>iCDS — Calc tab color options (v2: reordered)</title>
+<style>
+  :root{
+    --bg:#000; --cell:#121212; --seg:#2E2E2E; --segOn:#737373;
+    --mut:#8C8C8C; --mut2:#666; --mut3:#A6A6A6; --dim:#4D4D4D;
+    --off:#EBEBEB; --white:#FFFFFF;
+    --orange:#FF8000; --yellow:#FFFF65; --barOrange:#FF8000;
+    --amber:#FFB000;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    --sys:-apple-system,BlinkMacSystemFont,"SF Pro Text",Segoe UI,Roboto,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#1c1c1e;font-family:var(--sys);color:#fff;padding:18px;overflow-x:auto}
+  h1{font-size:18px;font-weight:600;margin-bottom:8px}
+  .intro{font-size:12.5px;color:#bbb;max-width:1400px;line-height:1.5;margin-bottom:20px}
+  .reorder-note{background:#1a1a1d;border-left:3px solid var(--orange);padding:10px 12px;font-size:12px;color:#ddd;margin-bottom:22px;max-width:1400px;line-height:1.5}
+  .grid{display:flex;gap:18px;flex-wrap:nowrap;align-items:flex-start;padding-bottom:24px}
+  .col{width:360px;flex-shrink:0}
+  .col h2{font-size:13px;font-weight:600;margin-bottom:8px;color:#ddd}
+  .col h2 b{color:#fff}
+  .col p{font-size:11px;color:#9a9a9a;margin-bottom:10px;line-height:1.4;min-height:50px}
+  .phone{background:var(--bg);border-radius:32px;padding:10px 12px 16px;border:1px solid #1f1f1f}
+  .row{display:flex;gap:7px}
+  .stack>*+*{margin-top:8px}
+  .lbl{font-size:10.5px;color:var(--mut3);margin-bottom:3px}
+  .seg-pill{background:var(--seg);border-radius:7px;padding:2px;display:flex}
+  .seg-pill .opt{flex:1;text-align:center;padding:6px 0;font-size:11px;color:#fff;border-radius:5px}
+  .seg-pill .opt.on{background:var(--segOn)}
+
+  /* Cards */
+  .quoted, .dirty{padding:9px 0;text-align:center;border-radius:8px}
+  .quoted{background:#3D1F00;border:1px solid #5C2E00}
+  .quoted .h{font-size:9.5px;letter-spacing:1.2px;color:#A65500;font-weight:600}
+  .quoted .v{font-size:24px;font-weight:700;font-family:var(--mono);color:var(--orange);margin-top:2px}
+  .quoted .v small{font-size:13px;color:#FFA040}
+  .dirty{background:var(--yellow)}
+  .dirty .h{font-size:9.5px;letter-spacing:1.2px;color:#4D4D4D;font-weight:600}
+  .dirty .v{font-size:22px;font-weight:700;font-family:var(--mono);color:#000;margin-top:2px}
+
+  .out{background:var(--cell);border-radius:6px;padding:7px 8px;flex:1;min-width:0}
+  .out .k{font-size:9.5px;color:var(--mut);margin-bottom:1px}
+  .out .v{font-size:13px;font-family:var(--mono);overflow:hidden;white-space:nowrap}
+
+  /* Trade Date (input) */
+  .td{background:#1A0E00;border:1px solid var(--orange);display:flex;align-items:center;gap:6px;padding:7px 8px;border-radius:6px;flex:1}
+  .td .arrow{color:var(--orange);font-size:14px;width:14px;text-align:center}
+  .td .inner{flex:1}
+  .td .k{font-size:9.5px;color:var(--mut);margin-bottom:1px}
+  .td .v{font-size:13px;font-family:var(--mono);color:var(--orange)}
+
+  /* Chart */
+  .chart{background:#0E0E0E;border-radius:8px;padding:10px 10px 8px}
+  .chart .head{display:flex;justify-content:space-between;font-size:10px;font-weight:600;letter-spacing:1px}
+  .chart .bars{display:flex;align-items:end;gap:6px;height:74px;margin-top:8px;border-bottom:1px solid #222;padding-bottom:4px}
+  .chart .bar{flex:1;background:#404040;border-radius:2px;position:relative}
+  .chart .bar.sel{background:var(--barOrange)}
+  .chart .bar span{position:absolute;top:-13px;left:50%;transform:translateX(-50%);font-size:9px;color:#aaa;white-space:nowrap}
+  .chart .bar.sel span{color:#fff}
+  .chart .ticks{display:flex;gap:6px;margin-top:3px}
+  .chart .ticks span{flex:1;text-align:center;font-size:10px;color:var(--mut)}
+  .chart .ticks span.sel{color:var(--orange)}
+  .chart .foot{font-size:10px;color:var(--dim);margin-top:4px}
+
+  /* Risk */
+  .risk{display:flex;gap:6px}
+  .risk .cell{background:var(--cell);border-radius:6px;padding:7px 8px;flex:1}
+  .risk .k{font-size:9.5px;color:var(--mut);font-weight:600;letter-spacing:0.5px}
+  .risk .v{font-size:13px;font-family:var(--mono);margin-top:1px}
+  .risk .s{font-size:9px;color:var(--dim);margin-top:1px}
+
+  /* Tab bar */
+  .tabs{display:flex;justify-content:space-around;padding-top:10px;margin-top:12px;border-top:1px solid #1d1d1d}
+  .tabs .tab{font-size:10px;color:#888;display:flex;flex-direction:column;align-items:center;gap:2px}
+  .tabs .tab.on{color:var(--orange)}
+
+  /* ====== VARIANT OVERRIDES ====== */
+  /* Current — everything orange */
+  .v-cur .out .v{color:var(--orange)}
+  .v-cur .risk .v{color:var(--orange)}
+  .v-cur .chart .head b{color:var(--orange)}
+  .v-cur .chart .ticks span.sel{color:var(--orange)}
+
+  /* Option A — Semantic split */
+  .v-a .out .v{color:var(--white)}
+  .v-a .risk .v{color:var(--white)}
+  .v-a .chart .head b{color:var(--mut3)}
+  .v-a .chart .ticks span.sel{color:var(--orange)}
+
+  /* Option B — Bloomberg amber */
+  .v-b .out .v, .v-b .risk .v, .v-b .td .v, .v-b .quoted .v,
+  .v-b .chart .head b, .v-b .chart .ticks span.sel{color:var(--amber)!important}
+  .v-b .quoted{background:#1F1300;border-color:#3F2600}
+  .v-b .quoted .h{color:#7F5800}
+  .v-b .td{background:#1A1000;border-color:var(--amber)}
+  .v-b .td .arrow{color:var(--amber)}
+  .v-b .tabs .tab.on{color:var(--amber)}
+  .v-b .chart .bar.sel{background:var(--amber)}
+  .v-b .dirty{background:#2A2400;border:1px solid #44391E}
+  .v-b .dirty .h{color:#666}
+  .v-b .dirty .v{color:var(--amber)}
+
+  /* Option C — Minimal accent */
+  .v-c .out .v{color:var(--white)}
+  .v-c .risk .v{color:var(--white)}
+  .v-c .quoted{background:#1A1A1A;border-color:#262626}
+  .v-c .quoted .h{color:#888}
+  .v-c .quoted .v{color:var(--white)}
+  .v-c .td{background:#1A1A1A;border-color:#333}
+  .v-c .td .arrow{color:#888}
+  .v-c .td .v{color:var(--white)}
+  .v-c .chart .head b{color:var(--mut3)}
+  .v-c .chart .ticks span.sel{color:var(--white)}
+
+  .col.rec h2 b{color:var(--orange)}
+  .col.rec .phone{box-shadow:0 0 0 2px var(--orange)}
+  .badge{display:inline-block;background:var(--orange);color:#000;font-size:10px;font-weight:700;padding:2px 6px;border-radius:3px;margin-left:6px}
+</style>
+</head>
+<body>
+
+<h1>iCDS — Calc tab color exploration (v2 with reordered output rows)</h1>
+
+<p class="intro">
+Same Calc-tab content, four color variants. Trade is NA / 100 bp coupon / 5Y / $10M / R=40% with Quoted Spread = 1000 bp (distressed). Scroll horizontally to compare all four.
+</p>
+
+<div class="reorder-note">
+  <b>Layout change vs current app:</b> Trade Date / Settle Date moved DOWN (rarely changed — defaults are today / T+1).
+  Accrued + Upfront Fee moved UP, right under the headline cards, so the cash split is read alongside Dirty Upfront.
+  Start + Maturity sit between accrued/fee and the chart (they bound the period the upfront covers).
+  New top-to-bottom: <code>Inputs → Quoted/Dirty cards → Accrued + Upfront Fee → Start + Maturity → Default-Risk chart → CS01/DV01/Rec01 → Trade + Settle dates</code>
+</div>
+
+<div class="grid">
+
+  <!-- CURRENT -->
+  <div class="col">
+    <h2>Current — <b>everything orange</b></h2>
+    <p>Brand color does five jobs at once: tab icon, chart bar, header label, input value, every computed result. Visual fatigue.</p>
+    <div class="phone v-cur">
+      <div class="stack">
+        <div><div class="lbl">Region</div><div class="seg-pill"><div class="opt on">NA</div><div class="opt">EM</div><div class="opt">EU</div><div class="opt">Asia</div><div class="opt">Japan</div><div class="opt">AUS</div></div></div>
+        <div class="row">
+          <div style="flex:1"><div class="lbl">Buy / Sell</div><div class="seg-pill"><div class="opt on">Buy</div><div class="opt">Sell</div></div></div>
+          <div style="flex:1"><div class="lbl">Recovery&nbsp; 40%</div><div class="seg-pill"><div class="opt on">SEN</div><div class="opt">SUB</div></div></div>
+        </div>
+        <div><div class="lbl">Maturity</div><div class="seg-pill"><div class="opt">1Y</div><div class="opt">2Y</div><div class="opt">3Y</div><div class="opt">4Y</div><div class="opt on">5Y</div><div class="opt">7Y</div><div class="opt">10Y</div></div></div>
+        <div class="row">
+          <div style="flex:1"><div class="lbl">Coupon (bp)</div><div class="seg-pill"><div class="opt on">100</div><div class="opt">500</div></div></div>
+          <div style="flex:1"><div class="lbl">Notional</div><div class="seg-pill"><div class="opt">1M</div><div class="opt">5M</div><div class="opt on">10M</div><div class="opt">20M</div></div></div>
+        </div>
+        <div class="row">
+          <div class="quoted" style="flex:1"><div class="h">QUOTED SPREAD</div><div class="v">1,000 <small>bp ✎</small></div></div>
+          <div class="dirty" style="flex:1"><div class="h">DIRTY UPFRONT</div><div class="v">$1,680,434</div></div>
+        </div>
+        <div class="row">
+          <div class="out"><div class="k">Accrued</div><div class="v">$79,167</div></div>
+          <div class="out"><div class="k">Upfront Fee</div><div class="v">$1,601,267</div></div>
+        </div>
+        <div class="row">
+          <div class="out"><div class="k">Start</div><div class="v">20-Mar-26</div></div>
+          <div class="out"><div class="k">Maturity</div><div class="v">20-Jun-31</div></div>
+        </div>
+        <div class="chart">
+          <div class="head"><b>DEFAULT RISK · by maturity</b><span style="color:var(--orange);font-weight:600">5Y ≈ 56.5%</span></div>
+          <div class="bars">
+            <div class="bar" style="height:21%"><span>15.4%</span></div>
+            <div class="bar" style="height:34%"><span>28.3%</span></div>
+            <div class="bar" style="height:46%"><span>39.3%</span></div>
+            <div class="bar" style="height:55%"><span>48.7%</span></div>
+            <div class="bar sel" style="height:62%"><span>56.5%</span></div>
+            <div class="bar" style="height:73%"><span>68.9%</span></div>
+            <div class="bar" style="height:84%"><span>81.1%</span></div>
+          </div>
+          <div class="ticks"><span>1Y</span><span>2Y</span><span>3Y</span><span>4Y</span><span class="sel">5Y</span><span>7Y</span><span>10Y</span></div>
+          <div class="foot">Cumulative default prob · flat-hazard</div>
+        </div>
+        <div class="risk">
+          <div class="cell"><div class="k">CS01</div><div class="v">$2,632</div><div class="s">per +1 bp</div></div>
+          <div class="cell"><div class="k">IR DV01</div><div class="v">−$351</div><div class="s">per +1 bp</div></div>
+          <div class="cell"><div class="k">Rec01</div><div class="v">−$9,617</div><div class="s">per +1 pt</div></div>
+        </div>
+        <div class="row">
+          <div class="td"><span class="arrow">‹</span><div class="inner"><div class="k">Trade Date</div><div class="v">15-May-26</div></div><span class="arrow">›</span></div>
+          <div class="out"><div class="k">Settle Date</div><div class="v">18-May-26</div></div>
+        </div>
+      </div>
+      <div class="tabs"><div class="tab on">▦<br>Calc</div><div class="tab">⤡<br>Curves</div><div class="tab">ⓘ<br>Info</div><div class="tab">⚗<br>Diag</div></div>
+    </div>
+  </div>
+
+  <!-- OPTION A -->
+  <div class="col rec">
+    <h2>Option A — <b>Semantic split</b><span class="badge">RECOMMENDED</span></h2>
+    <p>Orange = INPUT you can change. White = computed result. Yellow = headline. Brand stays in Quoted Spread, Trade Date stepper, chart selection, tab.</p>
+    <div class="phone v-a">
+      <div class="stack">
+        <div><div class="lbl">Region</div><div class="seg-pill"><div class="opt on">NA</div><div class="opt">EM</div><div class="opt">EU</div><div class="opt">Asia</div><div class="opt">Japan</div><div class="opt">AUS</div></div></div>
+        <div class="row">
+          <div style="flex:1"><div class="lbl">Buy / Sell</div><div class="seg-pill"><div class="opt on">Buy</div><div class="opt">Sell</div></div></div>
+          <div style="flex:1"><div class="lbl">Recovery&nbsp; 40%</div><div class="seg-pill"><div class="opt on">SEN</div><div class="opt">SUB</div></div></div>
+        </div>
+        <div><div class="lbl">Maturity</div><div class="seg-pill"><div class="opt">1Y</div><div class="opt">2Y</div><div class="opt">3Y</div><div class="opt">4Y</div><div class="opt on">5Y</div><div class="opt">7Y</div><div class="opt">10Y</div></div></div>
+        <div class="row">
+          <div style="flex:1"><div class="lbl">Coupon (bp)</div><div class="seg-pill"><div class="opt on">100</div><div class="opt">500</div></div></div>
+          <div style="flex:1"><div class="lbl">Notional</div><div class="seg-pill"><div class="opt">1M</div><div class="opt">5M</div><div class="opt on">10M</div><div class="opt">20M</div></div></div>
+        </div>
+        <div class="row">
+          <div class="quoted" style="flex:1"><div class="h">QUOTED SPREAD</div><div class="v">1,000 <small>bp ✎</small></div></div>
+          <div class="dirty" style="flex:1"><div class="h">DIRTY UPFRONT</div><div class="v">$1,680,434</div></div>
+        </div>
+        <div class="row">
+          <div class="out"><div class="k">Accrued</div><div class="v">$79,167</div></div>
+          <div class="out"><div class="k">Upfront Fee</div><div class="v">$1,601,267</div></div>
+        </div>
+        <div class="row">
+          <div class="out"><div class="k">Start</div><div class="v">20-Mar-26</div></div>
+          <div class="out"><div class="k">Maturity</div><div class="v">20-Jun-31</div></div>
+        </div>
+        <div class="chart">
+          <div class="head"><b>DEFAULT RISK · by maturity</b><span style="color:var(--orange);font-weight:600">5Y ≈ 56.5%</span></div>
+          <div class="bars">
+            <div class="bar" style="height:21%"><span>15.4%</span></div>
+            <div class="bar" style="height:34%"><span>28.3%</span></div>
+            <div class="bar" style="height:46%"><span>39.3%</span></div>
+            <div class="bar" style="height:55%"><span>48.7%</span></div>
+            <div class="bar sel" style="height:62%"><span>56.5%</span></div>
+            <div class="bar" style="height:73%"><span>68.9%</span></div>
+            <div class="bar" style="height:84%"><span>81.1%</span></div>
+          </div>
+          <div class="ticks"><span>1Y</span><span>2Y</span><span>3Y</span><span>4Y</span><span class="sel">5Y</span><span>7Y</span><span>10Y</span></div>
+          <div class="foot">Cumulative default prob · flat-hazard</div>
+        </div>
+        <div class="risk">
+          <div class="cell"><div class="k">CS01</div><div class="v">$2,632</div><div class="s">per +1 bp</div></div>
+          <div class="cell"><div class="k">IR DV01</div><div class="v">−$351</div><div class="s">per +1 bp</div></div>
+          <div class="cell"><div class="k">Rec01</div><div class="v">−$9,617</div><div class="s">per +1 pt</div></div>
+        </div>
+        <div class="row">
+          <div class="td"><span class="arrow">‹</span><div class="inner"><div class="k">Trade Date</div><div class="v">15-May-26</div></div><span class="arrow">›</span></div>
+          <div class="out"><div class="k">Settle Date</div><div class="v">18-May-26</div></div>
+        </div>
+      </div>
+      <div class="tabs"><div class="tab on">▦<br>Calc</div><div class="tab">⤡<br>Curves</div><div class="tab">ⓘ<br>Info</div><div class="tab">⚗<br>Diag</div></div>
+    </div>
+  </div>
+
+  <!-- OPTION B -->
+  <div class="col">
+    <h2>Option B — <b>Bloomberg amber</b></h2>
+    <p>Lean into orange-on-black financial-data aesthetic. All numeric data renders amber. Familiar to professionals, loud and one-note.</p>
+    <div class="phone v-b">
+      <div class="stack">
+        <div><div class="lbl">Region</div><div class="seg-pill"><div class="opt on">NA</div><div class="opt">EM</div><div class="opt">EU</div><div class="opt">Asia</div><div class="opt">Japan</div><div class="opt">AUS</div></div></div>
+        <div class="row">
+          <div style="flex:1"><div class="lbl">Buy / Sell</div><div class="seg-pill"><div class="opt on">Buy</div><div class="opt">Sell</div></div></div>
+          <div style="flex:1"><div class="lbl">Recovery&nbsp; 40%</div><div class="seg-pill"><div class="opt on">SEN</div><div class="opt">SUB</div></div></div>
+        </div>
+        <div><div class="lbl">Maturity</div><div class="seg-pill"><div class="opt">1Y</div><div class="opt">2Y</div><div class="opt">3Y</div><div class="opt">4Y</div><div class="opt on">5Y</div><div class="opt">7Y</div><div class="opt">10Y</div></div></div>
+        <div class="row">
+          <div style="flex:1"><div class="lbl">Coupon (bp)</div><div class="seg-pill"><div class="opt on">100</div><div class="opt">500</div></div></div>
+          <div style="flex:1"><div class="lbl">Notional</div><div class="seg-pill"><div class="opt">1M</div><div class="opt">5M</div><div class="opt on">10M</div><div class="opt">20M</div></div></div>
+        </div>
+        <div class="row">
+          <div class="quoted" style="flex:1"><div class="h">QUOTED SPREAD</div><div class="v">1,000 <small>bp ✎</small></div></div>
+          <div class="dirty" style="flex:1"><div class="h">DIRTY UPFRONT</div><div class="v">$1,680,434</div></div>
+        </div>
+        <div class="row">
+          <div class="out"><div class="k">Accrued</div><div class="v">$79,167</div></div>
+          <div class="out"><div class="k">Upfront Fee</div><div class="v">$1,601,267</div></div>
+        </div>
+        <div class="row">
+          <div class="out"><div class="k">Start</div><div class="v">20-Mar-26</div></div>
+          <div class="out"><div class="k">Maturity</div><div class="v">20-Jun-31</div></div>
+        </div>
+        <div class="chart">
+          <div class="head"><b>DEFAULT RISK · by maturity</b><span style="color:var(--amber);font-weight:600">5Y ≈ 56.5%</span></div>
+          <div class="bars">
+            <div class="bar" style="height:21%"><span>15.4%</span></div>
+            <div class="bar" style="height:34%"><span>28.3%</span></div>
+            <div class="bar" style="height:46%"><span>39.3%</span></div>
+            <div class="bar" style="height:55%"><span>48.7%</span></div>
+            <div class="bar sel" style="height:62%"><span>56.5%</span></div>
+            <div class="bar" style="height:73%"><span>68.9%</span></div>
+            <div class="bar" style="height:84%"><span>81.1%</span></div>
+          </div>
+          <div class="ticks"><span>1Y</span><span>2Y</span><span>3Y</span><span>4Y</span><span class="sel">5Y</span><span>7Y</span><span>10Y</span></div>
+          <div class="foot">Cumulative default prob · flat-hazard</div>
+        </div>
+        <div class="risk">
+          <div class="cell"><div class="k">CS01</div><div class="v">$2,632</div><div class="s">per +1 bp</div></div>
+          <div class="cell"><div class="k">IR DV01</div><div class="v">−$351</div><div class="s">per +1 bp</div></div>
+          <div class="cell"><div class="k">Rec01</div><div class="v">−$9,617</div><div class="s">per +1 pt</div></div>
+        </div>
+        <div class="row">
+          <div class="td"><span class="arrow">‹</span><div class="inner"><div class="k">Trade Date</div><div class="v">15-May-26</div></div><span class="arrow">›</span></div>
+          <div class="out"><div class="k">Settle Date</div><div class="v">18-May-26</div></div>
+        </div>
+      </div>
+      <div class="tabs"><div class="tab on">▦<br>Calc</div><div class="tab">⤡<br>Curves</div><div class="tab">ⓘ<br>Info</div><div class="tab">⚗<br>Diag</div></div>
+    </div>
+  </div>
+
+  <!-- OPTION C -->
+  <div class="col">
+    <h2>Option C — <b>Minimal accent</b></h2>
+    <p>Orange only on tab icon + selected chart bar. Everything else white-on-black. Yellow Dirty Upfront card is the single visual anchor.</p>
+    <div class="phone v-c">
+      <div class="stack">
+        <div><div class="lbl">Region</div><div class="seg-pill"><div class="opt on">NA</div><div class="opt">EM</div><div class="opt">EU</div><div class="opt">Asia</div><div class="opt">Japan</div><div class="opt">AUS</div></div></div>
+        <div class="row">
+          <div style="flex:1"><div class="lbl">Buy / Sell</div><div class="seg-pill"><div class="opt on">Buy</div><div class="opt">Sell</div></div></div>
+          <div style="flex:1"><div class="lbl">Recovery&nbsp; 40%</div><div class="seg-pill"><div class="opt on">SEN</div><div class="opt">SUB</div></div></div>
+        </div>
+        <div><div class="lbl">Maturity</div><div class="seg-pill"><div class="opt">1Y</div><div class="opt">2Y</div><div class="opt">3Y</div><div class="opt">4Y</div><div class="opt on">5Y</div><div class="opt">7Y</div><div class="opt">10Y</div></div></div>
+        <div class="row">
+          <div style="flex:1"><div class="lbl">Coupon (bp)</div><div class="seg-pill"><div class="opt on">100</div><div class="opt">500</div></div></div>
+          <div style="flex:1"><div class="lbl">Notional</div><div class="seg-pill"><div class="opt">1M</div><div class="opt">5M</div><div class="opt on">10M</div><div class="opt">20M</div></div></div>
+        </div>
+        <div class="row">
+          <div class="quoted" style="flex:1"><div class="h">QUOTED SPREAD</div><div class="v">1,000 <small>bp ✎</small></div></div>
+          <div class="dirty" style="flex:1"><div class="h">DIRTY UPFRONT</div><div class="v">$1,680,434</div></div>
+        </div>
+        <div class="row">
+          <div class="out"><div class="k">Accrued</div><div class="v">$79,167</div></div>
+          <div class="out"><div class="k">Upfront Fee</div><div class="v">$1,601,267</div></div>
+        </div>
+        <div class="row">
+          <div class="out"><div class="k">Start</div><div class="v">20-Mar-26</div></div>
+          <div class="out"><div class="k">Maturity</div><div class="v">20-Jun-31</div></div>
+        </div>
+        <div class="chart">
+          <div class="head"><b>DEFAULT RISK · by maturity</b><span style="color:#A6A6A6;font-weight:600">5Y ≈ 56.5%</span></div>
+          <div class="bars">
+            <div class="bar" style="height:21%"><span>15.4%</span></div>
+            <div class="bar" style="height:34%"><span>28.3%</span></div>
+            <div class="bar" style="height:46%"><span>39.3%</span></div>
+            <div class="bar" style="height:55%"><span>48.7%</span></div>
+            <div class="bar sel" style="height:62%"><span>56.5%</span></div>
+            <div class="bar" style="height:73%"><span>68.9%</span></div>
+            <div class="bar" style="height:84%"><span>81.1%</span></div>
+          </div>
+          <div class="ticks"><span>1Y</span><span>2Y</span><span>3Y</span><span>4Y</span><span class="sel">5Y</span><span>7Y</span><span>10Y</span></div>
+          <div class="foot">Cumulative default prob · flat-hazard</div>
+        </div>
+        <div class="risk">
+          <div class="cell"><div class="k">CS01</div><div class="v">$2,632</div><div class="s">per +1 bp</div></div>
+          <div class="cell"><div class="k">IR DV01</div><div class="v">−$351</div><div class="s">per +1 bp</div></div>
+          <div class="cell"><div class="k">Rec01</div><div class="v">−$9,617</div><div class="s">per +1 pt</div></div>
+        </div>
+        <div class="row">
+          <div class="td"><span class="arrow">‹</span><div class="inner"><div class="k">Trade Date</div><div class="v">15-May-26</div></div><span class="arrow">›</span></div>
+          <div class="out"><div class="k">Settle Date</div><div class="v">18-May-26</div></div>
+        </div>
+      </div>
+      <div class="tabs"><div class="tab on">▦<br>Calc</div><div class="tab">⤡<br>Curves</div><div class="tab">ⓘ<br>Info</div><div class="tab">⚗<br>Diag</div></div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>
