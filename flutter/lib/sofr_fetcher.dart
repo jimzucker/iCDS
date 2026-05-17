@@ -47,7 +47,7 @@ enum RFRCurrency {
       case RFRCurrency.usd: return 'NY Fed';
       case RFRCurrency.eur: return 'ECB';
       case RFRCurrency.gbp: return 'Bank of England';
-      case RFRCurrency.jpy: return 'FRED · Japan Overnight';
+      case RFRCurrency.jpy: return 'FRED · Japan Overnight (monthly)';
       case RFRCurrency.aud: return 'Reserve Bank of Australia';
     }
   }

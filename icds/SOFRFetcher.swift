@@ -37,7 +37,7 @@ enum RFRCurrency: String, CaseIterable, Identifiable, Hashable {
         case .USD: return "NY Fed"
         case .EUR: return "ECB"
         case .GBP: return "Bank of England"
-        case .JPY: return "FRED · Japan Overnight"
+        case .JPY: return "FRED · Japan Overnight (monthly)"
         case .AUD: return "Reserve Bank of Australia"
         }
     }
