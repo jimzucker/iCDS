@@ -98,7 +98,12 @@ class _DiagnosticsTabState extends State<DiagnosticsTab> {
   void _onUpdate() { if (mounted) setState(() {}); }
 
   String _bp(CdsResult? r) => r == null ? 'null' : '${r.upfrontBp.toStringAsFixed(2)} bp';
-  String _usd(CdsResult? r) => r == null ? 'null' : '\$${r.upfrontDollars.toStringAsFixed(0)}';
+  String _usd(CdsResult? r) {
+    if (r == null) return 'null';
+    final v = r.upfrontDollars;
+    final mag = _intFmt.format(v.abs());
+    return v < 0 ? '\$-$mag' : '\$$mag';
+  }
 
   static final _intFmt = NumberFormat('#,##0');
   static String _isoFromDateTime(DateTime d) =>

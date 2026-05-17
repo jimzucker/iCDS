@@ -153,9 +153,17 @@ struct DiagnosticsView: View {
         guard let r = r else { return "nil" }
         return String(format: "%.2f bp", r.upfrontBp)
     }
+    private static let usdFmt: NumberFormatter = {
+        let f = NumberFormatter()
+        f.numberStyle = .decimal
+        f.maximumFractionDigits = 0
+        return f
+    }()
     private func usd(_ r: CDSResult?) -> String {
         guard let r = r else { return "nil" }
-        return String(format: "$%.0f", r.upfrontDollars)
+        let v = r.upfrontDollars
+        let mag = ContentView.usdFmt.string(from: NSNumber(value: abs(v))) ?? String(format: "%.0f", abs(v))
+        return v < 0 ? "$-\(mag)" : "$\(mag)"
     }
     private func ymd(_ td: TDate) -> String {
         var mdy = TMonthDayYear()
