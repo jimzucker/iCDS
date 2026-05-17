@@ -43,13 +43,14 @@ struct FeeView: View {
     private var regionRow: some View {
         VStack(alignment: .leading, spacing: 4) {
             label("Region")
-            HStack(spacing: 6) {
+            Picker("", selection: $vm.regionIndex) {
                 ForEach(vm.contracts.indices, id: \.self) { i in
-                    segButton(vm.contracts[i].region, selected: vm.regionIndex == i) {
-                        vm.regionIndex = i
-                        vm.onRegionChanged()
-                    }
+                    Text(vm.contracts[i].region).tag(i)
                 }
+            }
+            .pickerStyle(.segmented)
+            .onChange(of: vm.regionIndex) { _ in
+                vm.onRegionChanged()
             }
         }
     }
