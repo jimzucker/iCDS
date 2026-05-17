@@ -314,7 +314,7 @@ void main() {
     // distinct: clean upfront ≈ $0 but accrued is meaningful ($7,500
     // for the pinned refDate). Guards against a regression observed on
     // the Android port where upfrontDollars silently contained accrued.
-    test('at par: upfront ≈ 0 AND accrued ≈ $7,500 — fields are independent', () {
+    test('at par: upfront ≈ 0 AND accrued ≈ \$7,500 — fields are independent', () {
       final r = calc(parSpread: 100, coupon: 100)!;
       expect(r.upfrontDollars.abs(), lessThan(1.0),
           reason: 'clean upfront must be ≈ 0 at par; non-zero means accrued bled into upfrontDollars');
