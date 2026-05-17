@@ -131,12 +131,12 @@ struct FeeView: View {
                     .foregroundColor(Color(white: 0.55))
                 HStack(alignment: .firstTextBaseline, spacing: 6) {
                     Text(Self.formatBp(Int(vm.spreadBp)))
-                        .font(.system(size: 28, weight: .bold, design: .monospaced))
+                        .font(.system(size: 28, weight: .bold))
                         .foregroundColor(orange)
                         .lineLimit(1)
                         .minimumScaleFactor(0.6)
                     Text("bp")
-                        .font(.system(size: 18, weight: .semibold, design: .monospaced))
+                        .font(.system(size: 18, weight: .semibold))
                         .foregroundColor(orange)
                     Image(systemName: "pencil")
                         .font(.caption.weight(.semibold))
@@ -164,7 +164,7 @@ struct FeeView: View {
                         .tracking(1)
                         .foregroundColor(Color(white: 0.30))
                     Text(FeeView.signedCurrencyString(r.upfrontDollars + r.accrued, code: vm.currency))
-                        .font(.system(size: 28, weight: .bold, design: .monospaced))
+                        .font(.system(size: 28, weight: .bold))
                         .foregroundColor(.black)
                         .lineLimit(1)
                         .minimumScaleFactor(0.6)
@@ -180,7 +180,7 @@ struct FeeView: View {
                         .tracking(1)
                         .foregroundColor(Color(white: 0.30))
                     Text("…")
-                        .font(.system(size: 28, weight: .bold, design: .monospaced))
+                        .font(.system(size: 28, weight: .bold))
                         .foregroundColor(.black)
                 }
                 .frame(maxWidth: .infinity)
@@ -532,15 +532,15 @@ struct FeeView: View {
         return VStack(alignment: .leading, spacing: 4) {
             HStack(spacing: 4) {
                 Text("DEFAULT RISK")
-                    .font(.caption2.weight(.bold)).tracking(1)
+                    .font(.caption.weight(.bold)).tracking(1)
                     .foregroundColor(Color(white: 0.65))
                 Text("· by maturity")
-                    .font(.caption2)
+                    .font(.caption)
                     .foregroundColor(Color(white: 0.55))
                 Spacer()
                 Text(String(format: "%@  ≈ %.1f%% to default",
                             vm.tenorLabels[sel], probs[sel] * 100))
-                    .font(.system(.caption2, design: .monospaced))
+                    .font(.system(.caption).weight(.semibold))
                     .foregroundColor(orange)
             }
             HStack(alignment: .bottom, spacing: 6) {
@@ -548,15 +548,15 @@ struct FeeView: View {
                     let isSel = i == sel
                     VStack(spacing: 3) {
                         Text(String(format: "%.1f%%", probs[i] * 100))
-                            .font(.system(size: 9, design: .monospaced))
-                            .foregroundColor(isSel ? orange : Color(white: 0.55))
+                            .font(.system(size: 11, weight: .semibold))
+                            .foregroundColor(isSel ? orange : Color(white: 0.65))
                             .lineLimit(1).minimumScaleFactor(0.6)
                         RoundedRectangle(cornerRadius: 2)
                             .fill(isSel ? orange : Color(white: 0.23))
                             .frame(height: max(4, CGFloat(probs[i] / maxP) * 60))
                         Text(vm.tenorLabels[i])
-                            .font(.system(size: 10, design: .monospaced))
-                            .foregroundColor(isSel ? orange : Color(white: 0.4))
+                            .font(.system(size: 12, weight: .semibold))
+                            .foregroundColor(isSel ? orange : Color(white: 0.5))
                     }
                     .frame(maxWidth: .infinity)
                     .contentShape(Rectangle())
@@ -565,8 +565,8 @@ struct FeeView: View {
             }
             .frame(height: 90, alignment: .bottom)
             Text("Cumulative default prob · flat-hazard")
-                .font(.system(size: 9))
-                .foregroundColor(Color(white: 0.4))
+                .font(.system(size: 11))
+                .foregroundColor(Color(white: 0.5))
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(8)

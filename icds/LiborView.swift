@@ -13,18 +13,13 @@ struct LiborView: View {
     private let orange = Color(red: 1, green: 0.502, blue: 0)
     @ObservedObject private var sofrStore = SOFRRateStore.shared
     @State private var selectedCurrency: RFRCurrency = .USD
+    @State private var refreshing = false
 
     var body: some View {
         VStack(spacing: 0) {
-            Text("Reference Rates")
-                .font(.title2.bold())
-                .foregroundColor(orange)
+            titleRow
                 .padding(.top, 8)
-
-            Text("Live RFR overnight rates by currency")
-                .font(.caption)
-                .foregroundColor(Color(white: 0.45))
-                .padding(.top, 2)
+                .padding(.horizontal, 16)
                 .padding(.bottom, 6)
 
             // Currency picker — color-coded by fetch status
@@ -40,31 +35,114 @@ struct LiborView: View {
                 .padding(.horizontal, 16)
                 .padding(.bottom, 6)
 
+            if allFallback {
+                offlineBanner
+                    .padding(.horizontal, 16)
+                    .padding(.bottom, 6)
+            }
+
             Divider().background(Color(white: 0.2))
 
             // Per-currency reference swap curve (static 2021 snapshot)
             curveTableHeader
                 .padding(.horizontal, 16)
                 .padding(.top, 4)
+                .padding(.bottom, 2)
 
-            List {
-                ForEach(tenorsForSelected(), id: \.tenor) { entry in
-                    HStack {
-                        Text(entry.tenor)
-                            .font(.system(.body, design: .monospaced))
-                            .foregroundColor(Color(white: 0.7))
-                        Spacer()
-                        Text(String(format: "%.4f%%", entry.rate * 100))
-                            .font(.system(.body, design: .monospaced).weight(.semibold))
-                            .foregroundColor(orange)
+            // Manual scroll list — replaces SwiftUI's `List` so we control row
+            // height. Default `.listStyle(.plain)` rows are ~44pt; here each
+            // row is ~22pt, so ~all 19 USD tenors fit on one screen.
+            ScrollView {
+                LazyVStack(spacing: 0) {
+                    ForEach(tenorsForSelected(), id: \.tenor) { entry in
+                        HStack {
+                            Text(entry.tenor)
+                                .font(.system(size: 15, design: .monospaced))
+                                .foregroundColor(Color(white: 0.75))
+                            Spacer()
+                            Text(String(format: "%.4f%%", entry.rate * 100))
+                                .font(.system(size: 15, design: .monospaced).weight(.semibold))
+                                .foregroundColor(orange)
+                        }
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 4)
                     }
-                    .listRowBackground(Color.black)
                 }
             }
-            .listStyle(.plain)
             .background(Color.black)
         }
         .background(Color.black)
+    }
+
+    /// Title row with refresh icon top-right (parity with Flutter Curves tab).
+    private var titleRow: some View {
+        ZStack {
+            Text("Reference Rates")
+                .font(.title2.bold())
+                .foregroundColor(orange)
+            HStack {
+                Spacer()
+                Button(action: refresh) {
+                    if refreshing {
+                        ProgressView()
+                            .progressViewStyle(.circular)
+                            .tint(orange)
+                            .scaleEffect(0.7)
+                            .frame(width: 24, height: 24)
+                    } else {
+                        Image(systemName: "arrow.clockwise")
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundColor(orange)
+                            .frame(width: 32, height: 32)
+                    }
+                }
+                .buttonStyle(.plain)
+                .disabled(refreshing)
+            }
+        }
+    }
+
+    private var allFallback: Bool {
+        for ccy in RFRCurrency.allCases {
+            if sofrStore.status(for: ccy) != .fallback { return false }
+        }
+        return true
+    }
+
+    private var offlineBanner: some View {
+        HStack(spacing: 6) {
+            Image(systemName: "icloud.slash")
+                .foregroundColor(.yellow)
+                .font(.caption)
+            Text("No live rates — showing static fallback values.")
+                .font(.caption.weight(.medium))
+                .foregroundColor(.yellow)
+            Spacer()
+            Button(action: refresh) {
+                Text("Retry")
+                    .font(.caption.weight(.semibold))
+                    .foregroundColor(.yellow)
+            }
+            .buttonStyle(.plain)
+            .disabled(refreshing)
+        }
+        .padding(.horizontal, 10)
+        .padding(.vertical, 6)
+        .background(Color.yellow.opacity(0.10))
+        .overlay(
+            RoundedRectangle(cornerRadius: 6)
+                .stroke(Color.yellow.opacity(0.30), lineWidth: 1)
+        )
+        .cornerRadius(6)
+    }
+
+    private func refresh() {
+        guard !refreshing else { return }
+        refreshing = true
+        Task {
+            await sofrStore.refreshAll()
+            await MainActor.run { refreshing = false }
+        }
     }
 
     // MARK: - Reference swap curves (ISDA RFR test grid · 2021-04-26 snapshot)
@@ -72,12 +150,12 @@ struct LiborView: View {
     private var curveTableHeader: some View {
         HStack {
             Text("\(selectedCurrency.indexName) swap curve")
-                .font(.caption.weight(.semibold))
-                .foregroundColor(Color(white: 0.65))
+                .font(.subheadline.weight(.semibold))
+                .foregroundColor(Color(white: 0.75))
             Spacer()
             Text("reference · 2021-04-26")
-                .font(.caption2)
-                .foregroundColor(Color(white: 0.4))
+                .font(.caption)
+                .foregroundColor(Color(white: 0.5))
         }
     }
 
@@ -128,7 +206,7 @@ struct LiborView: View {
                     selectedCurrency = ccy
                 } label: {
                     Text(ccy.rawValue)
-                        .font(.caption.weight(.semibold))
+                        .font(.subheadline.weight(.semibold))
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 8)
                         .background(buttonBackground(for: ccy))
@@ -209,26 +287,26 @@ struct LiborView: View {
         HStack(spacing: 6) {
             switch ccyStatus {
             case .loading:
-                Circle().fill(Color(white: 0.5)).frame(width: 8, height: 8)
+                Circle().fill(Color(white: 0.5)).frame(width: 9, height: 9)
                 Text("Fetching \(selectedCurrency.indexName)…")
-                    .font(.caption.weight(.medium))
+                    .font(.subheadline.weight(.medium))
                     .foregroundColor(Color(white: 0.5))
             case .live:
-                Circle().fill(Color.green).frame(width: 8, height: 8)
+                Circle().fill(Color.green).frame(width: 9, height: 9)
                 Text("LIVE  ·  \(selectedCurrency.sourceLabel)")
-                    .font(.caption.weight(.medium))
+                    .font(.subheadline.weight(.medium))
                     .foregroundColor(.green)
             case .cached:
-                Circle().fill(Self.cyan).frame(width: 8, height: 8)
+                Circle().fill(Self.cyan).frame(width: 9, height: 9)
                 Text("CACHED  ·  \(selectedCurrency.sourceLabel)")
-                    .font(.caption.weight(.medium))
+                    .font(.subheadline.weight(.medium))
                     .foregroundColor(Self.cyan)
             case .fallback:
                 Image(systemName: "exclamationmark.triangle.fill")
                     .foregroundColor(.yellow)
-                    .font(.caption)
+                    .font(.subheadline)
                 Text("Reference rate — \(selectedCurrency.sourceLabel)")
-                    .font(.caption.weight(.medium))
+                    .font(.subheadline.weight(.medium))
                     .foregroundColor(.yellow)
             }
             Spacer()
@@ -254,25 +332,26 @@ struct LiborView: View {
         return HStack {
             VStack(alignment: .leading, spacing: 2) {
                 Text("\(selectedCurrency.indexName)  (\(selectedCurrency.rawValue))")
-                    .font(.caption2)
-                    .foregroundColor(Color(white: 0.55))
+                    .font(.caption)
+                    .foregroundColor(Color(white: 0.65))
                 Text(ccyStatus == .loading
                      ? "loading…"
                      : String(format: "%.4f%%", rate * 100))
-                    .font(.system(size: 28, weight: .bold, design: .monospaced))
+                    .font(.system(size: 24, weight: .bold, design: .monospaced))
                     .foregroundColor(accentColor)
             }
             Spacer()
             VStack(alignment: .trailing, spacing: 2) {
                 Text("as of")
-                    .font(.caption2)
-                    .foregroundColor(Color(white: 0.55))
+                    .font(.caption)
+                    .foregroundColor(Color(white: 0.65))
                 Text(date.isEmpty ? "—" : date)
-                    .font(.system(.caption, design: .monospaced))
-                    .foregroundColor(ccyStatus == .fallback ? .red : Color(white: 0.7))
+                    .font(.system(.subheadline, design: .monospaced))
+                    .foregroundColor(ccyStatus == .fallback ? .red : Color(white: 0.8))
             }
         }
-        .padding(12)
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
         .background(Color(white: 0.08))
         .cornerRadius(8)
         .overlay(
