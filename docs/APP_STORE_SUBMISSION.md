@@ -1,4 +1,4 @@
-# App Store Submission — iCDS 3.0.1
+# App Store Submission — iCDS 3.1.0
 
 Each section below is the field's content as plain text, ready to copy-paste into App Store Connect.
 
@@ -24,10 +24,13 @@ WHAT'S INSIDE
   – GBP SONIA (Bank of England)
   – JPY TONA proxy (FRED / St. Louis Fed)
   – AUD AONIA (Reserve Bank of Australia)
-• Six regional contracts: NA, EM, EU, Asia, Japan, AUS
+• Six regional contracts: NA, EM, EU, Asia, Japan, AUS — modernized post-Big-Bang ISDA conventions (T+1 settlement everywhere; recovery rates per region)
+• Seven SNAC tenors: 1Y / 2Y / 3Y / 4Y / 5Y / 7Y / 10Y
 • Spread input via preset chips and a numeric keypad; cap raised to 10,000 bp for distressed credits
-• ISDA RFR test-grid validation across all five currencies
-• Three tabs: Fee, Curves, Info
+• Default-risk-by-maturity chart: cumulative default probability implied by the quoted spread, at each tenor
+• First-order risk metrics: CS01, IR DV01, Rec01 (bump-and-reprice)
+• ISDA RFR test-grid validation across six currencies
+• Four tabs: Calc, Curves, Info, Diag (in-app deterministic self-tests)
 
 WHO IT'S FOR
 Quantitative finance students, fixed-income professionals, and developers exploring CDS pricing. Source is open under Apache 2.0.
@@ -43,19 +46,14 @@ Source code: Apache 2.0. Pricing engine: ISDA CDS Standard Model Public License 
 
 ---
 
-## What's New in This Version (3.0.1)
+## What's New in This Version (3.1.0)
 
-• Rebuilt UI in SwiftUI — clearer layout and faster interaction
-• Updated for iOS 16 and current iPhone/iPad models
-• Refreshed app icon
-• Live overnight reference rates from five central banks
-   (USD SOFR, EUR €STR, GBP SONIA, JPY TONA, AUD AONIA)
-• Six regional contracts: NA, EM, EU, Asia, Japan, AUS
-• Spread input via preset chips and numeric keypad;
-   cap raised to 10,000 bp for distressed credits
-• "Documentation & Source" button on the Info screen
-• Apache 2.0 source license + full data-source attributions
-• New documentation site: jimzucker.github.io/iCDS
+• v12 layout — extended tenor row (1Y/2Y/3Y/4Y/5Y/7Y/10Y), default-risk-by-maturity chart, and a first-order risk row (CS01 / IR DV01 / Rec01)
+• "Calc" / "Curves" / "Info" / "Diag" tab structure — Diag is an in-app deterministic self-test surface for verifying the C library and endpoints on a new device
+• DIRTY UPFRONT yellow card showing the total cash to settle (upfront fee + accrued); the unsigned Upfront Fee and Accrued components stay visible alongside
+• Modernized SNAC conventions: EM moved to T+1 settlement; subordinated recoveries lowered (EM 25→15, Japan 35→15) so SUB is always strictly less than SEN; Japan adds 500 bp coupon; AUS drops the non-standard 25 bp coupon
+• Unified segmented-pill style on every selector (Region, Buy/Sell, Recovery, Maturity, Coupon, Notional) — grey-selected, matching the native iOS segmented control
+• Quality polish: −$0 never displayed on any signed-dollar cell; comma-grouped thousands; ISO yyyy-MM-dd dates; shrink-to-fit value text on tight cells
 
 ---
 

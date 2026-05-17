@@ -31,6 +31,17 @@ For support please create a ticket at: https://github.com/jimzucker/iCDS/issues
 
 # Release Notes
 
+## 3.1.0
+- **Flutter / Dart-FFI port** at `flutter/` running on Android arm64 + iOS arm64 with bit-identical numerical results to the Swift app. Live on Google Play Internal testing (versionCode 7).
+- **v12 layout**: 7 SNAC tenors (1Y, 2Y, 3Y, 4Y, 5Y, 7Y, 10Y) in a unified segmented pill; default-risk-by-maturity chart with the selected tenor highlighted; first-order risk row showing CS01, IR DV01, and Rec01 (bump-and-reprice).
+- **Diag tab**: in-app deterministic self-tests (JpmcdsDate sanity, CDSCalculator par/wide/tight, IMM helpers, regional holiday calendars, and live RFR fetcher status). Useful for verifying the C library and endpoints on a new device.
+- **Tab rename**: "Fee" → "Calc"; "Libor" → "Curves".
+- **Dirty Upfront card**: yellow card now shows the total cash to settle (upfront fee + accrued) labeled DIRTY UPFRONT, matching ISDA trader-floor vocabulary. The unsigned Upfront Fee and Accrued components are shown alongside.
+- **UX polish**: grey-selected segmented chips (matching iOS native style); −$0 suppression on every signed-dollar cell; rounded date pickers; shrink-to-fit value text; hidden chips that don't make economic sense.
+- **Modernized SNAC conventions**: EM moved to T+1 settlement (was T+3); EM SUB recovery 25%→15%; Japan SUB recovery 35%→15%; Japan adds 500 bp coupon; AUS drops 25 bp coupon (kept 100, 500).
+- **Android Info-tab link fix**: Android 11+ package-visibility (`<queries>`) declaration so external URLs (Documentation, ISDA, Apache, Privacy Policy) actually launch instead of silently no-opping.
+- **Regression coverage**: 263 tests passing across iOS (125 unit + 1 UI) and Flutter (37 pure-Dart + 12 widget + 88 integration). New parity tests for risk metrics, dirty-upfront composition, SUB-recovery-lower-than-SEN invariant, and signed-currency −$0 suppression.
+
 ## 3.0.1
 - Apache 2.0 source license headers and full third-party attribution (ISDA model, central-bank rate sources)
 - Expanded in-app disclaimers (not financial advice, AS IS, no liability, no affiliation)

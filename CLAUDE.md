@@ -4,12 +4,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this app is
 
-iCDS is a CDS (Credit Default Swap) upfront fee calculator implementing the SNAC (Standard North American CDS) model. It uses the **ISDA CDS Standard Model** C library (www.cdsmodel.com) compiled directly into the app. The app has three tabs: **Fee** (main calculator), **Libor** (SOFR reference curve), and **Info** (about screen).
+iCDS is a CDS (Credit Default Swap) upfront fee calculator implementing the SNAC (Standard North American CDS) model. It uses the **ISDA CDS Standard Model** C library (www.cdsmodel.com) compiled directly into the app. The app has four tabs: **Calc** (main calculator — Fee tab in earlier versions), **Curves** (live overnight reference rates), **Info** (about screen), and **Diag** (in-app diagnostics: JpmcdsDate sanity, CDSCalculator par/wide/tight, IMM helpers, holiday calendars, RFR fetcher status).
 
 This repository contains **two parallel implementations** of the same product:
 
-- **`icds/` + `icds.xcodeproj/`** — the shipped iOS Swift / SwiftUI app (3.0.1 in App Store). Use Xcode to build and run.
-- **`flutter/`** — a Flutter / Dart-FFI port that runs on iOS arm64 + Android arm64 with bit-identical numerical results. Self-contained subdirectory; see `flutter/README.md` for build instructions. 103 Dart tests at parity with the Swift suite (32 pure-Dart + 71 integration); reference grids match ISDA's published values within 2.5e-5 across 6 currencies.
+- **`icds/` + `icds.xcodeproj/`** — the iOS Swift / SwiftUI app. 3.0.1 is in the App Store; 3.1.0 (build 6, v12 layout) is prepared but not yet submitted. Use Xcode to build and run.
+- **`flutter/`** — a Flutter / Dart-FFI port that runs on iOS arm64 + Android arm64 with bit-identical numerical results. Self-contained subdirectory; see `flutter/README.md` for build instructions. 130+ Dart tests at parity with the Swift suite; reference grids match ISDA's published values within 2.5e-5 across 6 currencies. Android versionCode 7 is in Play Store Internal testing.
 
 When the user asks about "the iOS app" or "the App Store build" they mean the Swift one at the root. When they ask about "the Flutter version" or "Android" they mean the port at `flutter/`. The two are independent — touching one doesn't affect the other.
 
