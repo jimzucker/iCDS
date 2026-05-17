@@ -72,8 +72,6 @@ class _FeeTabState extends State<FeeTab> {
               _termRows(),
               const SizedBox(height: 12),
               _spreadFeeRow(),
-              const SizedBox(height: 8),
-              _periodRow(),
               const SizedBox(height: 12),
               _outputGrid(),
               const SizedBox(height: 12),
@@ -500,23 +498,6 @@ class _FeeTabState extends State<FeeTab> {
           const SizedBox(height: 2),
           Text(value, style: const TextStyle(fontSize: 14, fontFamily: 'Menlo', color: AppTheme.orange)),
         ],
-      ),
-    );
-  }
-
-  /// Accrual start → maturity with the period length in years.
-  /// Port of Swift `FeeView.periodRow`.
-  Widget _periodRow() {
-    final r = _vm.result;
-    if (r == null) return const SizedBox.shrink();
-    final years = r.endDate.difference(r.startDate).inDays / 365.25;
-    return Center(
-      child: Text(
-        '${formatDdMmmYy(r.startDate)} → ${formatDdMmmYy(r.endDate)}  '
-        '(${years.toStringAsFixed(2)}y)',
-        style: const TextStyle(
-          fontSize: 11, fontFamily: 'Menlo', color: Color(0xFF8C8C8C),
-        ),
       ),
     );
   }

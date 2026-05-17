@@ -28,7 +28,6 @@ struct FeeView: View {
                 regionRow
                 termRows
                 spreadFeeRow
-                periodRow
                 outputGrid
                 defaultRiskChart
                 riskRow
@@ -592,19 +591,6 @@ struct FeeView: View {
         .padding(10)
         .background(Color(white: 0.07))
         .cornerRadius(8)
-    }
-
-    // MARK: - Period (accrual start → maturity)
-
-    @ViewBuilder
-    private var periodRow: some View {
-        if let r = vm.result {
-            let years = Double(r.endDate - r.startDate) / 365.25
-            Text("\(formatTDate(r.startDate)) → \(formatTDate(r.endDate))  (\(String(format: "%.2f", years))y)")
-                .font(.system(.caption2, design: .monospaced))
-                .foregroundColor(Color(white: 0.55))
-                .frame(maxWidth: .infinity)
-        }
     }
 
     // MARK: - First-order risk (CS01 / IR DV01 / Rec01)
