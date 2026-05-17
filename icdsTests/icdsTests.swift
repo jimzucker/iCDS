@@ -56,6 +56,43 @@ class icdsTests: XCTestCase {
         XCTAssertEqual(na.recoveryList[1].subordination, "SUB")
     }
 
+    // Modernized post-Big-Bang conventions: ensure the data file matches
+    // current ISDA standards (EM = T+1, SUB < SEN, etc.).
+    func testEMConventions() {
+        let em = ISDAContract.readFromPlist().first { $0.region == "EM" }!
+        XCTAssertEqual(em.settleDays, 1, "EM uses T+1 cash settlement (post-Big-Bang)")
+        let rates = Dictionary(uniqueKeysWithValues: em.recoveryList.map { ($0.subordination, $0.recovery) })
+        XCTAssertEqual(rates["SEN"], 25, "EM SEN recovery is 25% (sovereign convention)")
+        XCTAssertEqual(rates["SUB"], 15, "EM SUB recovery is 15% (must be lower than SEN)")
+    }
+
+    func testJapanConventions() {
+        let jp = ISDAContract.readFromPlist().first { $0.region == "Japan" }!
+        let rates = Dictionary(uniqueKeysWithValues: jp.recoveryList.map { ($0.subordination, $0.recovery) })
+        XCTAssertEqual(rates["SEN"], 35, "Japan SEN recovery is 35% (JPY corporate)")
+        XCTAssertEqual(rates["SUB"], 15, "Japan SUB recovery is 15% (must be lower than SEN)")
+        XCTAssertTrue(jp.coupons.contains(500), "Japan must include 500 bp coupon for distressed names")
+    }
+
+    func testAUSConventions() {
+        let aus = ISDAContract.readFromPlist().first { $0.region == "AUS" }!
+        XCTAssertTrue(aus.coupons.contains(100), "AUS must include 100 bp standard coupon")
+        XCTAssertTrue(aus.coupons.contains(500), "AUS must include 500 bp distressed coupon")
+        XCTAssertFalse(aus.coupons.contains(25), "AUS standard contract does not use 25 bp (EU/JPY territory)")
+    }
+
+    // Structural invariant: subordinated paper must have lower recovery
+    // than senior paper across every region. Catches a future data drift
+    // that would imply sub paper has higher loss-given-default than senior.
+    func testSubRecoveryAlwaysLowerOrEqualToSen() {
+        for c in ISDAContract.readFromPlist() {
+            let rates = Dictionary(uniqueKeysWithValues: c.recoveryList.map { ($0.subordination, $0.recovery) })
+            guard let sen = rates["SEN"], let sub = rates["SUB"] else { continue }
+            XCTAssertLessThan(sub, sen,
+                              "\(c.region): SUB (\(sub)) must be strictly lower than SEN (\(sen)) — sub paper takes more loss")
+        }
+    }
+
     // MARK: - Recovery Model
 
     func testRecoveryInit() {
