@@ -5,7 +5,7 @@ import 'theme.dart';
 
 /// Port of `iCDS/icds/InfoView.swift`.
 class InfoTab extends StatelessWidget {
-  const InfoTab({super.key, this.version = '3.2.0'});
+  const InfoTab({super.key, this.version = '3.2.1'});
   final String version;
 
   static final _apacheURL  = Uri.parse('https://www.apache.org/licenses/LICENSE-2.0');
