@@ -23,7 +23,7 @@ struct FeeView: View {
 
     var body: some View {
         ScrollView {
-            VStack(spacing: 12) {
+            VStack(spacing: 8) {
                 regionRow
                 termRows
                 spreadFeeRow
@@ -33,7 +33,7 @@ struct FeeView: View {
                 dateFooterRow
             }
             .padding(.horizontal, 12)
-            .padding(.vertical, 8)
+            .padding(.vertical, 6)
         }
         .background(Color.black)
         .navigationTitle("iCDS")
@@ -59,34 +59,34 @@ struct FeeView: View {
     // MARK: - Terms
 
     private var termRows: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: 4) {
             // Row 1: Buy/Sell  |  Recovery
             HStack(spacing: 8) {
-                VStack(alignment: .leading, spacing: 4) {
+                VStack(alignment: .leading, spacing: 2) {
                     label("Buy / Sell")
                     segPicker(["Buy", "Sell"], selection: $vm.buySellIndex)
                 }
                 if let contract = vm.contract {
-                    VStack(alignment: .leading, spacing: 4) {
+                    VStack(alignment: .leading, spacing: 2) {
                         label("Recovery  \(vm.recoveryLabel)")
                         segPicker(contract.recoveryList.map(\.subordination), selection: $vm.recoveryIndex)
                     }
                 }
             }
             // Row 2: Maturity (full width)
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: 2) {
                 label("Maturity")
                 segPicker(vm.tenorLabels, selection: $vm.maturityIndex)
             }
             // Row 3: Coupon  |  Notional
             if let contract = vm.contract {
                 HStack(alignment: .bottom, spacing: 8) {
-                    VStack(alignment: .leading, spacing: 4) {
+                    VStack(alignment: .leading, spacing: 2) {
                         label("Coupon (bp)")
                         segPicker(contract.coupons.map(\.description), selection: $vm.couponIndex)
                             .onChange(of: vm.couponIndex) { _ in vm.resetSpreadToCoupon() }
                     }
-                    VStack(alignment: .leading, spacing: 4) {
+                    VStack(alignment: .leading, spacing: 2) {
                         label("Notional")
                         segPicker(vm.notionalLabels, selection: $vm.notionalIndex)
                     }
@@ -143,7 +143,7 @@ struct FeeView: View {
                 }
             }
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 10)
+            .padding(.vertical, 6)
             .background(orange.opacity(0.18))
             .cornerRadius(8)
             .overlay(
@@ -169,7 +169,7 @@ struct FeeView: View {
                         .minimumScaleFactor(0.6)
                 }
                 .frame(maxWidth: .infinity)
-                .padding(.vertical, 10)
+                .padding(.vertical, 6)
                 .background(Color(red: 1, green: 0.999, blue: 0.397))
                 .cornerRadius(8)
             } else {
@@ -183,7 +183,7 @@ struct FeeView: View {
                         .foregroundColor(.black)
                 }
                 .frame(maxWidth: .infinity)
-                .padding(.vertical, 10)
+                .padding(.vertical, 6)
                 .background(Color(red: 1, green: 0.999, blue: 0.397))
                 .cornerRadius(8)
             }

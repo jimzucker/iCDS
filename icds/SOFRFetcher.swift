@@ -315,7 +315,10 @@ final class SOFRRateStore: ObservableObject {
     ///   - fresh successful fetch       → .live (green), update cache
     ///   - fetch failed, cached present → keep cached rate + date,
     ///                                    flip to .fallback (yellow)
-    ///   - fetch failed, no cache       → hardcoded fallback + "unavailable",
+    ///   - fetch failed, no cache       → fallback rate + synthesised
+    ///                                    "last likely published" date
+    ///                                    for monthly sources (JPY) or
+    ///                                    "unavailable" otherwise,
     ///                                    .fallback (yellow)
     private func apply(_ outcome: (rate: Double, effectiveDate: String), to ccy: RFRCurrency) {
         let failed = outcome.effectiveDate == "unavailable" || outcome.effectiveDate == "static"
@@ -327,8 +330,9 @@ final class SOFRRateStore: ObservableObject {
                                      effectiveDate: existing.effectiveDate,
                                      status: .fallback)
             } else {
+                let date: String = (ccy == .JPY) ? Self.lastLikelyTonaDate() : outcome.effectiveDate
                 rates[ccy] = RFRRate(rate: outcome.rate,
-                                     effectiveDate: outcome.effectiveDate,
+                                     effectiveDate: date,
                                      status: .fallback)
             }
         } else {
@@ -336,6 +340,23 @@ final class SOFRRateStore: ObservableObject {
             rates[ccy] = r
             persistOne(ccy, r)
         }
+    }
+
+    /// First-of-month date ~45 days behind today — matches FRED's monthly-
+    /// with-publication-lag cadence for JPY. Used as a synthesised effective
+    /// date when the live fetch fails and there's no cache yet, so the UI
+    /// shows a plausible "this is the latest possible monthly observation"
+    /// date instead of "unavailable".
+    private static func lastLikelyTonaDate() -> String {
+        let cal = Calendar(identifier: .gregorian)
+        let probe = cal.date(byAdding: .day, value: -45, to: Date())!
+        let comps = cal.dateComponents([.year, .month], from: probe)
+        let first = cal.date(from: comps)!
+        let fmt = DateFormatter()
+        fmt.dateFormat = "yyyy-MM-dd"
+        fmt.locale = Locale(identifier: "en_US_POSIX")
+        fmt.timeZone = TimeZone(identifier: "UTC")
+        return fmt.string(from: first)
     }
 
     /// Fetch overnight rates for all currencies concurrently.

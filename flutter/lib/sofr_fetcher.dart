@@ -68,7 +68,12 @@ enum RFRCurrency {
 class RFRFetchResult {
   final double rate;
   final String effectiveDate; // YYYY-MM-DD or "unavailable"
-  const RFRFetchResult(this.rate, this.effectiveDate);
+  /// True when the result reflects a fresh successful network fetch.
+  /// False when it's a fallback — either because the live fetch failed
+  /// or because the source is monthly and we synthesised the expected
+  /// last-published date so the UI has something to show.
+  final bool isLive;
+  const RFRFetchResult(this.rate, this.effectiveDate, {this.isLive = true});
 }
 
 class RFRFetcher {
@@ -101,18 +106,18 @@ class RFRFetcher {
       final resp = await http.get(url, headers: _headers).timeout(_timeout);
       if (resp.statusCode != 200) {
         debugPrint('SOFR fetch HTTP ${resp.statusCode}');
-        return RFRFetchResult(RFRCurrency.usd.fallbackRate, 'unavailable');
+        return RFRFetchResult(RFRCurrency.usd.fallbackRate, 'unavailable', isLive: false);
       }
       final json = jsonDecode(resp.body);
       final refRates = json['refRates'] as List?;
       if (refRates == null || refRates.isEmpty) {
-        return RFRFetchResult(RFRCurrency.usd.fallbackRate, 'unavailable');
+        return RFRFetchResult(RFRCurrency.usd.fallbackRate, 'unavailable', isLive: false);
       }
       final first = refRates.first as Map;
       final pct = (first['percentRate'] as num?)?.toDouble();
       final date = first['effectiveDate'] as String?;
       if (pct == null || date == null) {
-        return RFRFetchResult(RFRCurrency.usd.fallbackRate, 'unavailable');
+        return RFRFetchResult(RFRCurrency.usd.fallbackRate, 'unavailable', isLive: false);
       }
       return RFRFetchResult(pct / 100.0, date);
     } catch (e) {
@@ -148,12 +153,43 @@ class RFRFetcher {
   }
 
   // === JPY — FRED Japan Call Money (monthly, CSV) ===
-  static Future<RFRFetchResult> _fetchTONA() {
+  ///
+  /// FRED's load balancer appears to drop a non-trivial fraction of
+  /// HTTP/1.1 keep-alive connections — iOS URLSession (HTTP/2 + idle
+  /// timeout) tends to break through on the first try, while Dart's
+  /// `http` package (HTTP/1.1, total timeout) sees a stalled
+  /// connection and gives up. Retry up to 3× with a short backoff so
+  /// Android matches iOS's empirical success rate.
+  static Future<RFRFetchResult> _fetchTONA() async {
     final url = Uri.parse('https://fred.stlouisfed.org/graph/fredgraph.csv?id=IRSTCI01JPM156N');
-    return _fetchCsv(
-      tag: 'TONA', url: url, dateCol: 0, valueCol: 1,
-      fallback: RFRCurrency.jpy.fallbackRate, takeLast: true,
-      timeout: _slowTimeout);
+    const attempts = 3;
+    for (var i = 1; i <= attempts; i++) {
+      final result = await _fetchCsv(
+        tag: 'TONA(try$i)', url: url, dateCol: 0, valueCol: 1,
+        fallback: RFRCurrency.jpy.fallbackRate, takeLast: true,
+        // Shorter per-attempt budget so 3 attempts still finish under
+        // a minute. If FRED is going to answer at all it does so within
+        // 15–20 s once the load balancer picks a healthy backend.
+        timeout: const Duration(seconds: 20));
+      if (result.isLive) return result;
+      if (i < attempts) {
+        await Future.delayed(Duration(seconds: 2 * i));
+      }
+    }
+    // All retries failed. FRED's series is monthly with ~45-day
+    // publication lag, so synthesise the most-likely last-published
+    // date (1st of the month, ~45 days ago) so the UI shows a
+    // plausible date instead of "unavailable".
+    return RFRFetchResult(RFRCurrency.jpy.fallbackRate,
+                          _lastLikelyTonaDate(), isLive: false);
+  }
+
+  /// First-of-month date that is ~45 days behind today — matches FRED's
+  /// monthly-with-lag publication cadence for `IRSTCI01JPM156N`.
+  static String _lastLikelyTonaDate() {
+    final probe = DateTime.now().subtract(const Duration(days: 45));
+    final firstOfMonth = DateTime(probe.year, probe.month, 1);
+    return DateFormat('yyyy-MM-dd').format(firstOfMonth);
   }
 
   // === AUD — RBA F1 Interbank Overnight Cash Rate (CSV with header rows) ===
@@ -180,7 +216,7 @@ class RFRFetcher {
       final resp = await http.get(url, headers: _headers).timeout(timeout);
       if (resp.statusCode != 200) {
         debugPrint('$tag fetch HTTP ${resp.statusCode}');
-        return RFRFetchResult(fallback, 'unavailable');
+        return RFRFetchResult(fallback, 'unavailable', isLive: false);
       }
       // Default (en_US) locale — works for all the English-month feeds
       // we hit (BoE, RBA, FRED, ECB, NY Fed) without needing
@@ -210,7 +246,7 @@ class RFRFetcher {
       }
       if (candidates.isEmpty) {
         debugPrint('$tag fetch: no parseable rows');
-        return RFRFetchResult(fallback, 'unavailable');
+        return RFRFetchResult(fallback, 'unavailable', isLive: false);
       }
       _CsvRow chosen;
       if (takeLast) {
@@ -297,14 +333,14 @@ class SOFRRateStore extends ChangeNotifier {
 
   Future<void> _refresh(RFRCurrency ccy) async {
     final r = await RFRFetcher.fetch(ccy);
-    if (r.effectiveDate == 'unavailable' || r.effectiveDate == 'static') {
-      // Fetch failed. If we have a cached value from a prior session,
-      // keep the rate + real effective date so the user sees how stale
-      // it is — but mark it as fallback (yellow) so the UI does NOT
-      // claim we have a fresh live rate. If there's no cache either,
-      // fall back to the hardcoded fallbackRate + 'unavailable' date.
+    if (!r.isLive) {
+      // Fetch failed. If we have a cached value (regardless of whether
+      // its status is `live` or `loading` from cache hydration), keep
+      // the cached rate + real effective date so the user sees how
+      // stale it is. Otherwise use whatever the fetcher returned —
+      // which for JPY is a synthetic "last likely published" date.
       final existing = _rates[ccy];
-      if (existing != null && existing.status == SOFRDataStatus.live &&
+      if (existing != null &&
           existing.effectiveDate != '—' &&
           existing.effectiveDate != 'unavailable') {
         _rates[ccy] = RFRRate(
