@@ -66,17 +66,17 @@ class _FeeTabState extends State<FeeTab> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _regionRow(),
-              const SizedBox(height: 8),
+              const SizedBox(height: 4),
               _termRows(),
-              const SizedBox(height: 8),
+              const SizedBox(height: 4),
               _spreadFeeRow(),
-              const SizedBox(height: 8),
+              const SizedBox(height: 4),
               _outputGrid(),
-              const SizedBox(height: 8),
+              const SizedBox(height: 4),
               _defaultRiskChart(),
-              const SizedBox(height: 8),
+              const SizedBox(height: 4),
               _riskRow(),
-              const SizedBox(height: 8),
+              const SizedBox(height: 4),
               _dateFooterRow(),
             ],
           ),
@@ -90,7 +90,7 @@ class _FeeTabState extends State<FeeTab> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const _FieldLabel('Region'),
-        const SizedBox(height: 4),
+        const SizedBox(height: 2),
         _SegRow(
           options: _vm.contracts.map((c) => c.region).toList(),
           selected: _vm.regionIndex,
@@ -112,7 +112,7 @@ class _FeeTabState extends State<FeeTab> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const _FieldLabel('Buy / Sell'),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 2),
                   _SegRow(
                     options: const ['Buy', 'Sell'],
                     selected: _vm.buySellIndex,
@@ -127,7 +127,7 @@ class _FeeTabState extends State<FeeTab> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _FieldLabel('Recovery  ${_vm.recoveryPct}%'),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 2),
                   _SegRow(
                     options: c.recoveryList.map((r) => r.subordination).toList(),
                     selected: _vm.recoveryIndex,
@@ -138,12 +138,12 @@ class _FeeTabState extends State<FeeTab> {
             ),
           ],
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 4),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const _FieldLabel('Maturity'),
-            const SizedBox(height: 4),
+            const SizedBox(height: 2),
             _SegRow(
               options: FeeViewModel.tenorLabels,
               selected: _vm.maturityIndex,
@@ -151,7 +151,7 @@ class _FeeTabState extends State<FeeTab> {
             ),
           ],
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 4),
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -160,7 +160,7 @@ class _FeeTabState extends State<FeeTab> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const _FieldLabel('Coupon (bp)'),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 2),
                   _SegRow(
                     options: c.coupons.map((v) => v.toString()).toList(),
                     selected: _vm.couponIndex,
@@ -175,7 +175,7 @@ class _FeeTabState extends State<FeeTab> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const _FieldLabel('Notional'),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 2),
                   _SegRow(
                     options: FeeViewModel.notionalLabels,
                     selected: _vm.notionalIndex,
@@ -205,7 +205,7 @@ class _FeeTabState extends State<FeeTab> {
       onTap: _editSpread,
       borderRadius: BorderRadius.circular(8),
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 10),
+        padding: const EdgeInsets.symmetric(vertical: 4),
         decoration: BoxDecoration(
           color: AppTheme.orange.withValues(alpha: 0.18),
           borderRadius: BorderRadius.circular(8),
@@ -216,7 +216,7 @@ class _FeeTabState extends State<FeeTab> {
           children: [
             const Text('QUOTED SPREAD',
               style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: AppTheme.captionText, letterSpacing: 1)),
-            const SizedBox(height: 4),
+            const SizedBox(height: 2),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.end,
@@ -224,22 +224,22 @@ class _FeeTabState extends State<FeeTab> {
                 Text(
                   '${_vm.spreadBp.round()}',
                   style: const TextStyle(
-                    fontSize: 28, fontFamily: 'Menlo',
+                    fontSize: 22, fontFamily: 'Menlo',
                     fontWeight: FontWeight.bold, color: AppTheme.orange,
                   ),
                 ),
-                const SizedBox(width: 6),
+                const SizedBox(width: 5),
                 const Padding(
-                  padding: EdgeInsets.only(bottom: 4),
+                  padding: EdgeInsets.only(bottom: 2),
                   child: Text('bp', style: TextStyle(
-                    fontSize: 16, fontFamily: 'Menlo',
+                    fontSize: 13, fontFamily: 'Menlo',
                     fontWeight: FontWeight.w600, color: AppTheme.orange,
                   )),
                 ),
-                const SizedBox(width: 4),
+                const SizedBox(width: 3),
                 const Padding(
-                  padding: EdgeInsets.only(bottom: 6),
-                  child: Icon(Icons.edit, size: 14, color: AppTheme.orange),
+                  padding: EdgeInsets.only(bottom: 4),
+                  child: Icon(Icons.edit, size: 12, color: AppTheme.orange),
                 ),
               ],
             ),
@@ -252,7 +252,7 @@ class _FeeTabState extends State<FeeTab> {
   Widget _feeCard() {
     final r = _vm.result;
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 10),
+      padding: const EdgeInsets.symmetric(vertical: 4),
       decoration: BoxDecoration(
         color: AppTheme.yellow,
         borderRadius: BorderRadius.circular(8),
@@ -263,8 +263,8 @@ class _FeeTabState extends State<FeeTab> {
               children: [
                 Text('CALCULATING',
                   style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: Color(0xFF4D4D4D), letterSpacing: 1)),
-                SizedBox(height: 4),
-                Text('…', style: TextStyle(fontSize: 28, fontFamily: 'Menlo', fontWeight: FontWeight.bold, color: Colors.black)),
+                SizedBox(height: 2),
+                Text('…', style: TextStyle(fontSize: 22, fontFamily: 'Menlo', fontWeight: FontWeight.bold, color: Colors.black)),
               ],
             )
           : Column(
@@ -273,13 +273,13 @@ class _FeeTabState extends State<FeeTab> {
                   'DIRTY UPFRONT',
                   style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: Color(0xFF4D4D4D), letterSpacing: 1),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 2),
                 FittedBox(
                   fit: BoxFit.scaleDown,
                   child: Text(
                     formatSignedCurrency(_noNegZero(r.upfrontDollars + r.accruedDollars, 0.5), _vm.currency),
                     style: const TextStyle(
-                      fontSize: 28, fontFamily: 'Menlo',
+                      fontSize: 22, fontFamily: 'Menlo',
                       fontWeight: FontWeight.bold, color: Colors.black,
                     ),
                   ),
@@ -453,7 +453,7 @@ class _FeeTabState extends State<FeeTab> {
   /// the headline Dirty Upfront card above.
   Widget _outputCell(String label, String value, {bool emphasized = false}) {
     return Container(
-      padding: EdgeInsets.all(emphasized ? 10 : 8),
+      padding: EdgeInsets.all(emphasized ? 7 : 6),
       decoration: BoxDecoration(
         color: const Color(0xFF121212),
         borderRadius: BorderRadius.circular(6),
@@ -563,9 +563,9 @@ class _FeeTabState extends State<FeeTab> {
               ),
             ],
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 4),
           SizedBox(
-            height: 112,
+            height: 82,
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
@@ -586,7 +586,7 @@ class _FeeTabState extends State<FeeTab> {
                           ),
                           const SizedBox(height: 3),
                           Container(
-                            height: (probs[i] / maxP * 70).clamp(4.0, 70.0).toDouble(),
+                            height: (probs[i] / maxP * 46).clamp(4.0, 46.0).toDouble(),
                             decoration: BoxDecoration(
                               color: i == sel ? AppTheme.orange : const Color(0xFF3A3A3A),
                               borderRadius: BorderRadius.circular(2),
@@ -609,7 +609,7 @@ class _FeeTabState extends State<FeeTab> {
               ],
             ),
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 4),
           const Text('Cumulative default prob · flat-hazard',
             style: TextStyle(fontSize: 9, color: Color(0xFF666666))),
         ],
