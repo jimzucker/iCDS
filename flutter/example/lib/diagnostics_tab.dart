@@ -116,8 +116,8 @@ class _DiagnosticsTabState extends State<DiagnosticsTab> {
 
   @override
   Widget build(BuildContext context) {
-    const sectionTitle = TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: AppTheme.orange);
-    const rowStyle = TextStyle(fontSize: 12, fontFamily: 'Menlo', color: AppTheme.offWhite);
+    const sectionTitle = TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: AppTheme.orange);
+    const rowStyle = TextStyle(fontSize: 14, fontFamily: 'Menlo', color: AppTheme.offWhite);
     return Container(
       color: Colors.black,
       child: SafeArea(
