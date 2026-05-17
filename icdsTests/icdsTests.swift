@@ -84,6 +84,30 @@ class icdsTests: XCTestCase {
     // Structural invariant: subordinated paper must have lower recovery
     // than senior paper across every region. Catches a future data drift
     // that would imply sub paper has higher loss-given-default than senior.
+    // Signed currency display: tiny near-zero values must never render
+    // with a leading minus. Guards against "−$0" on the Upfront Fee
+    // cell when par-spread = coupon makes upfrontDollars a tiny
+    // negative double (e.g., -0.001) from numerical noise.
+    func testSignedCurrencyTinyNegativeRendersAsUnsignedZero() {
+        XCTAssertEqual(FeeView.signedCurrencyString(-0.001, code: "USD"), "$0",
+                       "Near-zero negative must drop the minus")
+        XCTAssertEqual(FeeView.signedCurrencyString(-0.49, code: "USD"), "$0",
+                       "Anything that rounds to whole-dollar 0 must drop the minus")
+        XCTAssertEqual(FeeView.signedCurrencyString(0.0, code: "USD"), "$0",
+                       "Exact zero is unsigned")
+        XCTAssertEqual(FeeView.signedCurrencyString(0.001, code: "USD"), "$0",
+                       "Near-zero positive renders the same as zero")
+    }
+
+    func testSignedCurrencyMeaningfulMagnitudesKeepSign() {
+        XCTAssertEqual(FeeView.signedCurrencyString(-100.0, code: "USD"), "−$100",
+                       "$100 negative must keep the U+2212 minus")
+        XCTAssertEqual(FeeView.signedCurrencyString(100.0, code: "USD"), "$100",
+                       "$100 positive is unsigned")
+        XCTAssertEqual(FeeView.signedCurrencyString(-15833.0, code: "USD"), "−$15,833",
+                       "Comma grouping preserved with minus")
+    }
+
     func testSubRecoveryAlwaysLowerOrEqualToSen() {
         for c in ISDAContract.readFromPlist() {
             let rates = Dictionary(uniqueKeysWithValues: c.recoveryList.map { ($0.subordination, $0.recovery) })

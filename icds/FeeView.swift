@@ -493,10 +493,9 @@ struct FeeView: View {
             }
             if let r = vm.result {
                 let fmt  = currencyFormatter(vm.currency)
-                let sfmt = signedCurrencyFormatter(vm.currency)
                 HStack {
                     outputCell("Accrued",   fmt.string(from: NSNumber(value: r.accrued)) ?? "")
-                    outputCell("Upfront Fee", sfmt.string(from: NSNumber(value: r.upfrontDollars)) ?? "")
+                    outputCell("Upfront Fee", FeeView.signedCurrencyString(r.upfrontDollars, code: vm.currency))
                 }
                 HStack {
                     outputCell("Start",    formatTDate(r.startDate))
@@ -645,11 +644,7 @@ struct FeeView: View {
     }
 
     private func currencyFormatter(_ code: String) -> NumberFormatter {
-        let f = NumberFormatter()
-        f.numberStyle = .currency
-        f.currencyCode = code
-        f.maximumFractionDigits = 0
-        return f
+        FeeView.currencyFormatter(code)
     }
 
     /// Currency formatter for the Upfront Fee. Positive values render with
@@ -657,14 +652,40 @@ struct FeeView: View {
     /// negative values prepend a U+2212 MINUS SIGN so "−$X" reads as
     /// "actor receives".
     private func signedCurrencyFormatter(_ code: String) -> NumberFormatter {
+        FeeView.signedCurrencyFormatter(code)
+    }
+
+    // Normalize tiny values that would format as "-0" to positive zero
+    private func noNegZero(_ value: Double, eps: Double) -> Double {
+        FeeView.noNegZero(value, eps: eps)
+    }
+
+    // ---- Test-accessible static helpers (mirror the instance ones) ----
+
+    static func currencyFormatter(_ code: String) -> NumberFormatter {
+        let f = NumberFormatter()
+        f.numberStyle = .currency
+        f.currencyCode = code
+        f.maximumFractionDigits = 0
+        return f
+    }
+
+    static func signedCurrencyFormatter(_ code: String) -> NumberFormatter {
         let f = currencyFormatter(code)
         f.negativePrefix = "−" + (f.currencySymbol ?? "")
         return f
     }
 
-    // Normalize tiny values that would format as "-0" to positive zero
-    private func noNegZero(_ value: Double, eps: Double) -> Double {
+    static func noNegZero(_ value: Double, eps: Double) -> Double {
         abs(value) < eps ? 0.0 : value
+    }
+
+    /// Always returns the unsigned "$0" form for values whose absolute
+    /// rounds to zero. Used for every signed-dollar cell on the Fee tab.
+    static func signedCurrencyString(_ dollars: Double, code: String) -> String {
+        let adjusted = noNegZero(dollars, eps: 0.5)
+        return signedCurrencyFormatter(code).string(from: NSNumber(value: adjusted))
+            ?? String(format: "%+.0f", adjusted)
     }
 
     /// Display date format used everywhere in the app (e.g. "27-Apr-26").
