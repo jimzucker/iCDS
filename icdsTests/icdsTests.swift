@@ -934,8 +934,8 @@ class icdsTests: XCTestCase {
                        "2025-04-22", "T+1 TARGET settle should skip Good Friday and Easter Monday")
     }
 
-    func testSettleDateT3ForEM() {
-        // Mon Apr 14 2025 + T+3 nyFed → April 17 (Thu)
+    func testSettleDateT3NyFedCalendar() {
+        // Generic T+3 NY-calendar arithmetic check (Mon Apr 14 2025 → Thu Apr 17)
         XCTAssertEqual(isoDay(CDSCalculator.addBusinessDays(3, to: d(2025,4,14), calendarName: "nyFed")),
                        "2025-04-17")
     }
