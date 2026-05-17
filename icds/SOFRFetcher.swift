@@ -135,10 +135,28 @@ struct RFRFetcher {
     }
 
     // MARK: JPY — FRED "Immediate Rates: Less than 24 Hours: Call Money/Interbank Rate for Japan" (monthly)
-
+    //
+    // FRED's load balancer occasionally routes us through a slow backend.
+    // URLSession's idle timeout is more tolerant than Dart's total timeout
+    // so iOS already breaks through more often than Flutter — but we still
+    // see the occasional first-attempt drop. Retry 3× with 2s/4s backoff
+    // to match Flutter's belt-and-suspenders strategy and produce a
+    // consistent live-vs-cached outcome across platforms.
     private static func fetchTONA() async -> (rate: Double, effectiveDate: String) {
         let url = URL(string: "https://fred.stlouisfed.org/graph/fredgraph.csv?id=IRSTCI01JPM156N")!
-        return await fetchCSV(tag: "TONA", url: url, dateCol: 0, valueCol: 1, fallback: RFRCurrency.JPY.fallbackRate, takeLast: true)
+        let attempts = 3
+        for i in 1...attempts {
+            let outcome = await fetchCSV(tag: "TONA(try\(i))", url: url, dateCol: 0, valueCol: 1,
+                                         fallback: RFRCurrency.JPY.fallbackRate, takeLast: true)
+            if outcome.effectiveDate != "unavailable" { return outcome }
+            if i < attempts {
+                try? await Task.sleep(nanoseconds: UInt64(2_000_000_000 * i))
+            }
+        }
+        // All retries failed. The store's apply() will keep any prior
+        // cached value as .cached, or fall through to a synthesised
+        // lastLikelyTonaDate() pre-seed for cold-start fallback.
+        return (RFRCurrency.JPY.fallbackRate, "unavailable")
     }
 
     // MARK: AUD — RBA F1 Interbank Overnight Cash Rate (column 3)

@@ -167,10 +167,13 @@ class RFRFetcher {
       final result = await _fetchCsv(
         tag: 'TONA(try$i)', url: url, dateCol: 0, valueCol: 1,
         fallback: RFRCurrency.jpy.fallbackRate, takeLast: true,
-        // Shorter per-attempt budget so 3 attempts still finish under
-        // a minute. If FRED is going to answer at all it does so within
-        // 15–20 s once the load balancer picks a healthy backend.
-        timeout: const Duration(seconds: 20));
+        // Wider per-attempt budget — Dart's http package uses a total
+        // (not idle) timeout, so we need enough headroom to let FRED's
+        // slow-backend path complete a full CSV streaming response.
+        // iOS URLSession breaks through with its 60s idle timeout; 45s
+        // total here brings Android into the same observational window
+        // and the cross-platform live-vs-cached badge stays consistent.
+        timeout: const Duration(seconds: 45));
       if (result.isLive) return result;
       if (i < attempts) {
         await Future.delayed(Duration(seconds: 2 * i));
