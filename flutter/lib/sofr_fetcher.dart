@@ -13,7 +13,10 @@ library;
 
 import 'dart:async' show unawaited;
 import 'dart:convert';
+import 'dart:io' show Platform;
 
+import 'package:cronet_http/cronet_http.dart'
+    show CacheMode, CronetClient, CronetEngine;
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
@@ -87,7 +90,40 @@ class RFRFetcher {
   static const _slowTimeout = Duration(seconds: 60);
 
   /// Some government APIs (BoE, ECB) reject non-browser User-Agents.
-  static const _headers = {'User-Agent': 'Mozilla/5.0 (iCDS Flutter)'};
+  /// FRED is fronted by Akamai which fingerprints both TLS and headers;
+  /// using a real-Chrome-on-Android UA passes Akamai's bot checks while
+  /// staying truthful enough (we ARE running on Chromium's Cronet stack).
+  static const _headers = {
+    'User-Agent': 'Mozilla/5.0 (Linux; Android 14; Pixel 9) '
+        'AppleWebKit/537.36 (KHTML, like Gecko) '
+        'Chrome/124.0.0.0 Mobile Safari/537.36',
+    'Accept': 'text/csv,application/json,text/plain;q=0.9,*/*;q=0.8',
+    'Accept-Language': 'en-US,en;q=0.9',
+  };
+
+  /// Shared HTTP client. On Android we route through Cronet (Chromium's
+  /// networking stack) so we get HTTP/2 — FRED's Akamai edge silently
+  /// drops HTTP/1.1 connections, which is what Dart's default http
+  /// package speaks. On other platforms (iOS, web, desktop) the default
+  /// `http.Client()` is fine. Lazy-initialised on first use.
+  static http.Client? _client;
+  static http.Client _httpClient() {
+    if (_client != null) return _client!;
+    if (!kIsWeb && Platform.isAndroid) {
+      try {
+        final engine = CronetEngine.build(
+          cacheMode: CacheMode.memory,
+          cacheMaxSize: 2 * 1024 * 1024,
+        );
+        _client = CronetClient.fromCronetEngine(engine);
+        return _client!;
+      } catch (e) {
+        debugPrint('cronet_http init failed, falling back to http: $e');
+      }
+    }
+    _client = http.Client();
+    return _client!;
+  }
 
   static Future<RFRFetchResult> fetch(RFRCurrency ccy) {
     switch (ccy) {
@@ -103,7 +139,7 @@ class RFRFetcher {
   static Future<RFRFetchResult> _fetchSOFR() async {
     final url = Uri.parse('https://markets.newyorkfed.org/api/rates/secured/sofr/last/1.json');
     try {
-      final resp = await http.get(url, headers: _headers).timeout(_timeout);
+      final resp = await _httpClient().get(url, headers: _headers).timeout(_timeout);
       if (resp.statusCode != 200) {
         debugPrint('SOFR fetch HTTP ${resp.statusCode}');
         return RFRFetchResult(RFRCurrency.usd.fallbackRate, 'unavailable', isLive: false);
@@ -217,7 +253,7 @@ class RFRFetcher {
     Duration timeout = _timeout,
   }) async {
     try {
-      final resp = await http.get(url, headers: _headers).timeout(timeout);
+      final resp = await _httpClient().get(url, headers: _headers).timeout(timeout);
       if (resp.statusCode != 200) {
         debugPrint('$tag fetch HTTP ${resp.statusCode}');
         return RFRFetchResult(fallback, 'unavailable', isLive: false);

@@ -12,6 +12,12 @@ dependencies:
     sdk: flutter
   plugin_platform_interface: ^2.0.2
   http: ^1.2.0
+  # Native HTTP/2 client on Android via Chromium's Cronet. FRED's CSV
+  # endpoint is fronted by Akamai which silently drops HTTP/1.1
+  # connections — Dart's default http package can't reach it, but
+  # Cronet (which negotiates HTTP/2) does. Only used on Android; on
+  # other platforms the default http.Client() is fine.
+  cronet_http: ^1.4.0
   intl: ^0.19.0
   ffi: ^2.1.3
   shared_preferences: ^2.3.0
