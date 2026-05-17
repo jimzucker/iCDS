@@ -310,6 +310,46 @@ void main() {
           reason: '27/360 days expected. Off-by-one if it equals \$7222.22 (=26 days)');
     });
 
+    // At par the two displayed currency values must be structurally
+    // distinct: clean upfront ≈ $0 but accrued is meaningful ($7,500
+    // for the pinned refDate). Guards against a regression observed on
+    // the Android port where upfrontDollars silently contained accrued.
+    test('at par: upfront ≈ 0 AND accrued ≈ $7,500 — fields are independent', () {
+      final r = calc(parSpread: 100, coupon: 100)!;
+      expect(r.upfrontDollars.abs(), lessThan(1.0),
+          reason: 'clean upfront must be ≈ 0 at par; non-zero means accrued bled into upfrontDollars');
+      expect(r.accruedDollars, greaterThan(1000),
+          reason: 'accrued must be a meaningful dollar amount, not 0');
+      expect(r.accruedDollars, lessThan(20000),
+          reason: 'accrued must not be absurdly large for 100bp/27d/\$10M');
+    });
+
+    // At par the "dirty upfront" (upfrontDollars + accrued) must equal
+    // accrued exactly (clean upfront is ~0). Catches a sign flip — if
+    // someone subtracted accrued instead of adding, dirty would become
+    // ≈ −accrued or 0 at par.
+    test('at par: dirty upfront equals accrued (no sign flip)', () {
+      final r = calc(parSpread: 100, coupon: 100)!;
+      final dirty = r.upfrontDollars + r.accruedDollars;
+      expect(dirty, greaterThan(100.0), reason: 'dirty at par must be ≈ accrued (positive)');
+      expect((dirty - r.accruedDollars).abs(), lessThan(1.0),
+          reason: 'at par: dirty = 0 + accrued. Any deviation means clean upfront leaked.');
+    });
+
+    // Off-par identity: dirty − clean = accrued exactly. Locks the
+    // composition rule so a future refactor of the "DIRTY UPFRONT"
+    // yellow card cannot quietly switch the formula.
+    test('off par: dirty upfront = clean + accrued (composition lock)', () {
+      final r = calc(parSpread: 250, coupon: 100)!;
+      final dirty = r.upfrontDollars + r.accruedDollars;
+      expect(r.upfrontDollars, greaterThan(1000),
+          reason: 'above-coupon spread should have positive clean upfront');
+      expect(dirty, greaterThan(r.upfrontDollars),
+          reason: 'dirty must exceed clean when accrued > 0');
+      expect((dirty - r.upfrontDollars - r.accruedDollars).abs(), lessThan(0.01),
+          reason: 'dirty − clean must equal accrued exactly');
+    });
+
     test('price stays in [50, 120] across spread sweep', () {
       for (final s in [50.0, 100.0, 200.0, 500.0, 1000.0]) {
         final r = calc(parSpread: s, coupon: 100)!;

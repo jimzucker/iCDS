@@ -597,6 +597,51 @@ class icdsTests: XCTestCase {
                        + "= 27/360 days for refDate. Off-by-one if it equals $7,222.22 (= 26 days, T-prevIMM).")
     }
 
+    /// At par the two displayed currency values must be structurally
+    /// distinct: clean upfront ≈ $0 but accrued is meaningful ($7,500 for
+    /// the pinned refDate). Catches a regression where upfrontDollars
+    /// would silently include accrued (which historically appeared on
+    /// the Android port and prompted this guard).
+    func testAtParUpfrontAndAccruedAreIndependent() {
+        let r = CDSCalculator.calculate(tradeDate: refDate, tenorYears: 5,
+                                        parSpreadBp: 100, couponBp: 100,
+                                        recoveryRate: 0.40, notional: 10_000_000, isBuy: true)!
+        XCTAssertLessThan(abs(r.upfrontDollars), 1.0,
+                          "Clean upfront must be ≈ 0 at par; non-zero means accrued bled into upfrontDollars")
+        XCTAssertGreaterThan(r.accrued, 1_000,
+                             "Accrued must be a meaningful dollar amount, not 0")
+        XCTAssertLessThan(r.accrued, 20_000,
+                          "Accrued must not be absurdly large — sanity bound for 100bp/27d/$10M")
+    }
+
+    /// At par the "dirty upfront" (upfrontDollars + accrued) must equal
+    /// accrued exactly (clean upfront is ~0). Catches a sign flip — if
+    /// someone subtracted accrued instead of adding, dirty would become
+    /// ≈ -accrued or 0 at par.
+    func testAtParDirtyUpfrontEqualsAccrued() {
+        let r = CDSCalculator.calculate(tradeDate: refDate, tenorYears: 5,
+                                        parSpreadBp: 100, couponBp: 100,
+                                        recoveryRate: 0.40, notional: 10_000_000, isBuy: true)!
+        let dirty = r.upfrontDollars + r.accrued
+        XCTAssertGreaterThan(dirty, 100.0, "Dirty upfront at par must be ≈ accrued (positive)")
+        XCTAssertEqual(dirty, r.accrued, accuracy: 1.0,
+                       "At par: dirty = 0 + accrued. Any deviation means clean upfront leaked.")
+    }
+
+    /// Off-par identity: dirty − clean = accrued exactly. Locks the
+    /// composition rule so a future refactor of the "DIRTY UPFRONT"
+    /// yellow card cannot quietly switch the formula.
+    func testDirtyUpfrontIsCleanPlusAccruedOffPar() {
+        let r = CDSCalculator.calculate(tradeDate: refDate, tenorYears: 5,
+                                        parSpreadBp: 250, couponBp: 100,
+                                        recoveryRate: 0.40, notional: 10_000_000, isBuy: true)!
+        let dirty = r.upfrontDollars + r.accrued
+        XCTAssertGreaterThan(r.upfrontDollars, 1_000, "Above-coupon spread should have positive clean upfront")
+        XCTAssertGreaterThan(dirty, r.upfrontDollars, "Dirty must exceed clean when accrued > 0")
+        XCTAssertEqual(dirty - r.upfrontDollars, r.accrued, accuracy: 0.01,
+                       "dirty − clean must equal accrued exactly")
+    }
+
     func testPriceRangeReasonable() {
         for spread in [50.0, 100.0, 200.0, 500.0, 1000.0] {
             let r = CDSCalculator.calculate(tradeDate: refDate, tenorYears: 5,
