@@ -122,7 +122,7 @@ class RFRFetcher {
       return RFRFetchResult(pct / 100.0, date);
     } catch (e) {
       debugPrint('SOFR fetch failed: $e');
-      return RFRFetchResult(RFRCurrency.usd.fallbackRate, 'unavailable');
+      return RFRFetchResult(RFRCurrency.usd.fallbackRate, 'unavailable', isLive: false);
     }
   }
 
@@ -258,7 +258,7 @@ class RFRFetcher {
       return RFRFetchResult(chosen.value, chosen.dateStr);
     } catch (e) {
       debugPrint('$tag fetch failed: $e');
-      return RFRFetchResult(fallback, 'unavailable');
+      return RFRFetchResult(fallback, 'unavailable', isLive: false);
     }
   }
 }

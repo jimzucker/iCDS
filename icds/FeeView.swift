@@ -130,12 +130,12 @@ struct FeeView: View {
                     .foregroundColor(Color(white: 0.55))
                 HStack(alignment: .firstTextBaseline, spacing: 6) {
                     Text("\(Int(vm.spreadBp))")
-                        .font(.system(size: 28, weight: .bold, design: .monospaced))
+                        .font(.system(size: 22, weight: .bold, design: .monospaced))
                         .foregroundColor(orange)
                         .lineLimit(1)
                         .minimumScaleFactor(0.6)
                     Text("bp")
-                        .font(.system(size: 18, weight: .semibold, design: .monospaced))
+                        .font(.system(size: 13, weight: .semibold, design: .monospaced))
                         .foregroundColor(orange)
                     Image(systemName: "pencil")
                         .font(.caption.weight(.semibold))
@@ -163,7 +163,7 @@ struct FeeView: View {
                         .tracking(1)
                         .foregroundColor(Color(white: 0.30))
                     Text(FeeView.signedCurrencyString(r.upfrontDollars + r.accrued, code: vm.currency))
-                        .font(.system(size: 28, weight: .bold, design: .monospaced))
+                        .font(.system(size: 22, weight: .bold, design: .monospaced))
                         .foregroundColor(.black)
                         .lineLimit(1)
                         .minimumScaleFactor(0.6)
@@ -179,7 +179,7 @@ struct FeeView: View {
                         .tracking(1)
                         .foregroundColor(Color(white: 0.30))
                     Text("…")
-                        .font(.system(size: 28, weight: .bold, design: .monospaced))
+                        .font(.system(size: 22, weight: .bold, design: .monospaced))
                         .foregroundColor(.black)
                 }
                 .frame(maxWidth: .infinity)
@@ -528,7 +528,7 @@ struct FeeView: View {
         }
         let maxP = max(probs.max() ?? 0, 0.0001)
         let sel = min(max(vm.maturityIndex, 0), probs.count - 1)
-        return VStack(alignment: .leading, spacing: 6) {
+        return VStack(alignment: .leading, spacing: 4) {
             HStack(spacing: 4) {
                 Text("DEFAULT RISK")
                     .font(.caption2.weight(.bold)).tracking(1)
@@ -552,7 +552,7 @@ struct FeeView: View {
                             .lineLimit(1).minimumScaleFactor(0.6)
                         RoundedRectangle(cornerRadius: 2)
                             .fill(isSel ? orange : Color(white: 0.23))
-                            .frame(height: max(4, CGFloat(probs[i] / maxP) * 64))
+                            .frame(height: max(4, CGFloat(probs[i] / maxP) * 46))
                         Text(vm.tenorLabels[i])
                             .font(.system(size: 10, design: .monospaced))
                             .foregroundColor(isSel ? orange : Color(white: 0.4))
@@ -562,13 +562,13 @@ struct FeeView: View {
                     .onTapGesture { vm.maturityIndex = i }
                 }
             }
-            .frame(height: 96, alignment: .bottom)
+            .frame(height: 76, alignment: .bottom)
             Text("Cumulative default prob · flat-hazard")
                 .font(.system(size: 9))
                 .foregroundColor(Color(white: 0.4))
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(10)
+        .padding(8)
         .background(Color(white: 0.07))
         .cornerRadius(8)
     }
