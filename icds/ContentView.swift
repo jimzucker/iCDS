@@ -162,7 +162,7 @@ struct DiagnosticsView: View {
     private func usd(_ r: CDSResult?) -> String {
         guard let r = r else { return "nil" }
         let v = r.upfrontDollars
-        let mag = ContentView.usdFmt.string(from: NSNumber(value: abs(v))) ?? String(format: "%.0f", abs(v))
+        let mag = DiagnosticsView.usdFmt.string(from: NSNumber(value: abs(v))) ?? String(format: "%.0f", abs(v))
         return v < 0 ? "$-\(mag)" : "$\(mag)"
     }
     private func ymd(_ td: TDate) -> String {
