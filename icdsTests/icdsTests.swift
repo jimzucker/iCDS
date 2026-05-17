@@ -847,6 +847,17 @@ class icdsTests: XCTestCase {
                            "Weekend fetch should return a prior weekday SOFR date")
     }
 
+    func testRFRFetchEveryCurrencyReturnsRateOrFallback() async {
+        // Parity port of flutter sofr_fetcher_test.dart's multi-currency
+        // coverage. Each currency must return a positive rate (live) or
+        // fall back to the hardcoded value — never throw, never zero.
+        for ccy in RFRCurrency.allCases {
+            let (rate, _) = await RFRFetcher.fetch(ccy)
+            XCTAssertTrue(rate > 0.0 || rate == ccy.fallbackRate,
+                          "\(ccy.rawValue) rate should be > 0 or equal fallback")
+        }
+    }
+
     // MARK: - Helpers
 
     private func d(_ year: Int, _ month: Int, _ day: Int) -> Date {

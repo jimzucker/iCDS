@@ -613,7 +613,7 @@ struct FeeView: View {
     private var riskRow: some View {
         if let rk = vm.risk {
             let fmt = currencyFormatter(vm.currency)
-            func money(_ v: Double) -> String {
+            let money: (Double) -> String = { v in
                 let s = fmt.string(from: NSNumber(value: abs(v))) ?? String(format: "%.0f", abs(v))
                 return (v < 0 ? "−" : "") + s
             }

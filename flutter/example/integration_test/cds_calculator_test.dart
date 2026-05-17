@@ -5,6 +5,8 @@
 /// Run on iOS:    `flutter test integration_test -d "iPhone 17 Pro"`
 /// Run on Android: `flutter test integration_test -d emulator-5554`
 
+import 'dart:math' as math;
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 
@@ -362,6 +364,40 @@ void main() {
         region: CdsRegion.target,
       )!;
       expect(iso(r.valueDate), '2025-04-22');
+    });
+  });
+
+  // Parity port of icdsTests.swift's first-order risk section.
+  // Bump-and-reprice (+1 bp spread, +1 bp discount, +1 pt recovery).
+  group('First-order risk — CS01 / IR DV01 / Rec01', () {
+    CdsRisk? riskAt({double notional = 10_000_000, bool isBuy = true}) =>
+        CdsCalculator.riskMetrics(
+          tradeDate: refDate,
+          tenorYears: 5,
+          parSpreadBp: 300, couponBp: 100,
+          recoveryRate: 0.40, notional: notional, isBuy: isBuy,
+        );
+
+    test('signs and notional scaling', () {
+      final rk = riskAt()!;
+      // Buyer, spread above coupon: wider spread → buyer pays more.
+      expect(rk.cs01, greaterThan(0), reason: 'CS01 > 0 for a protection buyer');
+      // Higher recovery → less loss given default → smaller upfront.
+      expect(rk.rec01, lessThan(0), reason: 'Rec01 < 0 (higher recovery lowers upfront)');
+      // IR sensitivity is a second-order effect here: finite and small.
+      expect(rk.irDV01.isFinite, isTrue);
+      expect(rk.irDV01.abs(), lessThan(rk.cs01.abs()));
+      // Linear in notional.
+      final half = riskAt(notional: 5_000_000)!;
+      expect(rk.cs01, closeTo(half.cs01 * 2.0, math.max(1.0, half.cs01.abs() * 0.02)));
+    });
+
+    test('buy/sell symmetry', () {
+      final buy = riskAt(isBuy: true)!;
+      final sell = riskAt(isBuy: false)!;
+      expect(buy.cs01, closeTo(-sell.cs01, 1.0));
+      expect(buy.rec01, closeTo(-sell.rec01, 1.0));
+      expect(buy.irDV01, closeTo(-sell.irDV01, 1.0));
     });
   });
 }
