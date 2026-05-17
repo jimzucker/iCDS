@@ -334,17 +334,18 @@ class SOFRRateStore extends ChangeNotifier {
   Future<void> _refresh(RFRCurrency ccy) async {
     final r = await RFRFetcher.fetch(ccy);
     if (!r.isLive) {
-      // Fetch failed. If we have a cached value (regardless of whether
-      // its status is `live` or `loading` from cache hydration), keep
-      // the cached rate + real effective date so the user sees how
-      // stale it is. Otherwise use whatever the fetcher returned —
-      // which for JPY is a synthetic "last likely published" date.
+      // Fetch failed. Behaviour rule: once a currency has *ever* been
+      // loaded successfully (either this session or hydrated from
+      // cache), the user should keep seeing the live indicator — a
+      // transient network failure shouldn't downgrade a known-good
+      // rate to "fallback" yellow. Only show fallback when there is
+      // genuinely nothing to display.
       final existing = _rates[ccy];
       if (existing != null &&
           existing.effectiveDate != '—' &&
           existing.effectiveDate != 'unavailable') {
         _rates[ccy] = RFRRate(
-            existing.rate, existing.effectiveDate, SOFRDataStatus.fallback);
+            existing.rate, existing.effectiveDate, SOFRDataStatus.live);
       } else {
         _rates[ccy] = RFRRate(r.rate, r.effectiveDate, SOFRDataStatus.fallback);
       }
@@ -370,14 +371,12 @@ class SOFRRateStore extends ChangeNotifier {
         if (rate == null || date == null || date.isEmpty) continue;
         // Skip if a live fetch has already resolved for this ccy.
         if (_rates[ccy]?.status == SOFRDataStatus.live) continue;
-        // Mark hydrated values as `loading` — the rate + date are shown
-        // to the user immediately, but the status indicator stays in
-        // its "fetching" state until the live refresh resolves. If the
-        // refresh succeeds we flip to `live` (green); if it fails we
-        // flip to `fallback` (yellow). We deliberately do NOT flip
-        // straight to `live` here, since hydrating a previously-cached
-        // value is not the same as confirming a fresh fetch.
-        _rates[ccy] = RFRRate(rate, date, SOFRDataStatus.loading);
+        // Hydrated values are shown as `.live` — the cache only stores
+        // results from previously-successful fetches, so the rate +
+        // date are real. The in-progress refresh will overwrite with a
+        // newer value if it succeeds; if it fails the existing live
+        // status is preserved (see _refresh).
+        _rates[ccy] = RFRRate(rate, date, SOFRDataStatus.live);
         changed = true;
       }
       if (changed) notifyListeners();

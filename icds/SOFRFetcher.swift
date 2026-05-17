@@ -276,11 +276,11 @@ final class SOFRRateStore: ObservableObject {
 
     /// Load previously-fetched rates from UserDefaults so cold-start
     /// shows the last-known value immediately. Cached entries are
-    /// marked `.loading` — they're displayed but the status indicator
-    /// reflects that a fresh fetch hasn't completed in this session.
-    /// When the refresh finishes the status flips to `.live` (fresh)
-    /// or `.fallback` (couldn't refresh — still shows the cached rate
-    /// and real effective date, but with yellow indicator).
+    /// marked `.live` — the cache only ever holds results from
+    /// previously-successful fetches, so the rate + date are real
+    /// and worth showing as live. The in-progress refresh overwrites
+    /// with a newer value if it succeeds; if it fails the existing
+    /// live status is preserved (see `apply`).
     private func hydrateFromCache() {
         guard let raw = UserDefaults.standard.string(forKey: Self.cacheKey),
               let data = raw.data(using: .utf8),
@@ -292,7 +292,7 @@ final class SOFRRateStore: ObservableObject {
                   let date = entry["effectiveDate"] as? String,
                   !date.isEmpty
             else { continue }
-            rates[ccy] = RFRRate(rate: rate, effectiveDate: date, status: .loading)
+            rates[ccy] = RFRRate(rate: rate, effectiveDate: date, status: .live)
         }
     }
 
@@ -313,8 +313,12 @@ final class SOFRRateStore: ObservableObject {
 
     /// Apply a fetch outcome to the store. Encodes the rule:
     ///   - fresh successful fetch       → .live (green), update cache
-    ///   - fetch failed, cached present → keep cached rate + date,
-    ///                                    flip to .fallback (yellow)
+    ///   - fetch failed, cached present → keep cached rate + date as
+    ///                                    .live — once we've ever
+    ///                                    loaded successfully a
+    ///                                    transient refresh failure
+    ///                                    shouldn't downgrade to
+    ///                                    "fallback" yellow
     ///   - fetch failed, no cache       → fallback rate + synthesised
     ///                                    "last likely published" date
     ///                                    for monthly sources (JPY) or
@@ -328,7 +332,7 @@ final class SOFRRateStore: ObservableObject {
                existing.effectiveDate != "unavailable" {
                 rates[ccy] = RFRRate(rate: existing.rate,
                                      effectiveDate: existing.effectiveDate,
-                                     status: .fallback)
+                                     status: .live)
             } else {
                 let date: String = (ccy == .JPY) ? Self.lastLikelyTonaDate() : outcome.effectiveDate
                 rates[ccy] = RFRRate(rate: outcome.rate,

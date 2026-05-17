@@ -23,7 +23,7 @@ struct FeeView: View {
 
     var body: some View {
         ScrollView {
-            VStack(spacing: 8) {
+            VStack(spacing: 10) {
                 regionRow
                 termRows
                 spreadFeeRow
@@ -33,7 +33,7 @@ struct FeeView: View {
                 dateFooterRow
             }
             .padding(.horizontal, 12)
-            .padding(.vertical, 6)
+            .padding(.vertical, 8)
         }
         .background(Color.black)
         .navigationTitle("iCDS")
@@ -59,34 +59,34 @@ struct FeeView: View {
     // MARK: - Terms
 
     private var termRows: some View {
-        VStack(spacing: 4) {
+        VStack(spacing: 6) {
             // Row 1: Buy/Sell  |  Recovery
             HStack(spacing: 8) {
-                VStack(alignment: .leading, spacing: 2) {
+                VStack(alignment: .leading, spacing: 3) {
                     label("Buy / Sell")
                     segPicker(["Buy", "Sell"], selection: $vm.buySellIndex)
                 }
                 if let contract = vm.contract {
-                    VStack(alignment: .leading, spacing: 2) {
+                    VStack(alignment: .leading, spacing: 3) {
                         label("Recovery  \(vm.recoveryLabel)")
                         segPicker(contract.recoveryList.map(\.subordination), selection: $vm.recoveryIndex)
                     }
                 }
             }
             // Row 2: Maturity (full width)
-            VStack(alignment: .leading, spacing: 2) {
+            VStack(alignment: .leading, spacing: 3) {
                 label("Maturity")
                 segPicker(vm.tenorLabels, selection: $vm.maturityIndex)
             }
             // Row 3: Coupon  |  Notional
             if let contract = vm.contract {
                 HStack(alignment: .bottom, spacing: 8) {
-                    VStack(alignment: .leading, spacing: 2) {
+                    VStack(alignment: .leading, spacing: 3) {
                         label("Coupon (bp)")
                         segPicker(contract.coupons.map(\.description), selection: $vm.couponIndex)
                             .onChange(of: vm.couponIndex) { _ in vm.resetSpreadToCoupon() }
                     }
-                    VStack(alignment: .leading, spacing: 2) {
+                    VStack(alignment: .leading, spacing: 3) {
                         label("Notional")
                         segPicker(vm.notionalLabels, selection: $vm.notionalIndex)
                     }
@@ -130,12 +130,12 @@ struct FeeView: View {
                     .foregroundColor(Color(white: 0.55))
                 HStack(alignment: .firstTextBaseline, spacing: 6) {
                     Text(Self.formatBp(Int(vm.spreadBp)))
-                        .font(.system(size: 26, weight: .bold, design: .monospaced))
+                        .font(.system(size: 28, weight: .bold, design: .monospaced))
                         .foregroundColor(orange)
                         .lineLimit(1)
                         .minimumScaleFactor(0.6)
                     Text("bp")
-                        .font(.system(size: 15, weight: .semibold, design: .monospaced))
+                        .font(.system(size: 18, weight: .semibold, design: .monospaced))
                         .foregroundColor(orange)
                     Image(systemName: "pencil")
                         .font(.caption.weight(.semibold))
@@ -143,7 +143,7 @@ struct FeeView: View {
                 }
             }
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 6)
+            .padding(.vertical, 8)
             .background(orange.opacity(0.18))
             .cornerRadius(8)
             .overlay(
@@ -163,13 +163,13 @@ struct FeeView: View {
                         .tracking(1)
                         .foregroundColor(Color(white: 0.30))
                     Text(FeeView.signedCurrencyString(r.upfrontDollars + r.accrued, code: vm.currency))
-                        .font(.system(size: 26, weight: .bold, design: .monospaced))
+                        .font(.system(size: 28, weight: .bold, design: .monospaced))
                         .foregroundColor(.black)
                         .lineLimit(1)
                         .minimumScaleFactor(0.6)
                 }
                 .frame(maxWidth: .infinity)
-                .padding(.vertical, 6)
+                .padding(.vertical, 8)
                 .background(Color(red: 1, green: 0.999, blue: 0.397))
                 .cornerRadius(8)
             } else {
@@ -179,11 +179,11 @@ struct FeeView: View {
                         .tracking(1)
                         .foregroundColor(Color(white: 0.30))
                     Text("…")
-                        .font(.system(size: 26, weight: .bold, design: .monospaced))
+                        .font(.system(size: 28, weight: .bold, design: .monospaced))
                         .foregroundColor(.black)
                 }
                 .frame(maxWidth: .infinity)
-                .padding(.vertical, 6)
+                .padding(.vertical, 8)
                 .background(Color(red: 1, green: 0.999, blue: 0.397))
                 .cornerRadius(8)
             }
@@ -414,7 +414,7 @@ struct FeeView: View {
 
     private var tradeDateCell: some View {
         Button { showDatePicker = true } label: {
-            VStack(alignment: .leading, spacing: 2) {
+            VStack(alignment: .leading, spacing: 3) {
                 Text("Trade Date")
                     .font(.caption2)
                     .foregroundColor(Color(white: 0.55))
@@ -552,7 +552,7 @@ struct FeeView: View {
                             .lineLimit(1).minimumScaleFactor(0.6)
                         RoundedRectangle(cornerRadius: 2)
                             .fill(isSel ? orange : Color(white: 0.23))
-                            .frame(height: max(4, CGFloat(probs[i] / maxP) * 56))
+                            .frame(height: max(4, CGFloat(probs[i] / maxP) * 60))
                         Text(vm.tenorLabels[i])
                             .font(.system(size: 10, design: .monospaced))
                             .foregroundColor(isSel ? orange : Color(white: 0.4))
@@ -562,7 +562,7 @@ struct FeeView: View {
                     .onTapGesture { vm.maturityIndex = i }
                 }
             }
-            .frame(height: 86, alignment: .bottom)
+            .frame(height: 90, alignment: .bottom)
             Text("Cumulative default prob · flat-hazard")
                 .font(.system(size: 9))
                 .foregroundColor(Color(white: 0.4))
