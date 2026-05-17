@@ -157,13 +157,13 @@ struct FeeView: View {
         Group {
             if let r = vm.result {
                 let fmt = signedCurrencyFormatter(vm.currency)
-                let display = noNegZero(r.upfrontDollars, eps: 0.5)
+                let totalDue = noNegZero(r.upfrontDollars + r.accrued, eps: 0.5)
                 VStack(spacing: 4) {
-                    Text("UPFRONT FEE")
+                    Text("TOTAL DUE")
                         .font(.caption2.weight(.semibold))
                         .tracking(1)
                         .foregroundColor(Color(white: 0.30))
-                    Text(fmt.string(from: NSNumber(value: display)) ?? String(format: "%+.0f", display))
+                    Text(fmt.string(from: NSNumber(value: totalDue)) ?? String(format: "%+.0f", totalDue))
                         .font(.system(size: 28, weight: .bold, design: .monospaced))
                         .foregroundColor(.black)
                         .lineLimit(1)
@@ -494,10 +494,9 @@ struct FeeView: View {
             if let r = vm.result {
                 let fmt  = currencyFormatter(vm.currency)
                 let sfmt = signedCurrencyFormatter(vm.currency)
-                let unsettled = r.upfrontDollars - r.accrued
                 HStack {
                     outputCell("Accrued",   fmt.string(from: NSNumber(value: r.accrued)) ?? "")
-                    outputCell("Unsettled", sfmt.string(from: NSNumber(value: unsettled)) ?? "")
+                    outputCell("Unsettled", sfmt.string(from: NSNumber(value: r.upfrontDollars)) ?? "")
                 }
                 HStack {
                     outputCell("Start",    formatTDate(r.startDate))
