@@ -65,8 +65,6 @@ class _FeeTabState extends State<FeeTab> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _discountIndicator(),
-              const SizedBox(height: 12),
               _regionRow(),
               const SizedBox(height: 12),
               _termRows(),
@@ -82,41 +80,6 @@ class _FeeTabState extends State<FeeTab> {
           ),
         ),
       ),
-    );
-  }
-
-  Widget _discountIndicator() {
-    final rate = _vm.discountRate * 100;
-    final indexName = _vm._indexNameForCurrency();
-    final dateStr = formatIsoDate(_vm.discountRateDate);
-    Widget marker;
-    String body;
-    Color color;
-    switch (_vm.discountRateStatus) {
-      case SOFRDataStatus.loading:
-        marker = const _Dot(color: Color(0xFF808080), size: 6);
-        body = '$indexName loading…';
-        color = const Color(0xFF8C8C8C);
-        break;
-      case SOFRDataStatus.live:
-        marker = const _Dot(color: Colors.green, size: 6);
-        body = '$indexName ${rate.toStringAsFixed(4)}% · $dateStr';
-        color = const Color(0xFFB3B3B3);
-        break;
-      case SOFRDataStatus.fallback:
-        marker = const Icon(Icons.warning_rounded, size: 12, color: Colors.yellow);
-        body = '$indexName unavailable — using ${rate.toStringAsFixed(3)}% reference';
-        color = Colors.yellow;
-        break;
-    }
-    return Row(
-      children: [
-        const Text('Discount:', style: TextStyle(fontSize: 11, color: Color(0xFF737373))),
-        const SizedBox(width: 6),
-        marker,
-        const SizedBox(width: 6),
-        Expanded(child: Text(body, style: TextStyle(fontSize: 11, color: color))),
-      ],
     );
   }
 
@@ -512,22 +475,13 @@ class _FeeTabState extends State<FeeTab> {
       return v < 0 ? '−$s' : s;
     }
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return Row(
       children: [
-        const Text('RISK',
-          style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold,
-            letterSpacing: 1, color: AppTheme.orange)),
-        const SizedBox(height: 4),
-        Row(
-          children: [
-            Expanded(child: _riskCell('CS01', money(rk.cs01), 'per +1 bp')),
-            const SizedBox(width: 6),
-            Expanded(child: _riskCell('IR DV01', money(rk.irDV01), 'per +1 bp')),
-            const SizedBox(width: 6),
-            Expanded(child: _riskCell('Rec01', money(rk.rec01), 'per +1 pt')),
-          ],
-        ),
+        Expanded(child: _riskCell('CS01', money(rk.cs01), 'per +1 bp')),
+        const SizedBox(width: 6),
+        Expanded(child: _riskCell('IR DV01', money(rk.irDV01), 'per +1 bp')),
+        const SizedBox(width: 6),
+        Expanded(child: _riskCell('Rec01', money(rk.rec01), 'per +1 pt')),
       ],
     );
   }
@@ -737,13 +691,3 @@ class _SegButton extends StatelessWidget {
   }
 }
 
-class _Dot extends StatelessWidget {
-  final Color color;
-  final double size;
-  const _Dot({required this.color, this.size = 8});
-  @override
-  Widget build(BuildContext context) => Container(
-        width: size, height: size,
-        decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-      );
-}

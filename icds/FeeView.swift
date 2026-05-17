@@ -24,7 +24,6 @@ struct FeeView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 12) {
-                sofrIndicator
                 regionRow
                 termRows
                 spreadFeeRow
@@ -37,33 +36,6 @@ struct FeeView: View {
         }
         .background(Color.black)
         .navigationTitle("iCDS")
-    }
-
-    // MARK: - SOFR indicator (shows which discount rate is in use)
-
-    private var sofrIndicator: some View {
-        let ccyStr = vm.contract?.currency ?? "USD"
-        let ccy = RFRCurrency(rawValue: ccyStr) ?? .USD
-        let indexName = ccy.indexName
-        let rate = vm.discountRate * 100
-        let dateStr = FeeView.formatISODate(vm.discountRateDate)
-        return HStack(spacing: 6) {
-            Text("Discount:").font(.caption2).foregroundColor(Color(white: 0.45))
-            switch vm.discountRateStatus {
-            case .loading:
-                Circle().fill(Color(white: 0.5)).frame(width: 6, height: 6)
-                Text("\(indexName) loading…").font(.caption2).foregroundColor(Color(white: 0.55))
-            case .live:
-                Circle().fill(Color.green).frame(width: 6, height: 6)
-                Text(String(format: "%@ %.4f%% · %@", indexName, rate, dateStr))
-                    .font(.caption2).foregroundColor(Color(white: 0.7))
-            case .fallback:
-                Image(systemName: "exclamationmark.triangle.fill").font(.caption2).foregroundColor(.yellow)
-                Text(String(format: "%@ unavailable — using %.3f%% reference", indexName, rate))
-                    .font(.caption2).foregroundColor(.yellow)
-            }
-            Spacer()
-        }
     }
 
     // MARK: - Region
@@ -603,15 +575,10 @@ struct FeeView: View {
                 let s = fmt.string(from: NSNumber(value: abs(v))) ?? String(format: "%.0f", abs(v))
                 return (v < 0 ? "−" : "") + s
             }
-            VStack(alignment: .leading, spacing: 4) {
-                Text("RISK")
-                    .font(.caption2.weight(.bold)).tracking(1)
-                    .foregroundColor(orange.opacity(0.85))
-                HStack(spacing: 6) {
-                    riskCell("CS01",    money(rk.cs01),   "per +1 bp")
-                    riskCell("IR DV01", money(rk.irDV01), "per +1 bp")
-                    riskCell("Rec01",   money(rk.rec01),  "per +1 pt")
-                }
+            HStack(spacing: 6) {
+                riskCell("CS01",    money(rk.cs01),   "per +1 bp")
+                riskCell("IR DV01", money(rk.irDV01), "per +1 bp")
+                riskCell("Rec01",   money(rk.rec01),  "per +1 pt")
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         }
