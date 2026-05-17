@@ -345,9 +345,8 @@ class _FeeTabState extends State<FeeTab> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
       decoration: BoxDecoration(
-        color: AppTheme.orange.withValues(alpha: 0.18),
+        color: const Color(0xFF121212),
         borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: AppTheme.orange.withValues(alpha: 0.6)),
       ),
       child: Row(
         children: [

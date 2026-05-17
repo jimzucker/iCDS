@@ -430,12 +430,8 @@ struct FeeView: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(8)
-            .background(orange.opacity(0.18))
+            .background(Color(white: 0.07))
             .cornerRadius(6)
-            .overlay(
-                RoundedRectangle(cornerRadius: 6)
-                    .stroke(orange.opacity(0.6), lineWidth: 1)
-            )
         }
         .buttonStyle(.plain)
     }
