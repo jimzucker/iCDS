@@ -573,7 +573,7 @@ struct FeeView: View {
             let fmt = currencyFormatter(vm.currency)
             let money: (Double) -> String = { v in
                 let s = fmt.string(from: NSNumber(value: abs(v))) ?? String(format: "%.0f", abs(v))
-                return (v < 0 ? "−" : "") + s
+                return (v < 0 && abs(v) >= 0.5 ? "−" : "") + s
             }
             HStack(spacing: 6) {
                 riskCell("CS01",    money(rk.cs01),   "per +1 bp")

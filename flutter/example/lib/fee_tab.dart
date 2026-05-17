@@ -472,7 +472,7 @@ class _FeeTabState extends State<FeeTab> {
     if (rk == null) return const SizedBox.shrink();
     String money(double v) {
       final s = formatCurrency(v.abs(), _vm.currency);
-      return v < 0 ? '−$s' : s;
+      return (v < 0 && v.abs() >= 0.5) ? '−$s' : s;
     }
 
     return Row(
