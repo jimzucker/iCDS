@@ -144,13 +144,19 @@ struct RFRFetcher {
     // consistent live-vs-cached outcome across platforms.
     private static func fetchTONA() async -> (rate: Double, effectiveDate: String) {
         let url = URL(string: "https://fred.stlouisfed.org/graph/fredgraph.csv?id=IRSTCI01JPM156N")!
-        let attempts = 3
+        // 5 attempts with exponential backoff (2, 4, 8, 16s). URLSession's
+        // idle timeout (60s default) is more tolerant than Dart's total
+        // timeout, but FRED's load-balancer occasionally fully closes
+        // an HTTP/1.1 connection mid-response — a retry recovers quickly.
+        let attempts = 5
         for i in 1...attempts {
             let outcome = await fetchCSV(tag: "TONA(try\(i))", url: url, dateCol: 0, valueCol: 1,
                                          fallback: RFRCurrency.JPY.fallbackRate, takeLast: true)
             if outcome.effectiveDate != "unavailable" { return outcome }
             if i < attempts {
-                try? await Task.sleep(nanoseconds: UInt64(2_000_000_000 * i))
+                // Exponential backoff: 2, 4, 8, 16s
+                let backoffSeconds: UInt64 = 1 << i
+                try? await Task.sleep(nanoseconds: backoffSeconds * 1_000_000_000)
             }
         }
         // All retries failed. The store's apply() will keep any prior

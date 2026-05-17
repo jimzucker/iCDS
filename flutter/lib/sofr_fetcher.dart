@@ -162,21 +162,19 @@ class RFRFetcher {
   /// Android matches iOS's empirical success rate.
   static Future<RFRFetchResult> _fetchTONA() async {
     final url = Uri.parse('https://fred.stlouisfed.org/graph/fredgraph.csv?id=IRSTCI01JPM156N');
-    const attempts = 3;
+    // 5 attempts × 60s budget = up to ~5 min worst case, plus exponential
+    // backoff between tries (2, 4, 8, 16s). Pushes through FRED slow-backend
+    // routing that has been observed to take 30–45s on a single attempt.
+    const attempts = 5;
     for (var i = 1; i <= attempts; i++) {
       final result = await _fetchCsv(
         tag: 'TONA(try$i)', url: url, dateCol: 0, valueCol: 1,
         fallback: RFRCurrency.jpy.fallbackRate, takeLast: true,
-        // Wider per-attempt budget — Dart's http package uses a total
-        // (not idle) timeout, so we need enough headroom to let FRED's
-        // slow-backend path complete a full CSV streaming response.
-        // iOS URLSession breaks through with its 60s idle timeout; 45s
-        // total here brings Android into the same observational window
-        // and the cross-platform live-vs-cached badge stays consistent.
-        timeout: const Duration(seconds: 45));
+        timeout: const Duration(seconds: 60));
       if (result.isLive) return result;
       if (i < attempts) {
-        await Future.delayed(Duration(seconds: 2 * i));
+        // Exponential backoff: 2, 4, 8, 16s
+        await Future.delayed(Duration(seconds: 1 << i));
       }
     }
     // All retries failed. FRED's series is monthly with ~45-day
