@@ -180,6 +180,7 @@ struct DiagnosticsView: View {
     private func statusMark(_ s: SOFRDataStatus) -> String {
         switch s {
         case .live:     return "✓"
+        case .cached:   return "◌"
         case .fallback: return "·"
         case .loading:  return "…"
         }

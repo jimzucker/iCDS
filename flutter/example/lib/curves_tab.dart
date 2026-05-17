@@ -85,9 +85,15 @@ class _CurvesTabState extends State<CurvesTab> {
     );
   }
 
+  // Accent palette per status — used by currency button + rate card border.
+  // Cyan is deliberately distinct from green (live) and yellow (fallback)
+  // so the user can tell at a glance which of the three the data is in.
+  static const _cyan = Color(0xFF4DD0E1);
+
   Color _accent(SOFRDataStatus s) {
     switch (s) {
       case SOFRDataStatus.live:     return AppTheme.orange;
+      case SOFRDataStatus.cached:   return _cyan;
       case SOFRDataStatus.fallback: return Colors.yellow;
       case SOFRDataStatus.loading:  return const Color(0xFF808080);
     }
@@ -251,6 +257,13 @@ class _CurvesTabState extends State<CurvesTab> {
         border = Colors.transparent;
         borderW = 0;
         break;
+      case SOFRDataStatus.cached:
+        bg = selected ? _cyan.withValues(alpha: 0.30)
+                      : _cyan.withValues(alpha: 0.10);
+        fg = _cyan;
+        border = _cyan;
+        borderW = 1.5;
+        break;
       case SOFRDataStatus.live:
         bg = selected ? AppTheme.orange.withValues(alpha: 0.30)
                       : const Color(0xFF262626);
@@ -295,6 +308,12 @@ class _CurvesTabState extends State<CurvesTab> {
         text = 'LIVE  ·  ${_selected.sourceLabel}';
         fg = Colors.green;
         bg = Colors.green.withValues(alpha: 0.08);
+        break;
+      case SOFRDataStatus.cached:
+        icon = const _Dot(color: _cyan);
+        text = 'CACHED  ·  ${_selected.sourceLabel}';
+        fg = _cyan;
+        bg = _cyan.withValues(alpha: 0.08);
         break;
       case SOFRDataStatus.fallback:
         icon = const Icon(Icons.warning_rounded, size: 14, color: Colors.yellow);

@@ -273,7 +273,7 @@ class _CsvRow {
   _CsvRow(this.date, this.dateStr, this.value);
 }
 
-enum SOFRDataStatus { loading, live, fallback }
+enum SOFRDataStatus { loading, live, cached, fallback }
 
 class RFRRate {
   final double rate;
@@ -317,11 +317,12 @@ class SOFRRateStore extends ChangeNotifier {
         // JPY is published monthly with a ~45-day lag — even a freshly
         // successful FRED fetch returns a date that is structurally
         // weeks old. Seed the store with the synthesised "last likely
-        // published" date so fresh installs show a sensible live value
-        // (matching what iOS shows from any prior cached fetch).
+        // published" date as .cached (not .live) so the UI badge is
+        // honest about the source. A successful refresh upgrades to
+        // .live.
         _rates[ccy] = RFRRate(ccy.fallbackRate,
                               RFRFetcher.lastLikelyTonaDate(),
-                              SOFRDataStatus.live);
+                              SOFRDataStatus.cached);
       } else {
         _rates[ccy] = RFRRate(ccy.fallbackRate, '—', SOFRDataStatus.loading);
       }
@@ -348,18 +349,18 @@ class SOFRRateStore extends ChangeNotifier {
   Future<void> _refresh(RFRCurrency ccy) async {
     final r = await RFRFetcher.fetch(ccy);
     if (!r.isLive) {
-      // Fetch failed. Behaviour rule: once a currency has *ever* been
-      // loaded successfully (either this session or hydrated from
-      // cache), the user should keep seeing the live indicator — a
-      // transient network failure shouldn't downgrade a known-good
-      // rate to "fallback" yellow. Only show fallback when there is
-      // genuinely nothing to display.
+      // Fetch failed. If we have a plausible existing date (either a
+      // hydrated cache value or the JPY pre-seed), keep showing that
+      // rate marked as .cached — the user gets a date and a rate, but
+      // the badge tells them this isn't a freshly fetched value. Only
+      // when there is genuinely nothing to display (date == '—' or
+      // 'unavailable') do we fall through to .fallback.
       final existing = _rates[ccy];
       if (existing != null &&
           existing.effectiveDate != '—' &&
           existing.effectiveDate != 'unavailable') {
         _rates[ccy] = RFRRate(
-            existing.rate, existing.effectiveDate, SOFRDataStatus.live);
+            existing.rate, existing.effectiveDate, SOFRDataStatus.cached);
       } else {
         _rates[ccy] = RFRRate(r.rate, r.effectiveDate, SOFRDataStatus.fallback);
       }
@@ -385,12 +386,11 @@ class SOFRRateStore extends ChangeNotifier {
         if (rate == null || date == null || date.isEmpty) continue;
         // Skip if a live fetch has already resolved for this ccy.
         if (_rates[ccy]?.status == SOFRDataStatus.live) continue;
-        // Hydrated values are shown as `.live` — the cache only stores
-        // results from previously-successful fetches, so the rate +
-        // date are real. The in-progress refresh will overwrite with a
-        // newer value if it succeeds; if it fails the existing live
-        // status is preserved (see _refresh).
-        _rates[ccy] = RFRRate(rate, date, SOFRDataStatus.live);
+        // Hydrated values are shown as `.cached` — the rate + date are
+        // real (we only persist successful fetches) but they weren't
+        // re-verified in this session. The in-progress refresh will
+        // upgrade to .live on success, or keep .cached on failure.
+        _rates[ccy] = RFRRate(rate, date, SOFRDataStatus.cached);
         changed = true;
       }
       if (changed) notifyListeners();

@@ -114,6 +114,7 @@ class _DiagnosticsTabState extends State<DiagnosticsTab> {
   String _statusMark(SOFRDataStatus s) {
     switch (s) {
       case SOFRDataStatus.live:     return '✓';
+      case SOFRDataStatus.cached:   return '◌';
       case SOFRDataStatus.fallback: return '·';
       case SOFRDataStatus.loading:  return '…';
     }

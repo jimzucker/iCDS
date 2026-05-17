@@ -246,7 +246,7 @@ struct SOFRFetcher {
 
 // MARK: - Observable store
 
-enum SOFRDataStatus { case loading, live, fallback }
+enum SOFRDataStatus { case loading, live, cached, fallback }
 
 struct RFRRate {
     let rate: Double
@@ -271,11 +271,11 @@ final class SOFRRateStore: ObservableObject {
         // JPY is published monthly with a ~45-day lag — even a freshly
         // successful FRED fetch returns a date that is structurally
         // weeks old. Seed the store with the synthesised "last likely
-        // published" date so fresh installs (no cache yet) show a
-        // sensible live value instead of yellow fallback.
+        // published" date as .cached (not .live) so the badge tells
+        // the user this isn't a freshly verified value.
         rates[.JPY] = RFRRate(rate: RFRCurrency.JPY.fallbackRate,
                               effectiveDate: Self.lastLikelyTonaDate(),
-                              status: .live)
+                              status: .cached)
         hydrateFromCache()
         Task { @MainActor in
             await refreshAll()
@@ -300,7 +300,11 @@ final class SOFRRateStore: ObservableObject {
                   let date = entry["effectiveDate"] as? String,
                   !date.isEmpty
             else { continue }
-            rates[ccy] = RFRRate(rate: rate, effectiveDate: date, status: .live)
+            // Hydrated values are .cached — rate + date are real (we
+            // only persist successful fetches) but they weren't re-
+            // verified this session. The pending refresh upgrades to
+            // .live on success.
+            rates[ccy] = RFRRate(rate: rate, effectiveDate: date, status: .cached)
         }
     }
 
@@ -340,7 +344,7 @@ final class SOFRRateStore: ObservableObject {
                existing.effectiveDate != "unavailable" {
                 rates[ccy] = RFRRate(rate: existing.rate,
                                      effectiveDate: existing.effectiveDate,
-                                     status: .live)
+                                     status: .cached)
             } else {
                 let date: String = (ccy == .JPY) ? Self.lastLikelyTonaDate() : outcome.effectiveDate
                 rates[ccy] = RFRRate(rate: outcome.rate,

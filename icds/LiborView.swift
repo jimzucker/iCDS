@@ -19,33 +19,33 @@ struct LiborView: View {
             Text("Reference Rates")
                 .font(.title2.bold())
                 .foregroundColor(orange)
-                .padding(.top, 16)
+                .padding(.top, 8)
 
             Text("Live RFR overnight rates by currency")
                 .font(.caption)
                 .foregroundColor(Color(white: 0.45))
-                .padding(.top, 4)
-                .padding(.bottom, 10)
+                .padding(.top, 2)
+                .padding(.bottom, 6)
 
             // Currency picker — color-coded by fetch status
             currencyPicker
                 .padding(.horizontal, 16)
-                .padding(.bottom, 12)
+                .padding(.bottom, 6)
 
             statusBanner
                 .padding(.horizontal, 16)
-                .padding(.bottom, 8)
+                .padding(.bottom, 6)
 
             overnightBanner
                 .padding(.horizontal, 16)
-                .padding(.bottom, 12)
+                .padding(.bottom, 6)
 
             Divider().background(Color(white: 0.2))
 
             // Per-currency reference swap curve (static 2021 snapshot)
             curveTableHeader
                 .padding(.horizontal, 16)
-                .padding(.top, 8)
+                .padding(.top, 4)
 
             List {
                 ForEach(tenorsForSelected(), id: \.tenor) { entry in
@@ -145,15 +145,21 @@ struct LiborView: View {
         }
     }
 
+    // Cyan accent for the new `.cached` status — visually distinct
+    // from green (.live), yellow (.fallback) and grey (.loading) so
+    // the source state is unambiguous at a glance.
+    private static let cyan = Color(red: 0.302, green: 0.816, blue: 0.882)
+
     private func buttonBorderColor(for ccy: RFRCurrency) -> Color {
         let status = sofrStore.status(for: ccy)
-        if status == .fallback { return .yellow }   // always flag fallbacks
+        if status == .fallback { return .yellow }
+        if status == .cached   { return Self.cyan }
         return selectedCurrency == ccy ? orange : .clear
     }
 
     private func buttonBorderWidth(for ccy: RFRCurrency) -> CGFloat {
         let status = sofrStore.status(for: ccy)
-        if status == .fallback { return 1.5 }
+        if status == .fallback || status == .cached { return 1.5 }
         return selectedCurrency == ccy ? 2 : 0
     }
 
@@ -165,6 +171,8 @@ struct LiborView: View {
         switch status {
         case .fallback:
             return selected ? Color.yellow.opacity(0.35) : Color.yellow.opacity(0.12)
+        case .cached:
+            return selected ? Self.cyan.opacity(0.30) : Self.cyan.opacity(0.10)
         case .loading:
             return selected ? Color(white: 0.5).opacity(0.35) : Color(white: 0.5).opacity(0.12)
         case .live:
@@ -178,6 +186,8 @@ struct LiborView: View {
         switch status {
         case .fallback:
             return .yellow
+        case .cached:
+            return Self.cyan
         case .loading:
             return Color(white: 0.6)
         case .live:
@@ -189,6 +199,7 @@ struct LiborView: View {
         switch status {
         case .loading:  return Color(white: 0.5)
         case .live:     return orange     // neutral / app accent
+        case .cached:   return Self.cyan
         case .fallback: return .yellow    // defaulting to static reference
         }
     }
@@ -207,6 +218,11 @@ struct LiborView: View {
                 Text("LIVE  ·  \(selectedCurrency.sourceLabel)")
                     .font(.caption.weight(.medium))
                     .foregroundColor(.green)
+            case .cached:
+                Circle().fill(Self.cyan).frame(width: 8, height: 8)
+                Text("CACHED  ·  \(selectedCurrency.sourceLabel)")
+                    .font(.caption.weight(.medium))
+                    .foregroundColor(Self.cyan)
             case .fallback:
                 Image(systemName: "exclamationmark.triangle.fill")
                     .foregroundColor(.yellow)
@@ -227,6 +243,7 @@ struct LiborView: View {
         switch ccyStatus {
         case .loading:  return Color(white: 0.1)
         case .live:     return Color.green.opacity(0.08)
+        case .cached:   return Self.cyan.opacity(0.08)
         case .fallback: return Color.yellow.opacity(0.10)
         }
     }

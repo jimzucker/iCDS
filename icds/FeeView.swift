@@ -23,7 +23,7 @@ struct FeeView: View {
 
     var body: some View {
         ScrollView {
-            VStack(spacing: 10) {
+            VStack(spacing: 8) {
                 regionRow
                 termRows
                 spreadFeeRow
@@ -33,7 +33,8 @@ struct FeeView: View {
                 dateFooterRow
             }
             .padding(.horizontal, 12)
-            .padding(.vertical, 8)
+            .padding(.top, 6)
+            .padding(.bottom, 4)
         }
         .background(Color.black)
         .navigationTitle("iCDS")
@@ -59,34 +60,34 @@ struct FeeView: View {
     // MARK: - Terms
 
     private var termRows: some View {
-        VStack(spacing: 6) {
+        VStack(spacing: 8) {
             // Row 1: Buy/Sell  |  Recovery
             HStack(spacing: 8) {
-                VStack(alignment: .leading, spacing: 3) {
+                VStack(alignment: .leading, spacing: 4) {
                     label("Buy / Sell")
                     segPicker(["Buy", "Sell"], selection: $vm.buySellIndex)
                 }
                 if let contract = vm.contract {
-                    VStack(alignment: .leading, spacing: 3) {
+                    VStack(alignment: .leading, spacing: 4) {
                         label("Recovery  \(vm.recoveryLabel)")
                         segPicker(contract.recoveryList.map(\.subordination), selection: $vm.recoveryIndex)
                     }
                 }
             }
             // Row 2: Maturity (full width)
-            VStack(alignment: .leading, spacing: 3) {
+            VStack(alignment: .leading, spacing: 4) {
                 label("Maturity")
                 segPicker(vm.tenorLabels, selection: $vm.maturityIndex)
             }
             // Row 3: Coupon  |  Notional
             if let contract = vm.contract {
                 HStack(alignment: .bottom, spacing: 8) {
-                    VStack(alignment: .leading, spacing: 3) {
+                    VStack(alignment: .leading, spacing: 4) {
                         label("Coupon (bp)")
                         segPicker(contract.coupons.map(\.description), selection: $vm.couponIndex)
                             .onChange(of: vm.couponIndex) { _ in vm.resetSpreadToCoupon() }
                     }
-                    VStack(alignment: .leading, spacing: 3) {
+                    VStack(alignment: .leading, spacing: 4) {
                         label("Notional")
                         segPicker(vm.notionalLabels, selection: $vm.notionalIndex)
                     }
@@ -479,7 +480,7 @@ struct FeeView: View {
     // MARK: - Output grid
 
     private var outputGrid: some View {
-        VStack(spacing: 6) {
+        VStack(spacing: 8) {
             if let r = vm.result {
                 let fmt  = currencyFormatter(vm.currency)
                 // Cash split — the two components of the DIRTY UPFRONT
@@ -679,14 +680,20 @@ struct FeeView: View {
         f.numberStyle = .currency
         f.currencyCode = code
         f.maximumFractionDigits = 0
-        // Force comma grouping with no whitespace — otherwise locales
-        // like fr_FR render "1 234 567" or "1, 234, 567" depending on
-        // version. en_US gives "$1,234,567" (and the equivalent for
-        // ¥/€/£). en_US_POSIX is wrong here: it inserts a space
-        // between the currency symbol and the amount.
         f.locale = Locale(identifier: "en_US")
         f.usesGroupingSeparator = true
         f.groupingSeparator = ","
+        // Some currencies' default format pattern includes a space
+        // between the symbol and the digits (e.g. "JP¥ 1,234") or a
+        // narrow no-break space inside groups, producing visual
+        // artefacts like "1, 234, 567". Force the canonical compact
+        // form: <symbol><digits>. The "¤" placeholder is replaced by
+        // the currency symbol per `currencyCode` above.
+        let symbol = f.currencySymbol ?? "$"
+        f.positivePrefix = symbol
+        f.positiveSuffix = ""
+        f.negativePrefix = "−" + symbol
+        f.negativeSuffix = ""
         return f
     }
 
@@ -702,9 +709,8 @@ struct FeeView: View {
     }
 
     static func signedCurrencyFormatter(_ code: String) -> NumberFormatter {
-        let f = currencyFormatter(code)
-        f.negativePrefix = "−" + (f.currencySymbol ?? "")
-        return f
+        // currencyFormatter already sets a U+2212 MINUS negativePrefix.
+        return currencyFormatter(code)
     }
 
     static func noNegZero(_ value: Double, eps: Double) -> Double {
