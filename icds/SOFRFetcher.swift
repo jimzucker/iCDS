@@ -260,30 +260,96 @@ final class SOFRRateStore: ObservableObject {
     // Per-currency rates
     @Published private(set) var rates: [RFRCurrency: RFRRate] = [:]
 
+    private static let cacheKey = "icds.rfr.cache.v1"
+
     // Legacy single-value API (USD only) — kept for existing callers
     var rate: Double { rates[.USD]?.rate ?? RFRCurrency.USD.fallbackRate }
     var effectiveDate: String { rates[.USD]?.effectiveDate ?? "" }
     var status: SOFRDataStatus { rates[.USD]?.status ?? .loading }
 
     private init() {
+        hydrateFromCache()
         Task { @MainActor in
             await refreshAll()
+        }
+    }
+
+    /// Load previously-fetched rates from UserDefaults so cold-start
+    /// shows the last-known value immediately. Cached entries are
+    /// marked `.loading` — they're displayed but the status indicator
+    /// reflects that a fresh fetch hasn't completed in this session.
+    /// When the refresh finishes the status flips to `.live` (fresh)
+    /// or `.fallback` (couldn't refresh — still shows the cached rate
+    /// and real effective date, but with yellow indicator).
+    private func hydrateFromCache() {
+        guard let raw = UserDefaults.standard.string(forKey: Self.cacheKey),
+              let data = raw.data(using: .utf8),
+              let map = try? JSONSerialization.jsonObject(with: data) as? [String: [String: Any]]
+        else { return }
+        for ccy in RFRCurrency.allCases {
+            guard let entry = map[ccy.rawValue],
+                  let rate = entry["rate"] as? Double,
+                  let date = entry["effectiveDate"] as? String,
+                  !date.isEmpty
+            else { continue }
+            rates[ccy] = RFRRate(rate: rate, effectiveDate: date, status: .loading)
+        }
+    }
+
+    private func persistOne(_ ccy: RFRCurrency, _ r: RFRRate) {
+        let defaults = UserDefaults.standard
+        var map: [String: [String: Any]] = [:]
+        if let raw = defaults.string(forKey: Self.cacheKey),
+           let data = raw.data(using: .utf8),
+           let existing = try? JSONSerialization.jsonObject(with: data) as? [String: [String: Any]] {
+            map = existing
+        }
+        map[ccy.rawValue] = ["rate": r.rate, "effectiveDate": r.effectiveDate]
+        if let data = try? JSONSerialization.data(withJSONObject: map),
+           let raw = String(data: data, encoding: .utf8) {
+            defaults.set(raw, forKey: Self.cacheKey)
+        }
+    }
+
+    /// Apply a fetch outcome to the store. Encodes the rule:
+    ///   - fresh successful fetch       → .live (green), update cache
+    ///   - fetch failed, cached present → keep cached rate + date,
+    ///                                    flip to .fallback (yellow)
+    ///   - fetch failed, no cache       → hardcoded fallback + "unavailable",
+    ///                                    .fallback (yellow)
+    private func apply(_ outcome: (rate: Double, effectiveDate: String), to ccy: RFRCurrency) {
+        let failed = outcome.effectiveDate == "unavailable" || outcome.effectiveDate == "static"
+        if failed {
+            if let existing = rates[ccy],
+               existing.effectiveDate != "—",
+               existing.effectiveDate != "unavailable" {
+                rates[ccy] = RFRRate(rate: existing.rate,
+                                     effectiveDate: existing.effectiveDate,
+                                     status: .fallback)
+            } else {
+                rates[ccy] = RFRRate(rate: outcome.rate,
+                                     effectiveDate: outcome.effectiveDate,
+                                     status: .fallback)
+            }
+        } else {
+            let r = RFRRate(rate: outcome.rate, effectiveDate: outcome.effectiveDate, status: .live)
+            rates[ccy] = r
+            persistOne(ccy, r)
         }
     }
 
     /// Fetch overnight rates for all currencies concurrently.
     @MainActor
     func refreshAll() async {
-        await withTaskGroup(of: (RFRCurrency, RFRRate).self) { group in
+        await withTaskGroup(of: (RFRCurrency, (rate: Double, effectiveDate: String)).self) { group in
             for ccy in RFRCurrency.allCases {
                 group.addTask {
-                    let (r, d) = await RFRFetcher.fetch(ccy)
-                    let status: SOFRDataStatus = (d == "unavailable" || d == "static") ? .fallback : .live
-                    return (ccy, RFRRate(rate: r, effectiveDate: d, status: status))
+                    let outcome = await RFRFetcher.fetch(ccy)
+                    return (ccy, outcome)
                 }
             }
-            for await (ccy, rate) in group {
-                rates[ccy] = rate
+            for await (ccy, outcome) in group {
+                apply(outcome, to: ccy)
             }
         }
     }
@@ -291,9 +357,8 @@ final class SOFRRateStore: ObservableObject {
     /// Legacy single-currency API. Refreshes USD only.
     func updateForTradeDate(_ date: Date) {
         Task { @MainActor in
-            let (r, d) = await RFRFetcher.fetch(.USD)
-            let status: SOFRDataStatus = (d == "unavailable" || d == "static") ? .fallback : .live
-            rates[.USD] = RFRRate(rate: r, effectiveDate: d, status: status)
+            let outcome = await RFRFetcher.fetch(.USD)
+            apply(outcome, to: .USD)
         }
     }
 
