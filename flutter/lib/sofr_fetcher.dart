@@ -181,12 +181,15 @@ class RFRFetcher {
     // date (1st of the month, ~45 days ago) so the UI shows a
     // plausible date instead of "unavailable".
     return RFRFetchResult(RFRCurrency.jpy.fallbackRate,
-                          _lastLikelyTonaDate(), isLive: false);
+                          lastLikelyTonaDate(), isLive: false);
   }
 
   /// First-of-month date that is ~45 days behind today — matches FRED's
-  /// monthly-with-lag publication cadence for `IRSTCI01JPM156N`.
-  static String _lastLikelyTonaDate() {
+  /// monthly-with-lag publication cadence for `IRSTCI01JPM156N`. Public
+  /// so the store can pre-seed the JPY entry with this date on cold
+  /// start (FRED's source is monthly; even a successful fetch returns
+  /// a date weeks old).
+  static String lastLikelyTonaDate() {
     final probe = DateTime.now().subtract(const Duration(days: 45));
     final firstOfMonth = DateTime(probe.year, probe.month, 1);
     return DateFormat('yyyy-MM-dd').format(firstOfMonth);
@@ -310,7 +313,18 @@ class SOFRRateStore extends ChangeNotifier {
   SOFRRateStore._() {
     // Pre-populate so cold-start readers get a deterministic record.
     for (final ccy in RFRCurrency.values) {
-      _rates[ccy] = RFRRate(ccy.fallbackRate, '—', SOFRDataStatus.loading);
+      if (ccy == RFRCurrency.jpy) {
+        // JPY is published monthly with a ~45-day lag — even a freshly
+        // successful FRED fetch returns a date that is structurally
+        // weeks old. Seed the store with the synthesised "last likely
+        // published" date so fresh installs show a sensible live value
+        // (matching what iOS shows from any prior cached fetch).
+        _rates[ccy] = RFRRate(ccy.fallbackRate,
+                              RFRFetcher.lastLikelyTonaDate(),
+                              SOFRDataStatus.live);
+      } else {
+        _rates[ccy] = RFRRate(ccy.fallbackRate, '—', SOFRDataStatus.loading);
+      }
     }
     // Load persisted cache *then* fire the async refresh. The cache
     // hydration is fire-and-forget too — if it lands before the first

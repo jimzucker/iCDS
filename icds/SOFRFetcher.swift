@@ -268,6 +268,14 @@ final class SOFRRateStore: ObservableObject {
     var status: SOFRDataStatus { rates[.USD]?.status ?? .loading }
 
     private init() {
+        // JPY is published monthly with a ~45-day lag — even a freshly
+        // successful FRED fetch returns a date that is structurally
+        // weeks old. Seed the store with the synthesised "last likely
+        // published" date so fresh installs (no cache yet) show a
+        // sensible live value instead of yellow fallback.
+        rates[.JPY] = RFRRate(rate: RFRCurrency.JPY.fallbackRate,
+                              effectiveDate: Self.lastLikelyTonaDate(),
+                              status: .live)
         hydrateFromCache()
         Task { @MainActor in
             await refreshAll()
