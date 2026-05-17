@@ -277,7 +277,7 @@ class _FeeTabState extends State<FeeTab> {
           : Column(
               children: [
                 const Text(
-                  'TOTAL DUE',
+                  'DIRTY UPFRONT',
                   style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: Color(0xFF4D4D4D), letterSpacing: 1),
                 ),
                 const SizedBox(height: 4),
@@ -322,7 +322,7 @@ class _FeeTabState extends State<FeeTab> {
               Expanded(child: _outputCell('Accrued',
                 formatCurrency(r.accruedDollars, _vm.currency))),
               const SizedBox(width: 6),
-              Expanded(child: _outputCell('Unsettled',
+              Expanded(child: _outputCell('Upfront Fee',
                 formatSignedCurrency(r.upfrontDollars, _vm.currency))),
             ],
           ),
