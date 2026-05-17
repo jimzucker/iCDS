@@ -322,7 +322,7 @@ class _FeeTabState extends State<FeeTab> {
               Expanded(child: _outputCell('Accrued',
                 formatCurrency(r.accruedDollars, _vm.currency))),
               const SizedBox(width: 6),
-              Expanded(child: _outputCell('Price',
+              Expanded(child: _outputCell('Unsettled',
                 r.price.toStringAsFixed(4))),
             ],
           ),

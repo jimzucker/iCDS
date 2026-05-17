@@ -494,8 +494,8 @@ struct FeeView: View {
             if let r = vm.result {
                 let fmt = currencyFormatter(vm.currency)
                 HStack {
-                    outputCell("Accrued", fmt.string(from: NSNumber(value: r.accrued)) ?? "")
-                    outputCell("Price",   String(format: "%.4f", r.price))
+                    outputCell("Accrued",   fmt.string(from: NSNumber(value: r.accrued)) ?? "")
+                    outputCell("Unsettled", String(format: "%.4f", r.price))
                 }
                 HStack {
                     outputCell("Start",    formatTDate(r.startDate))
