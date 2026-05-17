@@ -156,14 +156,12 @@ struct FeeView: View {
     private var feeCard: some View {
         Group {
             if let r = vm.result {
-                let fmt = signedCurrencyFormatter(vm.currency)
-                let totalDue = noNegZero(r.upfrontDollars + r.accrued, eps: 0.5)
                 VStack(spacing: 4) {
                     Text("DIRTY UPFRONT")
                         .font(.caption2.weight(.semibold))
                         .tracking(1)
                         .foregroundColor(Color(white: 0.30))
-                    Text(fmt.string(from: NSNumber(value: totalDue)) ?? String(format: "%+.0f", totalDue))
+                    Text(FeeView.signedCurrencyString(r.upfrontDollars + r.accrued, code: vm.currency))
                         .font(.system(size: 28, weight: .bold, design: .monospaced))
                         .foregroundColor(.black)
                         .lineLimit(1)
@@ -305,9 +303,7 @@ struct FeeView: View {
     private func livePreviewCard(pending: Int) -> some View {
         if pending > 0,
            let preview = vm.previewUpfront(forSpread: Double(pending)) {
-            let dollars = noNegZero(preview.upfrontDollars, eps: 0.5)
-            let fmt = signedCurrencyFormatter(vm.currency)
-            let amount = fmt.string(from: NSNumber(value: dollars)) ?? String(format: "%+.0f", dollars)
+            let amount = FeeView.signedCurrencyString(preview.upfrontDollars, code: vm.currency)
             VStack(spacing: 4) {
                 Text("ESTIMATED UPFRONT FEE")
                     .font(.caption2.weight(.semibold))
