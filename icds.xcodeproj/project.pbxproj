@@ -127,7 +127,6 @@
 		6D497B141CE2D88E00FACBB2 /* icds.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = icds.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6D497B171CE2D88E00FACBB2 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		6D497B201CE2D88E00FACBB2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		6D497B231CE2D88E00FACBB2 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		6D497B251CE2D88E00FACBB2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		6D497B2A1CE2D88E00FACBB2 /* icdsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = icdsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		6D497B2E1CE2D88E00FACBB2 /* icdsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = icdsTests.swift; sourceTree = "<group>"; };
@@ -236,7 +235,6 @@
 				AABB000000000000ISDASRC0 /* isdamodel_src */,
 				6D7534F61DA5CFAD0061AFA8 /* FeeTab */,
 				6D497B201CE2D88E00FACBB2 /* Assets.xcassets */,
-				6D497B221CE2D88E00FACBB2 /* LaunchScreen.storyboard */,
 				6D497B251CE2D88E00FACBB2 /* Info.plist */,
 				AA000002000000000000PRIV /* PrivacyInfo.xcprivacy */,
 			);
@@ -560,17 +558,6 @@
 			targetProxy = 6D497B361CE2D88E00FACBB2 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
-
-/* Begin PBXVariantGroup section */
-		6D497B221CE2D88E00FACBB2 /* LaunchScreen.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				6D497B231CE2D88E00FACBB2 /* Base */,
-			);
-			name = LaunchScreen.storyboard;
-			sourceTree = "<group>";
-		};
-/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		6D497B3C1CE2D88E00FACBB2 /* Debug */ = {
