@@ -36,7 +36,7 @@ void main() {
         expect(r.rate, greaterThan(0.0).or(equals(c.fallbackRate)),
             reason: '${c.code} rate should be > 0 or fallback');
       }
-    });
+    }, timeout: const Timeout(Duration(minutes: 6)));
   });
 }
 
