@@ -1,0 +1,9 @@
+NEW
+• Seven SNAC maturities in one segmented row: 1Y / 2Y / 3Y / 4Y / 5Y / 7Y / 10Y. Pick any tenor in one tap.
+• Default-risk chart — cumulative default probability at each maturity; tap a bar to price that tenor.
+• Risk metrics on every trade — CS01, IR DV01, Rec01 (bump-and-reprice).
+• DIRTY UPFRONT card — total cash to settle (upfront + accrued), in trader vocabulary.
+
+IMPROVED
+• Updated SNAC conventions — EM moved to T+1 settlement; subordinated recoveries cut (EM 25→15%, Japan 35→15%); Japan now offers a 500 bp coupon.
+• Diagnostics tab — on-device self-tests for the pricing engine, IMM dates, regional holiday calendars, and live overnight-rate fetchers.
