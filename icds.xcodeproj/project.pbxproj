@@ -35,10 +35,7 @@
 		5317F43DBD4961F596BFF2E9 /* cds.c in Sources */ = {isa = PBXBuildFile; fileRef = 7F4137ABAC884F48B86FAB46 /* cds.c */; };
 		5E93DF3200D649859C864FE9 /* zr2fwd.c in Sources */ = {isa = PBXBuildFile; fileRef = 8A4C7D9A4FA1CC3D607406A8 /* zr2fwd.c */; };
 		67FA209731D6D21E6EA7BC85 /* cerror.c in Sources */ = {isa = PBXBuildFile; fileRef = A5B4CA813F57EE951C81A593 /* cerror.c */; };
-		6D0524C71DA7FC780029FE1B /* InfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D0524C61DA7FC780029FE1B /* InfoViewController.swift */; };
 		6D497B181CE2D88E00FACBB2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D497B171CE2D88E00FACBB2 /* AppDelegate.swift */; };
-		6D497B1A1CE2D88E00FACBB2 /* FeeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D497B191CE2D88E00FACBB2 /* FeeViewController.swift */; };
-		6D497B1C1CE2D88E00FACBB2 /* LiborViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D497B1B1CE2D88E00FACBB2 /* LiborViewController.swift */; };
 		6D497B211CE2D88E00FACBB2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6D497B201CE2D88E00FACBB2 /* Assets.xcassets */; };
 		6D497B2F1CE2D88E00FACBB2 /* icdsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D497B2E1CE2D88E00FACBB2 /* icdsTests.swift */; };
 		6D497B3A1CE2D88E00FACBB2 /* icdsUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D497B391CE2D88E00FACBB2 /* icdsUITests.swift */; };
@@ -127,12 +124,8 @@
 		56823F4FC4B6E57BBA7AD041 /* gtozc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = gtozc.c; sourceTree = "<group>"; };
 		65C11F58336A3ED4C36AC17A /* cxbsearch.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cxbsearch.c; sourceTree = "<group>"; };
 		65EB12469120E37B3A5A68D2 /* linterpc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = linterpc.c; sourceTree = "<group>"; };
-		6D0524C61DA7FC780029FE1B /* InfoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InfoViewController.swift; sourceTree = "<group>"; };
 		6D497B141CE2D88E00FACBB2 /* icds.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = icds.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6D497B171CE2D88E00FACBB2 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		6D497B191CE2D88E00FACBB2 /* FeeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeeViewController.swift; sourceTree = "<group>"; };
-		6D497B1B1CE2D88E00FACBB2 /* LiborViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiborViewController.swift; sourceTree = "<group>"; };
-		6D497B1E1CE2D88E00FACBB2 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		6D497B201CE2D88E00FACBB2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		6D497B231CE2D88E00FACBB2 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		6D497B251CE2D88E00FACBB2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -242,12 +235,9 @@
 				3CA3A5795DC151BA635B0909 /* SceneDelegate.swift */,
 				AABB000000000000ISDASRC0 /* isdamodel_src */,
 				6D7534F61DA5CFAD0061AFA8 /* FeeTab */,
-				6D497B1B1CE2D88E00FACBB2 /* LiborViewController.swift */,
-				6D497B1D1CE2D88E00FACBB2 /* Main.storyboard */,
 				6D497B201CE2D88E00FACBB2 /* Assets.xcassets */,
 				6D497B221CE2D88E00FACBB2 /* LaunchScreen.storyboard */,
 				6D497B251CE2D88E00FACBB2 /* Info.plist */,
-				6D0524C61DA7FC780029FE1B /* InfoViewController.swift */,
 				AA000002000000000000PRIV /* PrivacyInfo.xcprivacy */,
 			);
 			path = icds;
@@ -277,7 +267,6 @@
 			children = (
 				6D64185B1DA47D21005E8048 /* Recovery.swift */,
 				6D6418571DA4535C005E8048 /* contracts.plist */,
-				6D497B191CE2D88E00FACBB2 /* FeeViewController.swift */,
 				6D6418591DA45B95005E8048 /* ISDAContract.swift */,
 			);
 			name = FeeTab;
@@ -476,7 +465,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				6D64185A1DA45B95005E8048 /* ISDAContract.swift in Sources */,
-				6D497B1C1CE2D88E00FACBB2 /* LiborViewController.swift in Sources */,
 				6D497B181CE2D88E00FACBB2 /* AppDelegate.swift in Sources */,
 				50C5DA458B9EAC869B1292D2 /* InfoView.swift in Sources */,
 				F062BAF0F3FF89329C73DBF4 /* LiborView.swift in Sources */,
@@ -488,8 +476,6 @@
 				A1B2C3D400000001AABBCCDD /* SOFRFetcher.swift in Sources */,
 				A1B2C3D400000003AABBCCDD /* SOFRRateStore.swift in Sources */,
 				015C1A8BA366DDF95B691808 /* SceneDelegate.swift in Sources */,
-				6D497B1A1CE2D88E00FACBB2 /* FeeViewController.swift in Sources */,
-				6D0524C71DA7FC780029FE1B /* InfoViewController.swift in Sources */,
 				6D64185C1DA47D21005E8048 /* Recovery.swift in Sources */,
 				30048073EE2D758B9045895F /* badday.c in Sources */,
 				2672FF7B30F9A2A640FF0814 /* bsearch.c in Sources */,
@@ -576,14 +562,6 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		6D497B1D1CE2D88E00FACBB2 /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				6D497B1E1CE2D88E00FACBB2 /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
 		6D497B221CE2D88E00FACBB2 /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (

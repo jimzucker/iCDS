@@ -5,8 +5,8 @@ the Pages site via `_config.yml`.
 
 Build to upload: `flutter/example/build/app/outputs/bundle/release/app-release.aab`
 - applicationId: `com.jimzucker.iCDS`
-- versionName: 3.1.0
-- versionCode: 6 (bump on each subsequent Play upload)
+- versionName: 3.2.1
+- versionCode: 9 (bump on each subsequent Play upload)
 - Upload key SHA-1: `3C:52:AB:CA:13:49:62:9B:87:7B:97:00:01:84:1C:C0:83:BB:32:B5`
 
 ---
@@ -156,13 +156,14 @@ https://jimzucker.github.io/iCDS/PRIVACY
 ---
 
 ## Release notes for the first internal-testing release (max 500 chars per language)
-Initial Android release of iCDS. Feature parity with the iOS build:
-bit-identical pricing across USD, EUR, GBP, JPY, AUD, CHF. Live
-discount-rate fetch from each region's reference-rate publisher.
-Fee tab shows a single signed UPFRONT FEE value (negative means the
-chosen side receives). Includes Curves and Info tabs plus an in-app
-Diagnostics tab to verify the C library, calendar arithmetic, and
-endpoints are healthy on your device.
+Initial Android release of iCDS — Credit Default Swap upfront fee
+calculator on the ISDA Standard CDS Model. Bit-identical numerical
+parity with the iOS app across USD/EUR/GBP/JPY/CHF/AUD. Four tabs:
+Calc (par/upfront, default-risk chart, CS01/IRDV01/Rec01), Curves
+(live overnight RFR strip), Info (disclaimers + Apache 2.0), Diag
+(deterministic self-tests). Six SNAC regions with modern post-Big-Bang
+T+1 settlement and ISDA-aligned recoveries. Educational reference
+only.
 
 ---
 

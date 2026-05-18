@@ -5,7 +5,7 @@ import 'theme.dart';
 
 /// Port of `iCDS/icds/InfoView.swift`.
 class InfoTab extends StatelessWidget {
-  const InfoTab({super.key, this.version = '3.1.0'});
+  const InfoTab({super.key, this.version = '3.2.1'});
   final String version;
 
   static final _apacheURL  = Uri.parse('https://www.apache.org/licenses/LICENSE-2.0');
@@ -19,7 +19,7 @@ class InfoTab extends StatelessWidget {
       color: Colors.black,
       child: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
           child: Column(
             children: [
               _aboutSection(),
@@ -42,7 +42,7 @@ class InfoTab extends StatelessWidget {
         const Text(
           'iCDS',
           style: TextStyle(
-            fontSize: 52,
+            fontSize: 38,
             fontWeight: FontWeight.bold,
             color: AppTheme.orange,
           ),
@@ -50,25 +50,25 @@ class InfoTab extends StatelessWidget {
         const Text(
           'Credit Default Swap Calculator',
           style: TextStyle(
-            fontSize: 17,
+            fontSize: 15,
             fontWeight: FontWeight.w600,
             color: Colors.white,
           ),
         ),
         Text(
           'Version $version',
-          style: const TextStyle(fontSize: 14, color: Colors.grey),
+          style: const TextStyle(fontSize: 12, color: Colors.grey),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 8),
         OutlinedButton.icon(
-          icon: const Icon(Icons.menu_book, color: AppTheme.orange),
+          icon: const Icon(Icons.menu_book, color: AppTheme.orange, size: 18),
           label: const Text(
             'Documentation & Source',
             style: TextStyle(color: AppTheme.orange, fontWeight: FontWeight.w600),
           ),
           style: OutlinedButton.styleFrom(
             side: const BorderSide(color: AppTheme.orange, width: 1.2),
-            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           ),
           onPressed: () => _open(_docsURL),
@@ -81,7 +81,7 @@ class InfoTab extends StatelessWidget {
     return Column(
       children: [
         _SectionHeader('Data sources'),
-        const SizedBox(height: 14),
+        const SizedBox(height: 8),
         _AttributionBlock(
           title: 'Pricing engine',
           lines: const [
@@ -91,7 +91,7 @@ class InfoTab extends StatelessWidget {
           ],
           link: ('www.cdsmodel.com', _isdaURL),
         ),
-        const SizedBox(height: 14),
+        const SizedBox(height: 8),
         _AttributionBlock(
           title: 'Live reference rates',
           lines: const [
@@ -253,7 +253,7 @@ class _DisclaimerLine extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
+      padding: const EdgeInsets.symmetric(vertical: 2),
       child: Text(
         text,
         textAlign: TextAlign.center,
@@ -267,7 +267,7 @@ class _DividerLine extends StatelessWidget {
   const _DividerLine();
   @override
   Widget build(BuildContext context) => const Padding(
-        padding: EdgeInsets.symmetric(vertical: 14),
+        padding: EdgeInsets.symmetric(vertical: 8),
         child: Divider(color: Color(0xFF333333), height: 1),
       );
 }

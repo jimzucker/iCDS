@@ -23,45 +23,21 @@ struct FeeView: View {
 
     var body: some View {
         ScrollView {
-            VStack(spacing: 12) {
-                sofrIndicator
+            VStack(spacing: 8) {
                 regionRow
                 termRows
                 spreadFeeRow
                 outputGrid
+                defaultRiskChart
+                riskRow
+                dateFooterRow
             }
             .padding(.horizontal, 12)
-            .padding(.vertical, 8)
+            .padding(.top, 6)
+            .padding(.bottom, 4)
         }
         .background(Color.black)
         .navigationTitle("iCDS")
-    }
-
-    // MARK: - SOFR indicator (shows which discount rate is in use)
-
-    private var sofrIndicator: some View {
-        let ccyStr = vm.contract?.currency ?? "USD"
-        let ccy = RFRCurrency(rawValue: ccyStr) ?? .USD
-        let indexName = ccy.indexName
-        let rate = vm.discountRate * 100
-        let dateStr = FeeView.formatISODate(vm.discountRateDate)
-        return HStack(spacing: 6) {
-            Text("Discount:").font(.caption2).foregroundColor(Color(white: 0.45))
-            switch vm.discountRateStatus {
-            case .loading:
-                Circle().fill(Color(white: 0.5)).frame(width: 6, height: 6)
-                Text("\(indexName) loading…").font(.caption2).foregroundColor(Color(white: 0.55))
-            case .live:
-                Circle().fill(Color.green).frame(width: 6, height: 6)
-                Text(String(format: "%@ %.4f%% · %@", indexName, rate, dateStr))
-                    .font(.caption2).foregroundColor(Color(white: 0.7))
-            case .fallback:
-                Image(systemName: "exclamationmark.triangle.fill").font(.caption2).foregroundColor(.yellow)
-                Text(String(format: "%@ unavailable — using %.3f%% reference", indexName, rate))
-                    .font(.caption2).foregroundColor(.yellow)
-            }
-            Spacer()
-        }
     }
 
     // MARK: - Region
@@ -69,13 +45,14 @@ struct FeeView: View {
     private var regionRow: some View {
         VStack(alignment: .leading, spacing: 4) {
             label("Region")
-            HStack(spacing: 6) {
+            Picker("", selection: $vm.regionIndex) {
                 ForEach(vm.contracts.indices, id: \.self) { i in
-                    segButton(vm.contracts[i].region, selected: vm.regionIndex == i) {
-                        vm.regionIndex = i
-                        vm.onRegionChanged()
-                    }
+                    Text(vm.contracts[i].region).tag(i)
                 }
+            }
+            .pickerStyle(.segmented)
+            .onChange(of: vm.regionIndex) { _ in
+                vm.onRegionChanged()
             }
         }
     }
@@ -148,18 +125,18 @@ struct FeeView: View {
             showSpreadPicker = true
         } label: {
             VStack(spacing: 4) {
-                Text("QUOTED SPREAD · tap")
+                Text("QUOTED SPREAD")
                     .font(.caption2.weight(.semibold))
                     .tracking(1)
                     .foregroundColor(Color(white: 0.55))
                 HStack(alignment: .firstTextBaseline, spacing: 6) {
-                    Text("\(Int(vm.spreadBp))")
-                        .font(.system(size: 28, weight: .bold, design: .monospaced))
+                    Text(Self.formatBp(Int(vm.spreadBp)))
+                        .font(.system(size: 28, weight: .bold))
                         .foregroundColor(orange)
                         .lineLimit(1)
                         .minimumScaleFactor(0.6)
                     Text("bp")
-                        .font(.system(size: 18, weight: .semibold, design: .monospaced))
+                        .font(.system(size: 18, weight: .semibold))
                         .foregroundColor(orange)
                     Image(systemName: "pencil")
                         .font(.caption.weight(.semibold))
@@ -167,7 +144,7 @@ struct FeeView: View {
                 }
             }
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 10)
+            .padding(.vertical, 8)
             .background(orange.opacity(0.18))
             .cornerRadius(8)
             .overlay(
@@ -181,21 +158,19 @@ struct FeeView: View {
     private var feeCard: some View {
         Group {
             if let r = vm.result {
-                let fmt = signedCurrencyFormatter(vm.currency)
-                let display = noNegZero(r.upfrontDollars, eps: 0.5)
                 VStack(spacing: 4) {
-                    Text("UPFRONT FEE")
+                    Text("DIRTY UPFRONT")
                         .font(.caption2.weight(.semibold))
                         .tracking(1)
                         .foregroundColor(Color(white: 0.30))
-                    Text(fmt.string(from: NSNumber(value: display)) ?? String(format: "%+.0f", display))
-                        .font(.system(size: 28, weight: .bold, design: .monospaced))
+                    Text(FeeView.signedCurrencyString(r.upfrontDollars + r.accrued, code: vm.currency))
+                        .font(.system(size: 28, weight: .bold))
                         .foregroundColor(.black)
                         .lineLimit(1)
                         .minimumScaleFactor(0.6)
                 }
                 .frame(maxWidth: .infinity)
-                .padding(.vertical, 10)
+                .padding(.vertical, 8)
                 .background(Color(red: 1, green: 0.999, blue: 0.397))
                 .cornerRadius(8)
             } else {
@@ -205,11 +180,11 @@ struct FeeView: View {
                         .tracking(1)
                         .foregroundColor(Color(white: 0.30))
                     Text("…")
-                        .font(.system(size: 28, weight: .bold, design: .monospaced))
+                        .font(.system(size: 28, weight: .bold))
                         .foregroundColor(.black)
                 }
                 .frame(maxWidth: .infinity)
-                .padding(.vertical, 10)
+                .padding(.vertical, 8)
                 .background(Color(red: 1, green: 0.999, blue: 0.397))
                 .cornerRadius(8)
             }
@@ -280,12 +255,12 @@ struct FeeView: View {
                     HStack(spacing: 8) {
                         chip("Coupon +200", value: coupon + 200,   pending: pending)
                         chip("Coupon +500", value: coupon + 500,   pending: pending)
-                        chip("Coupon +1000",value: coupon + 1000,  pending: pending)
+                        chip("Coupon +1,000",value: coupon + 1000,  pending: pending)
                     }
                     HStack(spacing: 8) {
-                        chip("Coupon +2000",value: coupon + 2000,  pending: pending)
-                        chip("Coupon +5000",value: coupon + 5000,  pending: pending)
-                        chip("Max \(cap)",  value: cap,            pending: pending)
+                        chip("Coupon +2,000",value: coupon + 2000,  pending: pending)
+                        chip("Coupon +5,000",value: coupon + 5000,  pending: pending)
+                        chip("Max \(Self.formatBp(cap))",  value: cap,            pending: pending)
                     }
                 }
                 .padding(.horizontal, 12)
@@ -330,9 +305,7 @@ struct FeeView: View {
     private func livePreviewCard(pending: Int) -> some View {
         if pending > 0,
            let preview = vm.previewUpfront(forSpread: Double(pending)) {
-            let dollars = noNegZero(preview.upfrontDollars, eps: 0.5)
-            let fmt = signedCurrencyFormatter(vm.currency)
-            let amount = fmt.string(from: NSNumber(value: dollars)) ?? String(format: "%+.0f", dollars)
+            let amount = FeeView.signedCurrencyString(preview.upfrontDollars, code: vm.currency)
             VStack(spacing: 4) {
                 Text("ESTIMATED UPFRONT FEE")
                     .font(.caption2.weight(.semibold))
@@ -442,8 +415,8 @@ struct FeeView: View {
 
     private var tradeDateCell: some View {
         Button { showDatePicker = true } label: {
-            VStack(alignment: .leading, spacing: 2) {
-                Text("Trade Date  ·  tap to pick")
+            VStack(alignment: .leading, spacing: 3) {
+                Text("Trade Date")
                     .font(.caption2)
                     .foregroundColor(Color(white: 0.55))
                 HStack(spacing: 6) {
@@ -458,12 +431,8 @@ struct FeeView: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(8)
-            .background(orange.opacity(0.18))
+            .background(Color(white: 0.07))
             .cornerRadius(6)
-            .overlay(
-                RoundedRectangle(cornerRadius: 6)
-                    .stroke(orange.opacity(0.6), lineWidth: 1)
-            )
         }
         .buttonStyle(.plain)
     }
@@ -511,16 +480,19 @@ struct FeeView: View {
     // MARK: - Output grid
 
     private var outputGrid: some View {
-        VStack(spacing: 6) {
-            HStack {
-                tradeDateCell
-                settleDateCell
-            }
+        VStack(spacing: 8) {
             if let r = vm.result {
-                let fmt = currencyFormatter(vm.currency)
+                let fmt  = currencyFormatter(vm.currency)
+                // Cash split — the two components of the DIRTY UPFRONT
+                // headline above. Rendered larger to mark their role in
+                // the visual hierarchy.
                 HStack {
-                    outputCell("Accrued", fmt.string(from: NSNumber(value: r.accrued)) ?? "")
-                    outputCell("Price",   String(format: "%.4f", r.price))
+                    outputCell("Accrued",
+                               fmt.string(from: NSNumber(value: r.accrued)) ?? "",
+                               emphasized: true)
+                    outputCell("Upfront Fee",
+                               FeeView.signedCurrencyString(r.upfrontDollars, code: vm.currency),
+                               emphasized: true)
                 }
                 HStack {
                     outputCell("Start",    formatTDate(r.startDate))
@@ -529,6 +501,109 @@ struct FeeView: View {
             }
         }
         .sheet(isPresented: $showDatePicker) { datePickerSheet }
+    }
+
+    /// Trade Date / Settle Date row, rendered at the bottom of the Calc
+    /// tab below the risk metrics. Defaults to today / T+1 and rarely
+    /// changed in normal use — sits low to keep prime real estate for
+    /// the cash split and analytics.
+    private var dateFooterRow: some View {
+        HStack {
+            tradeDateCell
+            settleDateCell
+        }
+    }
+
+    // MARK: - Default-risk-by-maturity chart
+    //
+    // Flat-hazard cumulative default probability at each SNAC tenor.
+    // Bars scale to the longest-tenor probability so the shape stays
+    // readable at any spread; tapping a bar selects that maturity.
+
+    private var defaultRiskChart: some View {
+        let recovery = Double(vm.recoveryPct) / 100.0
+        let probs = vm.tenorYears.map {
+            CDSCalculator.cumulativeDefaultProb(spreadBp: vm.spreadBp,
+                                                recoveryRate: recovery,
+                                                years: Double($0))
+        }
+        let maxP = max(probs.max() ?? 0, 0.0001)
+        let sel = min(max(vm.maturityIndex, 0), probs.count - 1)
+        return VStack(alignment: .leading, spacing: 4) {
+            HStack(spacing: 4) {
+                Text("DEFAULT RISK")
+                    .font(.caption.weight(.bold)).tracking(1)
+                    .foregroundColor(Color(white: 0.65))
+                Text("· by maturity")
+                    .font(.caption)
+                    .foregroundColor(Color(white: 0.55))
+                Spacer()
+                Text(String(format: "%@  ≈ %.1f%% to default",
+                            vm.tenorLabels[sel], probs[sel] * 100))
+                    .font(.system(.caption).weight(.semibold))
+                    .foregroundColor(orange)
+            }
+            HStack(alignment: .bottom, spacing: 6) {
+                ForEach(vm.tenorYears.indices, id: \.self) { i in
+                    let isSel = i == sel
+                    VStack(spacing: 3) {
+                        Text(String(format: "%.1f%%", probs[i] * 100))
+                            .font(.system(size: 11, weight: .semibold))
+                            .foregroundColor(isSel ? orange : Color(white: 0.65))
+                            .lineLimit(1).minimumScaleFactor(0.6)
+                        RoundedRectangle(cornerRadius: 2)
+                            .fill(isSel ? orange : Color(white: 0.23))
+                            .frame(height: max(4, CGFloat(probs[i] / maxP) * 60))
+                        Text(vm.tenorLabels[i])
+                            .font(.system(size: 12, weight: .semibold))
+                            .foregroundColor(isSel ? orange : Color(white: 0.5))
+                    }
+                    .frame(maxWidth: .infinity)
+                    .contentShape(Rectangle())
+                    .onTapGesture { vm.maturityIndex = i }
+                }
+            }
+            .frame(height: 90, alignment: .bottom)
+            Text("Cumulative default prob · flat-hazard")
+                .font(.system(size: 11))
+                .foregroundColor(Color(white: 0.5))
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(8)
+        .background(Color(white: 0.07))
+        .cornerRadius(8)
+    }
+
+    // MARK: - First-order risk (CS01 / IR DV01 / Rec01)
+
+    @ViewBuilder
+    private var riskRow: some View {
+        if let rk = vm.risk {
+            let fmt = currencyFormatter(vm.currency)
+            let money: (Double) -> String = { v in
+                let s = fmt.string(from: NSNumber(value: abs(v))) ?? String(format: "%.0f", abs(v))
+                return (v < 0 && abs(v) >= 0.5 ? "−" : "") + s
+            }
+            HStack(spacing: 6) {
+                riskCell("CS01",    money(rk.cs01),   "per +1 bp")
+                riskCell("IR DV01", money(rk.irDV01), "per +1 bp")
+                riskCell("Rec01",   money(rk.rec01),  "per +1 pt")
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+    }
+
+    private func riskCell(_ k: String, _ v: String, _ s: String) -> some View {
+        VStack(alignment: .leading, spacing: 1) {
+            Text(k).font(.caption2.weight(.semibold)).foregroundColor(Color(white: 0.55))
+            Text(v).font(.system(.callout, design: .monospaced))
+                .foregroundColor(Color(white: 0.92)).lineLimit(1).minimumScaleFactor(0.6)
+            Text(s).font(.system(size: 9)).foregroundColor(Color(white: 0.35))
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(7)
+        .background(Color(white: 0.07))
+        .cornerRadius(6)
     }
 
     // MARK: - Helpers
@@ -545,8 +620,8 @@ struct FeeView: View {
                 .font(.caption.weight(.medium))
                 .frame(maxWidth: .infinity)       // fill equal share of row
                 .padding(.vertical, 8)
-                .background(selected ? orange : Color(white: 0.18))
-                .foregroundColor(selected ? .black : .white)
+                .background(selected ? Color(white: 0.45) : Color(white: 0.18))
+                .foregroundColor(.white)
                 .cornerRadius(6)
         }
         .buttonStyle(.plain)
@@ -561,27 +636,28 @@ struct FeeView: View {
         .pickerStyle(.segmented)
     }
 
-    private func outputCell(_ label: String, _ value: String) -> some View {
+    /// Computed-value cell. `emphasized` bumps the value text up to
+     /// 18pt semibold for the cash split (Accrued / Upfront Fee) which
+     /// compose the headline Dirty Upfront card above.
+    private func outputCell(_ label: String, _ value: String, emphasized: Bool = false) -> some View {
         VStack(alignment: .leading, spacing: 2) {
             Text(label)
                 .font(.caption2)
                 .foregroundColor(Color(white: 0.55))
             Text(value)
-                .font(.system(.callout, design: .monospaced))
-                .foregroundColor(orange)
+                .font(emphasized
+                      ? .system(size: 18, weight: .semibold, design: .monospaced)
+                      : .system(.callout, design: .monospaced))
+                .foregroundColor(Color(white: 0.92))
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(8)
+        .padding(emphasized ? 10 : 8)
         .background(Color(white: 0.07))
         .cornerRadius(6)
     }
 
     private func currencyFormatter(_ code: String) -> NumberFormatter {
-        let f = NumberFormatter()
-        f.numberStyle = .currency
-        f.currencyCode = code
-        f.maximumFractionDigits = 0
-        return f
+        FeeView.currencyFormatter(code)
     }
 
     /// Currency formatter for the Upfront Fee. Positive values render with
@@ -589,14 +665,64 @@ struct FeeView: View {
     /// negative values prepend a U+2212 MINUS SIGN so "−$X" reads as
     /// "actor receives".
     private func signedCurrencyFormatter(_ code: String) -> NumberFormatter {
-        let f = currencyFormatter(code)
-        f.negativePrefix = "−" + (f.currencySymbol ?? "")
-        return f
+        FeeView.signedCurrencyFormatter(code)
     }
 
     // Normalize tiny values that would format as "-0" to positive zero
     private func noNegZero(_ value: Double, eps: Double) -> Double {
+        FeeView.noNegZero(value, eps: eps)
+    }
+
+    // ---- Test-accessible static helpers (mirror the instance ones) ----
+
+    static func currencyFormatter(_ code: String) -> NumberFormatter {
+        let f = NumberFormatter()
+        f.numberStyle = .currency
+        f.currencyCode = code
+        f.maximumFractionDigits = 0
+        f.locale = Locale(identifier: "en_US")
+        f.usesGroupingSeparator = true
+        f.groupingSeparator = ","
+        // Some currencies' default format pattern includes a space
+        // between the symbol and the digits (e.g. "JP¥ 1,234") or a
+        // narrow no-break space inside groups, producing visual
+        // artefacts like "1, 234, 567". Force the canonical compact
+        // form: <symbol><digits>. The "¤" placeholder is replaced by
+        // the currency symbol per `currencyCode` above.
+        let symbol = f.currencySymbol ?? "$"
+        f.positivePrefix = symbol
+        f.positiveSuffix = ""
+        f.negativePrefix = "−" + symbol
+        f.negativeSuffix = ""
+        return f
+    }
+
+    /// Plain bp integer with comma grouping for thousands.
+    /// "1000" → "1,000", "10000" → "10,000".
+    static func formatBp(_ bp: Int) -> String {
+        let f = NumberFormatter()
+        f.numberStyle = .decimal
+        f.usesGroupingSeparator = true
+        f.groupingSeparator = ","
+        f.maximumFractionDigits = 0
+        return f.string(from: NSNumber(value: bp)) ?? String(bp)
+    }
+
+    static func signedCurrencyFormatter(_ code: String) -> NumberFormatter {
+        // currencyFormatter already sets a U+2212 MINUS negativePrefix.
+        return currencyFormatter(code)
+    }
+
+    static func noNegZero(_ value: Double, eps: Double) -> Double {
         abs(value) < eps ? 0.0 : value
+    }
+
+    /// Always returns the unsigned "$0" form for values whose absolute
+    /// rounds to zero. Used for every signed-dollar cell on the Fee tab.
+    static func signedCurrencyString(_ dollars: Double, code: String) -> String {
+        let adjusted = noNegZero(dollars, eps: 0.5)
+        return signedCurrencyFormatter(code).string(from: NSNumber(value: adjusted))
+            ?? String(format: "%+.0f", adjusted)
     }
 
     /// Display date format used everywhere in the app (e.g. "27-Apr-26").

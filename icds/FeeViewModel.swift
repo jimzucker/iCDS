@@ -50,7 +50,7 @@ final class FeeViewModel: ObservableObject {
     @Published var regionIndex:   Int = 0
     @Published var buySellIndex:  Int = 0       // 0=Buy 1=Sell
     @Published var notionalIndex: Int = 2       // 10M default
-    @Published var maturityIndex: Int = 1       // 5Y default
+    @Published var maturityIndex: Int = 4       // 5Y default (index into tenorYears)
     @Published var couponIndex:   Int = 0
     @Published var recoveryIndex: Int = 0
     @Published var spreadBp:      Double = 100
@@ -60,8 +60,8 @@ final class FeeViewModel: ObservableObject {
     // MARK: - Static option lists
     let notionalLabels = ["1M", "5M", "10M", "20M"]
     let notionalValues = [1_000_000.0, 5_000_000.0, 10_000_000.0, 20_000_000.0]
-    let tenorLabels    = ["1Y", "5Y", "7Y", "10Y"]
-    let tenorYears     = [1, 5, 7, 10]
+    let tenorLabels    = ["1Y", "2Y", "3Y", "4Y", "5Y", "7Y", "10Y"]
+    let tenorYears     = [1, 2, 3, 4, 5, 7, 10]
     let currencies     = ["AUD", "EUR", "GBP", "JPY", "USD"]
 
     // MARK: - Derived
@@ -210,6 +210,24 @@ final class FeeViewModel: ObservableObject {
         if result != nil {
             AppReviewPrompter.recordSuccessfulCalculation()
         }
+    }
+
+    /// First-order risk (CS01 / IR DV01 / Rec01) for the current inputs,
+    /// via bump-and-reprice. Recomputed on demand from the live inputs.
+    var risk: CDSRisk? {
+        CDSCalculator.riskMetrics(
+            tradeDate:    tradeDate,
+            tenorYears:   tenorYears[maturityIndex],
+            parSpreadBp:  spreadBp,
+            couponBp:     couponBp,
+            recoveryRate: Double(recoveryPct) / 100.0,
+            notional:     notionalValues[notionalIndex],
+            isBuy:        buySellIndex == 0,
+            settleDays:   contract?.settleDays   ?? 1,
+            calendarName: contract?.calendarName ?? "nyFed",
+            discountRate: discountRate,
+            minSettle:    Date()
+        )
     }
 
     /// Recompute upfront for a hypothetical spread without committing it.

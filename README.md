@@ -31,6 +31,18 @@ For support please create a ticket at: https://github.com/jimzucker/iCDS/issues
 
 # Release Notes
 
+## 3.2.x (combines 3.2.0 and 3.2.1)
+- **Now on Android** — full Flutter / Dart-FFI port with bit-identical numerical results to the iOS app. Available on Google Play.
+- **More maturities** — 7 SNAC tenors (1Y / 2Y / 3Y / 4Y / 5Y / 7Y / 10Y) in a single segmented selector, up from the previous fixed grid.
+- **Default-risk-by-maturity chart** — cumulative default probability implied by the quoted spread at each tenor; tap a bar to switch maturity.
+- **First-order risk row** — CS01, IR DV01, and Rec01 computed by bump-and-reprice, so you can see sensitivity at a glance.
+- **DIRTY UPFRONT card** — total cash to settle (upfront fee + accrued) labelled in trader-floor vocabulary; the unsigned components remain visible alongside.
+- **In-app Diagnostics tab** — deterministic self-tests for the C engine, IMM helpers, regional holiday calendars, and live rate fetchers — verify everything works on any device.
+- **Modernized SNAC conventions** — EM moves to T+1 settlement (was T+3); subordinated recoveries lowered (EM 25→15%, Japan 35→15%); Japan adds a 500 bp coupon.
+- **Reliable JPY (TONA)** — retry strategy hardened so the monthly Japan rate breaks through FRED's slow paths consistently across both platforms.
+- **CACHED status indicator** — Curves tab shows a cyan banner when a rate is from persisted cache (not freshly fetched), so the source of every rate is unambiguous.
+- **Android Info-tab links fixed** — external URLs (Documentation, ISDA, Apache, Privacy) now actually launch on Android 11+.
+
 ## 3.0.1
 - Apache 2.0 source license headers and full third-party attribution (ISDA model, central-bank rate sources)
 - Expanded in-app disclaimers (not financial advice, AS IS, no liability, no affiliation)

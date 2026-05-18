@@ -45,8 +45,11 @@ String formatCurrency(double dollars, String code) {
 /// Signed currency: positive renders as the bare "$X" (the default
 /// direction — actor pays), negative prepends a U+2212 MINUS SIGN
 /// so "−$X" reads as "actor receives". Mirrors the Swift app's
-/// `signedCurrencyFormatter`. Zero takes the positive (unsigned) form.
+/// `signedCurrencyFormatter`. Values whose absolute is under $0.50
+/// (i.e. round to whole-dollar zero) always render as the unsigned
+/// "$0" — there is no such thing as −$0 in the displayed grid.
 String formatSignedCurrency(double dollars, String code) {
-  final magnitude = formatCurrency(dollars.abs(), code);
-  return dollars < 0 ? '−$magnitude' : magnitude;
+  final adjusted = dollars.abs() < 0.5 ? 0.0 : dollars;
+  final magnitude = formatCurrency(adjusted.abs(), code);
+  return adjusted < 0 ? '−$magnitude' : magnitude;
 }

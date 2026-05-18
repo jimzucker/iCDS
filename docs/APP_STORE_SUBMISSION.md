@@ -1,4 +1,4 @@
-# App Store Submission — iCDS 3.0.1
+# App Store Submission — iCDS 3.2.1
 
 Each section below is the field's content as plain text, ready to copy-paste into App Store Connect.
 
@@ -24,10 +24,13 @@ WHAT'S INSIDE
   – GBP SONIA (Bank of England)
   – JPY TONA proxy (FRED / St. Louis Fed)
   – AUD AONIA (Reserve Bank of Australia)
-• Six regional contracts: NA, EM, EU, Asia, Japan, AUS
+• Six regional contracts: NA, EM, EU, Asia, Japan, AUS — modernized post-Big-Bang ISDA conventions (T+1 settlement everywhere; recovery rates per region)
+• Seven SNAC tenors: 1Y / 2Y / 3Y / 4Y / 5Y / 7Y / 10Y
 • Spread input via preset chips and a numeric keypad; cap raised to 10,000 bp for distressed credits
-• ISDA RFR test-grid validation across all five currencies
-• Three tabs: Fee, Curves, Info
+• Default-risk-by-maturity chart: cumulative default probability implied by the quoted spread, at each tenor
+• First-order risk metrics: CS01, IR DV01, Rec01 (bump-and-reprice)
+• ISDA RFR test-grid validation across six currencies
+• Four tabs: Calc, Curves, Info, Diag (in-app deterministic self-tests)
 
 WHO IT'S FOR
 Quantitative finance students, fixed-income professionals, and developers exploring CDS pricing. Source is open under Apache 2.0.
@@ -43,19 +46,16 @@ Source code: Apache 2.0. Pricing engine: ISDA CDS Standard Model Public License 
 
 ---
 
-## What's New in This Version (3.0.1)
+## What's New in This Version (3.2.x)
 
-• Rebuilt UI in SwiftUI — clearer layout and faster interaction
-• Updated for iOS 16 and current iPhone/iPad models
-• Refreshed app icon
-• Live overnight reference rates from five central banks
-   (USD SOFR, EUR €STR, GBP SONIA, JPY TONA, AUD AONIA)
-• Six regional contracts: NA, EM, EU, Asia, Japan, AUS
-• Spread input via preset chips and numeric keypad;
-   cap raised to 10,000 bp for distressed credits
-• "Documentation & Source" button on the Info screen
-• Apache 2.0 source license + full data-source attributions
-• New documentation site: jimzucker.github.io/iCDS
+• 7 SNAC tenors selectable from one segmented row (1Y / 2Y / 3Y / 4Y / 5Y / 7Y / 10Y)
+• Default-risk-by-maturity chart — cumulative default probability implied by the quoted spread at each tenor; tap a bar to switch maturity
+• First-order risk row — CS01, IR DV01, Rec01 via bump-and-reprice
+• DIRTY UPFRONT card showing total cash to settle (upfront fee + accrued) in trader-floor vocabulary
+• In-app Diagnostics tab — deterministic self-tests for the C engine, IMM helpers, regional holiday calendars, and the live rate fetchers
+• Modernized SNAC conventions: EM moves to T+1 settlement; subordinated recoveries lowered (EM 25→15%, Japan 35→15%); Japan adds a 500 bp coupon
+• Curves tab — CACHED status indicator for rates from persisted cache (distinct from freshly fetched LIVE values); refresh icon and offline retry banner
+• Reliable JPY (TONA) fetching — retry strategy hardened so the monthly Japan rate consistently breaks through FRED's slow paths
 
 ---
 

@@ -3,6 +3,8 @@
 /// business-day adder, and a CdsResult that carries the same set of
 /// outputs as the Swift app's CDSResult.
 
+import 'dart:math' as math;
+
 import 'cds_holiday_calendar.dart';
 import 'icds_spike.dart' as icds_spike;
 
@@ -30,6 +32,13 @@ class CdsResult {
     required this.valueDate,
     required this.endDate,
   });
+}
+
+class CdsRisk {
+  final double cs01;    // Δ upfront $ for +1 bp credit spread
+  final double irDV01;  // Δ upfront $ for +1 bp discount rate
+  final double rec01;   // Δ upfront $ for +1 pt recovery
+  const CdsRisk({required this.cs01, required this.irDV01, required this.rec01});
 }
 
 class CdsCalculator {
@@ -66,6 +75,66 @@ class CdsCalculator {
   static DateTime lastValidTradeDate(DateTime date,
       {CdsRegion region = CdsRegion.nyFed}) {
     return CDSHolidayCalendar.prevBusinessDay(date, region);
+  }
+
+  /// Cumulative probability of default by [years] under a flat-hazard
+  /// (credit-triangle) approximation: λ = (spreadBp/1e4) / (1 − recovery),
+  /// P(default ≤ T) = 1 − e^(−λ·T). Parity with Swift
+  /// `CDSCalculator.cumulativeDefaultProb` — drives the Default-Risk-by-
+  /// Maturity chart and is intentionally independent of the ISDA bootstrap.
+  static double cumulativeDefaultProb({
+    required double spreadBp,
+    required double recoveryRate,
+    required num years,
+  }) {
+    if (years <= 0 || spreadBp <= 0 || recoveryRate >= 1) return 0;
+    final lambda = (spreadBp / 10000.0) / (1.0 - recoveryRate);
+    final p = 1.0 - math.exp(-lambda * years);
+    return math.min(1.0, math.max(0.0, p));
+  }
+
+  /// First-order risk by bump-and-reprice on the same inputs as
+  /// [calculate]. Forward differences (+1 bp spread / +1 bp discount /
+  /// +1 pt recovery). Parity with Swift `CDSCalculator.riskMetrics`.
+  static CdsRisk? riskMetrics({
+    required DateTime tradeDate,
+    required int tenorYears,
+    required double parSpreadBp,
+    required double couponBp,
+    required double recoveryRate,
+    required double notional,
+    required bool isBuy,
+    int settleDays = 1,
+    double discountRate = 0.045,
+    CdsRegion region = CdsRegion.nyFed,
+    DateTime? minSettle,
+  }) {
+    double? px(double spread, double rec, double disc) => calculate(
+          tradeDate: tradeDate,
+          tenorYears: tenorYears,
+          parSpreadBp: spread,
+          couponBp: couponBp,
+          recoveryRate: rec,
+          notional: notional,
+          isBuy: isBuy,
+          settleDays: settleDays,
+          discountRate: disc,
+          region: region,
+          minSettle: minSettle,
+        )?.upfrontDollars;
+
+    final base = px(parSpreadBp, recoveryRate, discountRate);
+    final bumpS = px(parSpreadBp + 1.0, recoveryRate, discountRate);
+    final bumpR = px(parSpreadBp, math.min(recoveryRate + 0.01, 0.999), discountRate);
+    final bumpD = px(parSpreadBp, recoveryRate, discountRate + 0.0001);
+    if (base == null || bumpS == null || bumpR == null || bumpD == null) {
+      return null;
+    }
+    return CdsRisk(
+      cs01: bumpS - base,
+      irDV01: bumpD - base,
+      rec01: bumpR - base,
+    );
   }
 
   /// Compute the upfront fee for a SNAC CDS trade. Mirrors the inputs of

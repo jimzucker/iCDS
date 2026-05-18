@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:icds_spike/icds_spike.dart' as icds_spike;
 import 'package:icds_spike/cds_calculator.dart';
 import 'package:icds_spike/sofr_fetcher.dart';
@@ -97,11 +98,23 @@ class _DiagnosticsTabState extends State<DiagnosticsTab> {
   void _onUpdate() { if (mounted) setState(() {}); }
 
   String _bp(CdsResult? r) => r == null ? 'null' : '${r.upfrontBp.toStringAsFixed(2)} bp';
-  String _usd(CdsResult? r) => r == null ? 'null' : '\$${r.upfrontDollars.toStringAsFixed(0)}';
+  String _usd(CdsResult? r) {
+    if (r == null) return 'null';
+    final v = r.upfrontDollars;
+    final mag = _intFmt.format(v.abs());
+    return v < 0 ? '\$-$mag' : '\$$mag';
+  }
+
+  static final _intFmt = NumberFormat('#,##0');
+  static String _isoFromDateTime(DateTime d) =>
+      '${d.year.toString().padLeft(4, '0')}-'
+      '${d.month.toString().padLeft(2, '0')}-'
+      '${d.day.toString().padLeft(2, '0')}';
 
   String _statusMark(SOFRDataStatus s) {
     switch (s) {
       case SOFRDataStatus.live:     return '✓';
+      case SOFRDataStatus.cached:   return '◌';
       case SOFRDataStatus.fallback: return '·';
       case SOFRDataStatus.loading:  return '…';
     }
@@ -109,40 +122,40 @@ class _DiagnosticsTabState extends State<DiagnosticsTab> {
 
   @override
   Widget build(BuildContext context) {
-    const sectionTitle = TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: AppTheme.orange);
+    const sectionTitle = TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: AppTheme.orange);
     const rowStyle = TextStyle(fontSize: 12, fontFamily: 'Menlo', color: AppTheme.offWhite);
     return Container(
       color: Colors.black,
       child: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text('Test 1 — JpmcdsDate', style: sectionTitle),
-              Text('JpmcdsDate(1601, 1, 1) = $tdEpoch', style: rowStyle),
-              Text('JpmcdsDate(2010, 1, 4) = $td2010', style: rowStyle),
+              Text('JpmcdsDate(1601, 1, 1) = ${_intFmt.format(tdEpoch)}', style: rowStyle),
+              Text('JpmcdsDate(2010, 1, 4) = ${_intFmt.format(td2010)}', style: rowStyle),
               Text('JpmcdsDate(2024, 13, 99) = $tdInvalid (expect -1)', style: rowStyle),
               Text('Δ(2026-05-05, 2026-05-04) = $oneDay (expect 1)', style: rowStyle),
-              const SizedBox(height: 16),
-              const Text('Test 2 — CdsCalculator (\$10M, 5Y, today=2026-05-04)', style: sectionTitle),
+              const SizedBox(height: 8),
+              const Text('Test 2 — CDSCalculator (\$10M, 5Y, today=2026-05-04)', style: sectionTitle),
               Text('par   (sp=100, cp=100): ${_bp(par)}  / ${_usd(par)}', style: rowStyle),
               Text('wide  (sp=250, cp=100): ${_bp(wide)} / ${_usd(wide)}', style: rowStyle),
               Text('tight (sp= 50, cp=100): ${_bp(tight)} / ${_usd(tight)}', style: rowStyle),
-              const SizedBox(height: 16),
+              const SizedBox(height: 8),
               const Text('Test 3 — IMM helpers', style: sectionTitle),
-              Text('next IMM after 2026-04-01 = ${formatDdMmmYy(nextIMMA)}', style: rowStyle),
-              Text('next IMM after 2026-03-20 = ${formatDdMmmYy(nextIMMB)} (strictly after)', style: rowStyle),
-              Text('prev IMM before 2026-04-01 = ${formatDdMmmYy(prevIMMA)}', style: rowStyle),
-              const SizedBox(height: 16),
+              Text('next IMM after 2026-04-01 = ${_isoFromDateTime(nextIMMA)}', style: rowStyle),
+              Text('next IMM after 2026-03-20 = ${_isoFromDateTime(nextIMMB)} (strictly after)', style: rowStyle),
+              Text('prev IMM before 2026-04-01 = ${_isoFromDateTime(prevIMMA)}', style: rowStyle),
+              const SizedBox(height: 8),
               const Text('Test 4 — Holiday calendar by region', style: sectionTitle),
-              Text('Thu 2026-07-02 + 1 BD nyFed  = ${formatDdMmmYy(july4NY)}', style: rowStyle),
-              Text('Thu 2026-07-02 + 1 BD target = ${formatDdMmmYy(july4EU)}', style: rowStyle),
-              Text('Thu 2026-04-30 + 1 BD nyFed  = ${formatDdMmmYy(may1NY)}', style: rowStyle),
-              Text('Thu 2026-04-30 + 1 BD target = ${formatDdMmmYy(may1EU)}', style: rowStyle),
-              Text('Tue 2026-04-28 + 3 BD nyFed  = ${formatDdMmmYy(gwNY)}', style: rowStyle),
-              Text('Tue 2026-04-28 + 3 BD tokyo  = ${formatDdMmmYy(gwTok)}', style: rowStyle),
-              const SizedBox(height: 16),
+              Text('Thu 2026-07-02 + 1 BD nyFed  = ${_isoFromDateTime(july4NY)}', style: rowStyle),
+              Text('Thu 2026-07-02 + 1 BD target = ${_isoFromDateTime(july4EU)}', style: rowStyle),
+              Text('Thu 2026-04-30 + 1 BD nyFed  = ${_isoFromDateTime(may1NY)}', style: rowStyle),
+              Text('Thu 2026-04-30 + 1 BD target = ${_isoFromDateTime(may1EU)}', style: rowStyle),
+              Text('Tue 2026-04-28 + 3 BD nyFed  = ${_isoFromDateTime(gwNY)}', style: rowStyle),
+              Text('Tue 2026-04-28 + 3 BD tokyo  = ${_isoFromDateTime(gwTok)}', style: rowStyle),
+              const SizedBox(height: 8),
               const Text('Test 5 — RFR fetcher (live)', style: sectionTitle),
               for (final ccy in RFRCurrency.values)
                 Text(
@@ -151,13 +164,13 @@ class _DiagnosticsTabState extends State<DiagnosticsTab> {
                   '(${_store.effectiveDateFor(ccy)})  ${ccy.sourceLabel}',
                   style: rowStyle,
                 ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 10),
               Text(
                 _ok
                   ? '✓ All deterministic tests pass on this platform.'
                   : '✗ Something is off — see rows above.',
                 style: TextStyle(
-                  fontSize: 16,
+                  fontSize: 13,
                   fontWeight: FontWeight.w700,
                   color: _ok ? Colors.green : Colors.red,
                 ),

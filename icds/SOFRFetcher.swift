@@ -37,7 +37,7 @@ enum RFRCurrency: String, CaseIterable, Identifiable, Hashable {
         case .USD: return "NY Fed"
         case .EUR: return "ECB"
         case .GBP: return "Bank of England"
-        case .JPY: return "FRED · Japan Overnight"
+        case .JPY: return "FRED · Japan Overnight (monthly)"
         case .AUD: return "Reserve Bank of Australia"
         }
     }
@@ -135,10 +135,34 @@ struct RFRFetcher {
     }
 
     // MARK: JPY — FRED "Immediate Rates: Less than 24 Hours: Call Money/Interbank Rate for Japan" (monthly)
-
+    //
+    // FRED's load balancer occasionally routes us through a slow backend.
+    // URLSession's idle timeout is more tolerant than Dart's total timeout
+    // so iOS already breaks through more often than Flutter — but we still
+    // see the occasional first-attempt drop. Retry 3× with 2s/4s backoff
+    // to match Flutter's belt-and-suspenders strategy and produce a
+    // consistent live-vs-cached outcome across platforms.
     private static func fetchTONA() async -> (rate: Double, effectiveDate: String) {
         let url = URL(string: "https://fred.stlouisfed.org/graph/fredgraph.csv?id=IRSTCI01JPM156N")!
-        return await fetchCSV(tag: "TONA", url: url, dateCol: 0, valueCol: 1, fallback: RFRCurrency.JPY.fallbackRate, takeLast: true)
+        // 5 attempts with exponential backoff (2, 4, 8, 16s). URLSession's
+        // idle timeout (60s default) is more tolerant than Dart's total
+        // timeout, but FRED's load-balancer occasionally fully closes
+        // an HTTP/1.1 connection mid-response — a retry recovers quickly.
+        let attempts = 5
+        for i in 1...attempts {
+            let outcome = await fetchCSV(tag: "TONA(try\(i))", url: url, dateCol: 0, valueCol: 1,
+                                         fallback: RFRCurrency.JPY.fallbackRate, takeLast: true)
+            if outcome.effectiveDate != "unavailable" { return outcome }
+            if i < attempts {
+                // Exponential backoff: 2, 4, 8, 16s
+                let backoffSeconds: UInt64 = 1 << i
+                try? await Task.sleep(nanoseconds: backoffSeconds * 1_000_000_000)
+            }
+        }
+        // All retries failed. The store's apply() will keep any prior
+        // cached value as .cached, or fall through to a synthesised
+        // lastLikelyTonaDate() pre-seed for cold-start fallback.
+        return (RFRCurrency.JPY.fallbackRate, "unavailable")
     }
 
     // MARK: AUD — RBA F1 Interbank Overnight Cash Rate (column 3)
@@ -246,7 +270,7 @@ struct SOFRFetcher {
 
 // MARK: - Observable store
 
-enum SOFRDataStatus { case loading, live, fallback }
+enum SOFRDataStatus { case loading, live, cached, fallback }
 
 struct RFRRate {
     let rate: Double
@@ -260,30 +284,133 @@ final class SOFRRateStore: ObservableObject {
     // Per-currency rates
     @Published private(set) var rates: [RFRCurrency: RFRRate] = [:]
 
+    private static let cacheKey = "icds.rfr.cache.v1"
+
     // Legacy single-value API (USD only) — kept for existing callers
     var rate: Double { rates[.USD]?.rate ?? RFRCurrency.USD.fallbackRate }
     var effectiveDate: String { rates[.USD]?.effectiveDate ?? "" }
     var status: SOFRDataStatus { rates[.USD]?.status ?? .loading }
 
     private init() {
+        // JPY is published monthly with a ~45-day lag — even a freshly
+        // successful FRED fetch returns a date that is structurally
+        // weeks old. Seed the store with the synthesised "last likely
+        // published" date as .cached (not .live) so the badge tells
+        // the user this isn't a freshly verified value.
+        rates[.JPY] = RFRRate(rate: RFRCurrency.JPY.fallbackRate,
+                              effectiveDate: Self.lastLikelyTonaDate(),
+                              status: .cached)
+        hydrateFromCache()
         Task { @MainActor in
             await refreshAll()
         }
     }
 
+    /// Load previously-fetched rates from UserDefaults so cold-start
+    /// shows the last-known value immediately. Cached entries are
+    /// marked `.live` — the cache only ever holds results from
+    /// previously-successful fetches, so the rate + date are real
+    /// and worth showing as live. The in-progress refresh overwrites
+    /// with a newer value if it succeeds; if it fails the existing
+    /// live status is preserved (see `apply`).
+    private func hydrateFromCache() {
+        guard let raw = UserDefaults.standard.string(forKey: Self.cacheKey),
+              let data = raw.data(using: .utf8),
+              let map = try? JSONSerialization.jsonObject(with: data) as? [String: [String: Any]]
+        else { return }
+        for ccy in RFRCurrency.allCases {
+            guard let entry = map[ccy.rawValue],
+                  let rate = entry["rate"] as? Double,
+                  let date = entry["effectiveDate"] as? String,
+                  !date.isEmpty
+            else { continue }
+            // Hydrated values are .cached — rate + date are real (we
+            // only persist successful fetches) but they weren't re-
+            // verified this session. The pending refresh upgrades to
+            // .live on success.
+            rates[ccy] = RFRRate(rate: rate, effectiveDate: date, status: .cached)
+        }
+    }
+
+    private func persistOne(_ ccy: RFRCurrency, _ r: RFRRate) {
+        let defaults = UserDefaults.standard
+        var map: [String: [String: Any]] = [:]
+        if let raw = defaults.string(forKey: Self.cacheKey),
+           let data = raw.data(using: .utf8),
+           let existing = try? JSONSerialization.jsonObject(with: data) as? [String: [String: Any]] {
+            map = existing
+        }
+        map[ccy.rawValue] = ["rate": r.rate, "effectiveDate": r.effectiveDate]
+        if let data = try? JSONSerialization.data(withJSONObject: map),
+           let raw = String(data: data, encoding: .utf8) {
+            defaults.set(raw, forKey: Self.cacheKey)
+        }
+    }
+
+    /// Apply a fetch outcome to the store. Encodes the rule:
+    ///   - fresh successful fetch       → .live (green), update cache
+    ///   - fetch failed, cached present → keep cached rate + date as
+    ///                                    .live — once we've ever
+    ///                                    loaded successfully a
+    ///                                    transient refresh failure
+    ///                                    shouldn't downgrade to
+    ///                                    "fallback" yellow
+    ///   - fetch failed, no cache       → fallback rate + synthesised
+    ///                                    "last likely published" date
+    ///                                    for monthly sources (JPY) or
+    ///                                    "unavailable" otherwise,
+    ///                                    .fallback (yellow)
+    private func apply(_ outcome: (rate: Double, effectiveDate: String), to ccy: RFRCurrency) {
+        let failed = outcome.effectiveDate == "unavailable" || outcome.effectiveDate == "static"
+        if failed {
+            if let existing = rates[ccy],
+               existing.effectiveDate != "—",
+               existing.effectiveDate != "unavailable" {
+                rates[ccy] = RFRRate(rate: existing.rate,
+                                     effectiveDate: existing.effectiveDate,
+                                     status: .cached)
+            } else {
+                let date: String = (ccy == .JPY) ? Self.lastLikelyTonaDate() : outcome.effectiveDate
+                rates[ccy] = RFRRate(rate: outcome.rate,
+                                     effectiveDate: date,
+                                     status: .fallback)
+            }
+        } else {
+            let r = RFRRate(rate: outcome.rate, effectiveDate: outcome.effectiveDate, status: .live)
+            rates[ccy] = r
+            persistOne(ccy, r)
+        }
+    }
+
+    /// First-of-month date ~45 days behind today — matches FRED's monthly-
+    /// with-publication-lag cadence for JPY. Used as a synthesised effective
+    /// date when the live fetch fails and there's no cache yet, so the UI
+    /// shows a plausible "this is the latest possible monthly observation"
+    /// date instead of "unavailable".
+    private static func lastLikelyTonaDate() -> String {
+        let cal = Calendar(identifier: .gregorian)
+        let probe = cal.date(byAdding: .day, value: -45, to: Date())!
+        let comps = cal.dateComponents([.year, .month], from: probe)
+        let first = cal.date(from: comps)!
+        let fmt = DateFormatter()
+        fmt.dateFormat = "yyyy-MM-dd"
+        fmt.locale = Locale(identifier: "en_US_POSIX")
+        fmt.timeZone = TimeZone(identifier: "UTC")
+        return fmt.string(from: first)
+    }
+
     /// Fetch overnight rates for all currencies concurrently.
     @MainActor
     func refreshAll() async {
-        await withTaskGroup(of: (RFRCurrency, RFRRate).self) { group in
+        await withTaskGroup(of: (RFRCurrency, (rate: Double, effectiveDate: String)).self) { group in
             for ccy in RFRCurrency.allCases {
                 group.addTask {
-                    let (r, d) = await RFRFetcher.fetch(ccy)
-                    let status: SOFRDataStatus = (d == "unavailable" || d == "static") ? .fallback : .live
-                    return (ccy, RFRRate(rate: r, effectiveDate: d, status: status))
+                    let outcome = await RFRFetcher.fetch(ccy)
+                    return (ccy, outcome)
                 }
             }
-            for await (ccy, rate) in group {
-                rates[ccy] = rate
+            for await (ccy, outcome) in group {
+                apply(outcome, to: ccy)
             }
         }
     }
@@ -291,9 +418,8 @@ final class SOFRRateStore: ObservableObject {
     /// Legacy single-currency API. Refreshes USD only.
     func updateForTradeDate(_ date: Date) {
         Task { @MainActor in
-            let (r, d) = await RFRFetcher.fetch(.USD)
-            let status: SOFRDataStatus = (d == "unavailable" || d == "static") ? .fallback : .live
-            rates[.USD] = RFRRate(rate: r, effectiveDate: d, status: status)
+            let outcome = await RFRFetcher.fetch(.USD)
+            apply(outcome, to: .USD)
         }
     }
 

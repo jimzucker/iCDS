@@ -547,4 +547,36 @@ void main() {
       );
     });
   });
+
+  // Parity port of CDSReferenceTests.swift qualitative-property tests.
+  // Use the QuantLib shaped curve so results aren't biased by the app's
+  // flat 4.5% production discount curve.
+  group('Qualitative pricing properties — QuantLib curve', () {
+    final end5Y = DateTime(2014, 6, 20);
+
+    test('500bp coupon at-par spread → upfront near zero', () {
+      final u = upfrontQL(endDate: end5Y, couponBp: 500, spreadBp: 500, recovery: 0.40);
+      expect(u, isNotNull);
+      expect(u!.abs(), lessThan(0.02),
+          reason: '500bp at-par on shaped curve should be near zero (≤2%)');
+    });
+
+    test('1000bp spread: 500bp coupon buyer pays less than 100bp coupon', () {
+      final u500 = upfrontQL(endDate: end5Y, couponBp: 500, spreadBp: 1000, recovery: 0.40);
+      final u100 = upfrontQL(endDate: end5Y, couponBp: 100, spreadBp: 1000, recovery: 0.40);
+      expect(u500, isNotNull);
+      expect(u100, isNotNull);
+      expect(u500!, lessThan(u100!),
+          reason: 'higher running coupon reduces buyer upfront for same par spread');
+    });
+
+    test('1000bp spread: R=20% gives higher upfront than R=40%', () {
+      final u40 = upfrontQL(endDate: end5Y, couponBp: 100, spreadBp: 1000, recovery: 0.40);
+      final u20 = upfrontQL(endDate: end5Y, couponBp: 100, spreadBp: 1000, recovery: 0.20);
+      expect(u40, isNotNull);
+      expect(u20, isNotNull);
+      expect(u20!, greaterThan(u40!),
+          reason: 'lower R → lower hazard rate → longer risky duration → higher upfront');
+    });
+  });
 }

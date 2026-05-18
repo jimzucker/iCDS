@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:icds_spike/cds_calculator.dart';
 import 'package:icds_spike/fee_view_model.dart';
 import 'package:icds_spike/sofr_fetcher.dart';
 
@@ -48,6 +50,9 @@ class _FeeTabState extends State<FeeTab> {
 
   double _noNegZero(double v, double eps) => v.abs() < eps ? 0.0 : v;
 
+  static final _bpFmt = NumberFormat('#,##0');
+  String _bpWithCommas(int bp) => _bpFmt.format(bp);
+
   @override
   Widget build(BuildContext context) {
     if (_vm.contracts.isEmpty) {
@@ -64,54 +69,23 @@ class _FeeTabState extends State<FeeTab> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _discountIndicator(),
-              const SizedBox(height: 12),
               _regionRow(),
-              const SizedBox(height: 12),
+              const SizedBox(height: 3),
               _termRows(),
-              const SizedBox(height: 12),
+              const SizedBox(height: 3),
               _spreadFeeRow(),
-              const SizedBox(height: 12),
+              const SizedBox(height: 3),
               _outputGrid(),
+              const SizedBox(height: 3),
+              _defaultRiskChart(),
+              const SizedBox(height: 3),
+              _riskRow(),
+              const SizedBox(height: 3),
+              _dateFooterRow(),
             ],
           ),
         ),
       ),
-    );
-  }
-
-  Widget _discountIndicator() {
-    final rate = _vm.discountRate * 100;
-    final indexName = _vm._indexNameForCurrency();
-    final dateStr = formatIsoDate(_vm.discountRateDate);
-    Widget marker;
-    String body;
-    Color color;
-    switch (_vm.discountRateStatus) {
-      case SOFRDataStatus.loading:
-        marker = const _Dot(color: Color(0xFF808080), size: 6);
-        body = '$indexName loading…';
-        color = const Color(0xFF8C8C8C);
-        break;
-      case SOFRDataStatus.live:
-        marker = const _Dot(color: Colors.green, size: 6);
-        body = '$indexName ${rate.toStringAsFixed(4)}% · $dateStr';
-        color = const Color(0xFFB3B3B3);
-        break;
-      case SOFRDataStatus.fallback:
-        marker = const Icon(Icons.warning_rounded, size: 12, color: Colors.yellow);
-        body = '$indexName unavailable — using ${rate.toStringAsFixed(3)}% reference';
-        color = Colors.yellow;
-        break;
-    }
-    return Row(
-      children: [
-        const Text('Discount:', style: TextStyle(fontSize: 11, color: Color(0xFF737373))),
-        const SizedBox(width: 6),
-        marker,
-        const SizedBox(width: 6),
-        Expanded(child: Text(body, style: TextStyle(fontSize: 11, color: color))),
-      ],
     );
   }
 
@@ -120,20 +94,11 @@ class _FeeTabState extends State<FeeTab> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const _FieldLabel('Region'),
-        const SizedBox(height: 4),
-        Row(
-          children: [
-            for (var i = 0; i < _vm.contracts.length; i++) ...[
-              Expanded(
-                child: _SegButton(
-                  text: _vm.contracts[i].region,
-                  selected: _vm.regionIndex == i,
-                  onTap: () => _vm.regionIndex = i,
-                ),
-              ),
-              if (i != _vm.contracts.length - 1) const SizedBox(width: 6),
-            ],
-          ],
+        const SizedBox(height: 2),
+        _SegRow(
+          options: _vm.contracts.map((c) => c.region).toList(),
+          selected: _vm.regionIndex,
+          onChange: (i) => _vm.regionIndex = i,
         ),
       ],
     );
@@ -151,7 +116,7 @@ class _FeeTabState extends State<FeeTab> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const _FieldLabel('Buy / Sell'),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 2),
                   _SegRow(
                     options: const ['Buy', 'Sell'],
                     selected: _vm.buySellIndex,
@@ -166,7 +131,7 @@ class _FeeTabState extends State<FeeTab> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _FieldLabel('Recovery  ${_vm.recoveryPct}%'),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 2),
                   _SegRow(
                     options: c.recoveryList.map((r) => r.subordination).toList(),
                     selected: _vm.recoveryIndex,
@@ -177,12 +142,12 @@ class _FeeTabState extends State<FeeTab> {
             ),
           ],
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 4),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const _FieldLabel('Maturity'),
-            const SizedBox(height: 4),
+            const SizedBox(height: 2),
             _SegRow(
               options: FeeViewModel.tenorLabels,
               selected: _vm.maturityIndex,
@@ -190,7 +155,7 @@ class _FeeTabState extends State<FeeTab> {
             ),
           ],
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 4),
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -199,7 +164,7 @@ class _FeeTabState extends State<FeeTab> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const _FieldLabel('Coupon (bp)'),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 2),
                   _SegRow(
                     options: c.coupons.map((v) => v.toString()).toList(),
                     selected: _vm.couponIndex,
@@ -214,7 +179,7 @@ class _FeeTabState extends State<FeeTab> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const _FieldLabel('Notional'),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 2),
                   _SegRow(
                     options: FeeViewModel.notionalLabels,
                     selected: _vm.notionalIndex,
@@ -244,7 +209,7 @@ class _FeeTabState extends State<FeeTab> {
       onTap: _editSpread,
       borderRadius: BorderRadius.circular(8),
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 10),
+        padding: const EdgeInsets.symmetric(vertical: 4),
         decoration: BoxDecoration(
           color: AppTheme.orange.withValues(alpha: 0.18),
           borderRadius: BorderRadius.circular(8),
@@ -253,32 +218,32 @@ class _FeeTabState extends State<FeeTab> {
         alignment: Alignment.center,
         child: Column(
           children: [
-            const Text('QUOTED SPREAD · tap',
+            const Text('QUOTED SPREAD',
               style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: AppTheme.captionText, letterSpacing: 1)),
-            const SizedBox(height: 4),
+            const SizedBox(height: 2),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
-                  '${_vm.spreadBp.round()}',
+                  _bpWithCommas(_vm.spreadBp.round()),
                   style: const TextStyle(
-                    fontSize: 28, fontFamily: 'Menlo',
+                    fontSize: 22, fontFamily: 'Menlo',
                     fontWeight: FontWeight.bold, color: AppTheme.orange,
                   ),
                 ),
-                const SizedBox(width: 6),
+                const SizedBox(width: 5),
                 const Padding(
-                  padding: EdgeInsets.only(bottom: 4),
+                  padding: EdgeInsets.only(bottom: 2),
                   child: Text('bp', style: TextStyle(
-                    fontSize: 16, fontFamily: 'Menlo',
+                    fontSize: 13, fontFamily: 'Menlo',
                     fontWeight: FontWeight.w600, color: AppTheme.orange,
                   )),
                 ),
-                const SizedBox(width: 4),
+                const SizedBox(width: 3),
                 const Padding(
-                  padding: EdgeInsets.only(bottom: 6),
-                  child: Icon(Icons.edit, size: 14, color: AppTheme.orange),
+                  padding: EdgeInsets.only(bottom: 4),
+                  child: Icon(Icons.edit, size: 12, color: AppTheme.orange),
                 ),
               ],
             ),
@@ -291,7 +256,7 @@ class _FeeTabState extends State<FeeTab> {
   Widget _feeCard() {
     final r = _vm.result;
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 10),
+      padding: const EdgeInsets.symmetric(vertical: 4),
       decoration: BoxDecoration(
         color: AppTheme.yellow,
         borderRadius: BorderRadius.circular(8),
@@ -302,23 +267,23 @@ class _FeeTabState extends State<FeeTab> {
               children: [
                 Text('CALCULATING',
                   style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: Color(0xFF4D4D4D), letterSpacing: 1)),
-                SizedBox(height: 4),
-                Text('…', style: TextStyle(fontSize: 28, fontFamily: 'Menlo', fontWeight: FontWeight.bold, color: Colors.black)),
+                SizedBox(height: 2),
+                Text('…', style: TextStyle(fontSize: 22, fontFamily: 'Menlo', fontWeight: FontWeight.bold, color: Colors.black)),
               ],
             )
           : Column(
               children: [
                 const Text(
-                  'UPFRONT FEE',
+                  'DIRTY UPFRONT',
                   style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: Color(0xFF4D4D4D), letterSpacing: 1),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 2),
                 FittedBox(
                   fit: BoxFit.scaleDown,
                   child: Text(
-                    formatSignedCurrency(_noNegZero(r.upfrontDollars, 0.5), _vm.currency),
+                    formatSignedCurrency(_noNegZero(r.upfrontDollars + r.accruedDollars, 0.5), _vm.currency),
                     style: const TextStyle(
-                      fontSize: 28, fontFamily: 'Menlo',
+                      fontSize: 22, fontFamily: 'Menlo',
                       fontWeight: FontWeight.bold, color: Colors.black,
                     ),
                   ),
@@ -337,36 +302,45 @@ class _FeeTabState extends State<FeeTab> {
 
   Widget _outputGrid() {
     final r = _vm.result;
+    if (r == null) return const SizedBox.shrink();
     return Column(
       children: [
+        // Cash split — the two components of the DIRTY UPFRONT headline
+        // above. Rendered larger to mark their role in the hierarchy.
         Row(
           children: [
-            Expanded(child: _tradeDateCell()),
+            Expanded(child: _outputCell('Accrued',
+              formatCurrency(r.accruedDollars, _vm.currency),
+              emphasized: true)),
             const SizedBox(width: 6),
-            Expanded(child: _outputCell('Settle Date',
-              r != null ? formatDdMmmYy(r.valueDate) : '—')),
+            Expanded(child: _outputCell('Upfront Fee',
+              formatSignedCurrency(r.upfrontDollars, _vm.currency),
+              emphasized: true)),
           ],
         ),
-        if (r != null) ...[
-          const SizedBox(height: 6),
-          Row(
-            children: [
-              Expanded(child: _outputCell('Accrued',
-                formatCurrency(r.accruedDollars, _vm.currency))),
-              const SizedBox(width: 6),
-              Expanded(child: _outputCell('Price',
-                r.price.toStringAsFixed(4))),
-            ],
-          ),
-          const SizedBox(height: 6),
-          Row(
-            children: [
-              Expanded(child: _outputCell('Start', formatDdMmmYy(r.startDate))),
-              const SizedBox(width: 6),
-              Expanded(child: _outputCell('Maturity', formatDdMmmYy(r.endDate))),
-            ],
-          ),
-        ],
+        const SizedBox(height: 6),
+        Row(
+          children: [
+            Expanded(child: _outputCell('Start', formatDdMmmYy(r.startDate))),
+            const SizedBox(width: 6),
+            Expanded(child: _outputCell('Maturity', formatDdMmmYy(r.endDate))),
+          ],
+        ),
+      ],
+    );
+  }
+
+  /// Trade Date / Settle Date row at the bottom of the Calc tab.
+  /// Defaults to today / T+1 and rarely changed in normal use — sits low
+  /// to keep prime real estate for the cash split and analytics above.
+  Widget _dateFooterRow() {
+    final r = _vm.result;
+    return Row(
+      children: [
+        Expanded(child: _tradeDateCell()),
+        const SizedBox(width: 6),
+        Expanded(child: _outputCell('Settle Date',
+          r != null ? formatDdMmmYy(r.valueDate) : '—')),
       ],
     );
   }
@@ -375,9 +349,8 @@ class _FeeTabState extends State<FeeTab> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
       decoration: BoxDecoration(
-        color: AppTheme.orange.withValues(alpha: 0.18),
+        color: const Color(0xFF121212),
         borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: AppTheme.orange.withValues(alpha: 0.6)),
       ),
       child: Row(
         children: [
@@ -391,7 +364,7 @@ class _FeeTabState extends State<FeeTab> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Trade Date  ·  tap to pick',
+                    const Text('Trade Date',
                       style: TextStyle(fontSize: 11, color: Color(0xFF8C8C8C))),
                     const SizedBox(height: 2),
                     Row(
@@ -479,9 +452,12 @@ class _FeeTabState extends State<FeeTab> {
     _vm.tradeDateOffset = daysDelta;
   }
 
-  Widget _outputCell(String label, String value) {
+  /// Computed-value cell. `emphasized` bumps the value text to 18pt
+  /// semibold for the cash split (Accrued / Upfront Fee) which compose
+  /// the headline Dirty Upfront card above.
+  Widget _outputCell(String label, String value, {bool emphasized = false}) {
     return Container(
-      padding: const EdgeInsets.all(8),
+      padding: EdgeInsets.all(emphasized ? 7 : 6),
       decoration: BoxDecoration(
         color: const Color(0xFF121212),
         borderRadius: BorderRadius.circular(6),
@@ -491,7 +467,155 @@ class _FeeTabState extends State<FeeTab> {
         children: [
           Text(label, style: const TextStyle(fontSize: 11, color: Color(0xFF8C8C8C))),
           const SizedBox(height: 2),
-          Text(value, style: const TextStyle(fontSize: 14, fontFamily: 'Menlo', color: AppTheme.orange)),
+          Text(value, style: TextStyle(
+            fontSize: emphasized ? 18 : 14,
+            fontWeight: emphasized ? FontWeight.w600 : FontWeight.w400,
+            fontFamily: 'Menlo',
+            color: const Color(0xFFEBEBEB),
+          )),
+        ],
+      ),
+    );
+  }
+
+  /// First-order risk (CS01 / IR DV01 / Rec01) by bump-and-reprice.
+  /// Port of Swift `FeeView.riskRow`.
+  Widget _riskRow() {
+    final rk = _vm.risk;
+    if (rk == null) return const SizedBox.shrink();
+    String money(double v) {
+      final s = formatCurrency(v.abs(), _vm.currency);
+      return (v < 0 && v.abs() >= 0.5) ? '−$s' : s;
+    }
+
+    return Row(
+      children: [
+        Expanded(child: _riskCell('CS01', money(rk.cs01), 'per +1 bp')),
+        const SizedBox(width: 6),
+        Expanded(child: _riskCell('IR DV01', money(rk.irDV01), 'per +1 bp')),
+        const SizedBox(width: 6),
+        Expanded(child: _riskCell('Rec01', money(rk.rec01), 'per +1 pt')),
+      ],
+    );
+  }
+
+  Widget _riskCell(String k, String v, String s) {
+    return Container(
+      padding: const EdgeInsets.all(7),
+      decoration: BoxDecoration(
+        color: const Color(0xFF121212),
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(k, style: const TextStyle(
+            fontSize: 10, fontWeight: FontWeight.w600, color: Color(0xFF8C8C8C))),
+          const SizedBox(height: 1),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerLeft,
+            child: Text(v, style: const TextStyle(
+              fontSize: 14, fontFamily: 'Menlo', color: Color(0xFFEBEBEB))),
+          ),
+          const SizedBox(height: 1),
+          Text(s, style: const TextStyle(fontSize: 9, color: Color(0xFF595959))),
+        ],
+      ),
+    );
+  }
+
+  /// Flat-hazard cumulative default probability at each SNAC tenor.
+  /// Bars scale to the longest-tenor probability; tapping a bar selects
+  /// that maturity. Port of Swift `FeeView.defaultRiskChart`.
+  Widget _defaultRiskChart() {
+    final recovery = _vm.recoveryPct / 100.0;
+    const years = FeeViewModel.tenorYearsList;
+    const labels = FeeViewModel.tenorLabels;
+    final probs = [
+      for (final y in years)
+        CdsCalculator.cumulativeDefaultProb(
+          spreadBp: _vm.spreadBp,
+          recoveryRate: recovery,
+          years: y,
+        ),
+    ];
+    final maxP = probs.fold<double>(0.0001, (m, p) => p > m ? p : m);
+    final sel = _vm.maturityIndex.clamp(0, probs.length - 1).toInt();
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: const Color(0xFF121212),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Text('DEFAULT RISK',
+                style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold,
+                  letterSpacing: 1, color: Color(0xFFA6A6A6))),
+              const SizedBox(width: 4),
+              const Text('· by maturity',
+                style: TextStyle(fontSize: 10, color: Color(0xFF8C8C8C))),
+              const Spacer(),
+              Text(
+                '${labels[sel]}  ≈ ${(probs[sel] * 100).toStringAsFixed(1)}% to default',
+                style: const TextStyle(fontSize: 10, fontFamily: 'Menlo', color: AppTheme.orange),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          SizedBox(
+            height: 82,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                for (var i = 0; i < years.length; i++) ...[
+                  Expanded(
+                    child: GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: () => _vm.maturityIndex = i,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Text(
+                            '${(probs[i] * 100).toStringAsFixed(1)}%',
+                            style: TextStyle(
+                              fontSize: 9, fontFamily: 'Menlo',
+                              color: i == sel ? AppTheme.orange : const Color(0xFF8C8C8C),
+                            ),
+                          ),
+                          const SizedBox(height: 3),
+                          Container(
+                            height: (probs[i] / maxP * 46).clamp(4.0, 46.0).toDouble(),
+                            decoration: BoxDecoration(
+                              color: i == sel ? AppTheme.orange : const Color(0xFF3A3A3A),
+                              borderRadius: BorderRadius.circular(2),
+                            ),
+                          ),
+                          const SizedBox(height: 3),
+                          Text(
+                            labels[i],
+                            style: TextStyle(
+                              fontSize: 10, fontFamily: 'Menlo',
+                              color: i == sel ? AppTheme.orange : const Color(0xFF666666),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  if (i != years.length - 1) const SizedBox(width: 6),
+                ],
+              ],
+            ),
+          ),
+          const SizedBox(height: 4),
+          const Text('Cumulative default prob · flat-hazard',
+            style: TextStyle(fontSize: 9, color: Color(0xFF666666))),
         ],
       ),
     );
@@ -524,6 +648,9 @@ class _FieldLabel extends StatelessWidget {
 /// underlying InkWell/Container nodes — but if jank ever shows up the
 /// optimization is to wrap each input group in its own `ListenableBuilder`
 /// listening to a Selector slice of FeeViewModel rather than the whole VM.
+/// iOS-style segmented control: a single rounded "pill" containing
+/// all options with one inset highlight on the selected cell. Matches
+/// SwiftUI's `Picker(.segmented)` look (no internal dividers).
 class _SegRow extends StatelessWidget {
   final List<String> options;
   final int selected;
@@ -532,61 +659,42 @@ class _SegRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        for (var i = 0; i < options.length; i++) ...[
-          Expanded(
-            child: _SegButton(
-              text: options[i],
-              selected: i == selected,
-              onTap: () => onChange(i),
+    return Container(
+      padding: const EdgeInsets.all(2),
+      decoration: BoxDecoration(
+        color: const Color(0xFF2D2D2D),
+        borderRadius: BorderRadius.circular(7),
+      ),
+      child: Row(
+        children: [
+          for (var i = 0; i < options.length; i++)
+            Expanded(
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () => onChange(i),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 6),
+                  decoration: BoxDecoration(
+                    color: i == selected
+                      ? const Color(0xFF737373)
+                      : Colors.transparent,
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  alignment: Alignment.center,
+                  child: Text(
+                    options[i],
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
             ),
-          ),
-          if (i != options.length - 1) const SizedBox(width: 6),
         ],
-      ],
-    );
-  }
-}
-
-class _SegButton extends StatelessWidget {
-  final String text;
-  final bool selected;
-  final VoidCallback onTap;
-  const _SegButton({required this.text, required this.selected, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(6),
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 8),
-        decoration: BoxDecoration(
-          color: selected ? AppTheme.orange : const Color(0xFF2D2D2D),
-          borderRadius: BorderRadius.circular(6),
-        ),
-        alignment: Alignment.center,
-        child: Text(
-          text,
-          style: TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w500,
-            color: selected ? Colors.black : Colors.white,
-          ),
-        ),
       ),
     );
   }
 }
 
-class _Dot extends StatelessWidget {
-  final Color color;
-  final double size;
-  const _Dot({required this.color, this.size = 8});
-  @override
-  Widget build(BuildContext context) => Container(
-        width: size, height: size,
-        decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-      );
-}

@@ -17,14 +17,14 @@ class FeeViewModel extends ChangeNotifier {
   static const notionalValues = <double>[
     1_000_000, 5_000_000, 10_000_000, 20_000_000,
   ];
-  static const tenorLabels = <String>['1Y', '5Y', '7Y', '10Y'];
-  static const tenorYearsList = <int>[1, 5, 7, 10];
+  static const tenorLabels = <String>['1Y', '2Y', '3Y', '4Y', '5Y', '7Y', '10Y'];
+  static const tenorYearsList = <int>[1, 2, 3, 4, 5, 7, 10];
 
   // Inputs
   int _regionIndex = 0;
   int _buySellIndex = 0;       // 0=Buy 1=Sell
   int _notionalIndex = 2;      // 10M default
-  int _maturityIndex = 1;      // 5Y default
+  int _maturityIndex = 4;      // 5Y default (index into tenorYearsList)
   int _couponIndex = 0;
   int _recoveryIndex = 0;
   double _spreadBp = 100;
@@ -187,6 +187,28 @@ class FeeViewModel extends ChangeNotifier {
     _couponIndex = 0;
     _recoveryIndex = 0;
     _spreadBp = couponBp;
+  }
+
+  /// First-order risk (CS01 / IR DV01 / Rec01) for the current inputs,
+  /// via bump-and-reprice. Recomputed on demand. Parity with Swift
+  /// `FeeViewModel.risk`.
+  CdsRisk? get risk {
+    final c = contract;
+    if (c == null) return null;
+    final today = DateTime.now();
+    return CdsCalculator.riskMetrics(
+      tradeDate: tradeDate,
+      tenorYears: tenorYearsList[_maturityIndex],
+      parSpreadBp: _spreadBp,
+      couponBp: couponBp,
+      recoveryRate: recoveryPct / 100.0,
+      notional: notionalValues[_notionalIndex],
+      isBuy: _buySellIndex == 0,
+      settleDays: c.settleDays,
+      discountRate: discountRate,
+      region: calendar,
+      minSettle: DateTime(today.year, today.month, today.day),
+    );
   }
 
   /// Hypothetical-spread preview (used by the spread-edit dialog).

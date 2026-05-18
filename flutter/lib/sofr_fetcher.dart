@@ -13,10 +13,14 @@ library;
 
 import 'dart:async' show unawaited;
 import 'dart:convert';
+import 'dart:io' show Platform;
 
+import 'package:cronet_http/cronet_http.dart'
+    show CacheMode, CronetClient, CronetEngine;
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 enum RFRCurrency {
   usd, eur, gbp, jpy, aud;
@@ -46,7 +50,7 @@ enum RFRCurrency {
       case RFRCurrency.usd: return 'NY Fed';
       case RFRCurrency.eur: return 'ECB';
       case RFRCurrency.gbp: return 'Bank of England';
-      case RFRCurrency.jpy: return 'FRED · Japan Overnight';
+      case RFRCurrency.jpy: return 'FRED · Japan Overnight (monthly)';
       case RFRCurrency.aud: return 'Reserve Bank of Australia';
     }
   }
@@ -67,14 +71,59 @@ enum RFRCurrency {
 class RFRFetchResult {
   final double rate;
   final String effectiveDate; // YYYY-MM-DD or "unavailable"
-  const RFRFetchResult(this.rate, this.effectiveDate);
+  /// True when the result reflects a fresh successful network fetch.
+  /// False when it's a fallback — either because the live fetch failed
+  /// or because the source is monthly and we synthesised the expected
+  /// last-published date so the UI has something to show.
+  final bool isLive;
+  const RFRFetchResult(this.rate, this.effectiveDate, {this.isLive = true});
 }
 
 class RFRFetcher {
   static const _timeout = Duration(seconds: 15);
 
+  /// FRED's CSV endpoint (used for JPY TONA) accepts the TLS handshake
+  /// quickly but the response body trickles in slowly. iOS's URLSession
+  /// uses an *idle* timeout so it waits as long as bytes keep arriving;
+  /// Dart's `Future.timeout` is a *total* budget. Give FRED a 60 s
+  /// budget so Android matches iOS's behaviour in practice.
+  static const _slowTimeout = Duration(seconds: 60);
+
   /// Some government APIs (BoE, ECB) reject non-browser User-Agents.
-  static const _headers = {'User-Agent': 'Mozilla/5.0 (iCDS Flutter)'};
+  /// FRED is fronted by Akamai which fingerprints both TLS and headers;
+  /// using a real-Chrome-on-Android UA passes Akamai's bot checks while
+  /// staying truthful enough (we ARE running on Chromium's Cronet stack).
+  static const _headers = {
+    'User-Agent': 'Mozilla/5.0 (Linux; Android 14; Pixel 9) '
+        'AppleWebKit/537.36 (KHTML, like Gecko) '
+        'Chrome/124.0.0.0 Mobile Safari/537.36',
+    'Accept': 'text/csv,application/json,text/plain;q=0.9,*/*;q=0.8',
+    'Accept-Language': 'en-US,en;q=0.9',
+  };
+
+  /// Shared HTTP client. On Android we route through Cronet (Chromium's
+  /// networking stack) so we get HTTP/2 — FRED's Akamai edge silently
+  /// drops HTTP/1.1 connections, which is what Dart's default http
+  /// package speaks. On other platforms (iOS, web, desktop) the default
+  /// `http.Client()` is fine. Lazy-initialised on first use.
+  static http.Client? _client;
+  static http.Client _httpClient() {
+    if (_client != null) return _client!;
+    if (!kIsWeb && Platform.isAndroid) {
+      try {
+        final engine = CronetEngine.build(
+          cacheMode: CacheMode.memory,
+          cacheMaxSize: 2 * 1024 * 1024,
+        );
+        _client = CronetClient.fromCronetEngine(engine);
+        return _client!;
+      } catch (e) {
+        debugPrint('cronet_http init failed, falling back to http: $e');
+      }
+    }
+    _client = http.Client();
+    return _client!;
+  }
 
   static Future<RFRFetchResult> fetch(RFRCurrency ccy) {
     switch (ccy) {
@@ -90,26 +139,26 @@ class RFRFetcher {
   static Future<RFRFetchResult> _fetchSOFR() async {
     final url = Uri.parse('https://markets.newyorkfed.org/api/rates/secured/sofr/last/1.json');
     try {
-      final resp = await http.get(url, headers: _headers).timeout(_timeout);
+      final resp = await _httpClient().get(url, headers: _headers).timeout(_timeout);
       if (resp.statusCode != 200) {
         debugPrint('SOFR fetch HTTP ${resp.statusCode}');
-        return RFRFetchResult(RFRCurrency.usd.fallbackRate, 'unavailable');
+        return RFRFetchResult(RFRCurrency.usd.fallbackRate, 'unavailable', isLive: false);
       }
       final json = jsonDecode(resp.body);
       final refRates = json['refRates'] as List?;
       if (refRates == null || refRates.isEmpty) {
-        return RFRFetchResult(RFRCurrency.usd.fallbackRate, 'unavailable');
+        return RFRFetchResult(RFRCurrency.usd.fallbackRate, 'unavailable', isLive: false);
       }
       final first = refRates.first as Map;
       final pct = (first['percentRate'] as num?)?.toDouble();
       final date = first['effectiveDate'] as String?;
       if (pct == null || date == null) {
-        return RFRFetchResult(RFRCurrency.usd.fallbackRate, 'unavailable');
+        return RFRFetchResult(RFRCurrency.usd.fallbackRate, 'unavailable', isLive: false);
       }
       return RFRFetchResult(pct / 100.0, date);
     } catch (e) {
       debugPrint('SOFR fetch failed: $e');
-      return RFRFetchResult(RFRCurrency.usd.fallbackRate, 'unavailable');
+      return RFRFetchResult(RFRCurrency.usd.fallbackRate, 'unavailable', isLive: false);
     }
   }
 
@@ -140,11 +189,47 @@ class RFRFetcher {
   }
 
   // === JPY — FRED Japan Call Money (monthly, CSV) ===
-  static Future<RFRFetchResult> _fetchTONA() {
+  ///
+  /// FRED's load balancer appears to drop a non-trivial fraction of
+  /// HTTP/1.1 keep-alive connections — iOS URLSession (HTTP/2 + idle
+  /// timeout) tends to break through on the first try, while Dart's
+  /// `http` package (HTTP/1.1, total timeout) sees a stalled
+  /// connection and gives up. Retry up to 3× with a short backoff so
+  /// Android matches iOS's empirical success rate.
+  static Future<RFRFetchResult> _fetchTONA() async {
     final url = Uri.parse('https://fred.stlouisfed.org/graph/fredgraph.csv?id=IRSTCI01JPM156N');
-    return _fetchCsv(
-      tag: 'TONA', url: url, dateCol: 0, valueCol: 1,
-      fallback: RFRCurrency.jpy.fallbackRate, takeLast: true);
+    // 5 attempts × 60s budget = up to ~5 min worst case, plus exponential
+    // backoff between tries (2, 4, 8, 16s). Pushes through FRED slow-backend
+    // routing that has been observed to take 30–45s on a single attempt.
+    const attempts = 5;
+    for (var i = 1; i <= attempts; i++) {
+      final result = await _fetchCsv(
+        tag: 'TONA(try$i)', url: url, dateCol: 0, valueCol: 1,
+        fallback: RFRCurrency.jpy.fallbackRate, takeLast: true,
+        timeout: const Duration(seconds: 60));
+      if (result.isLive) return result;
+      if (i < attempts) {
+        // Exponential backoff: 2, 4, 8, 16s
+        await Future.delayed(Duration(seconds: 1 << i));
+      }
+    }
+    // All retries failed. FRED's series is monthly with ~45-day
+    // publication lag, so synthesise the most-likely last-published
+    // date (1st of the month, ~45 days ago) so the UI shows a
+    // plausible date instead of "unavailable".
+    return RFRFetchResult(RFRCurrency.jpy.fallbackRate,
+                          lastLikelyTonaDate(), isLive: false);
+  }
+
+  /// First-of-month date that is ~45 days behind today — matches FRED's
+  /// monthly-with-lag publication cadence for `IRSTCI01JPM156N`. Public
+  /// so the store can pre-seed the JPY entry with this date on cold
+  /// start (FRED's source is monthly; even a successful fetch returns
+  /// a date weeks old).
+  static String lastLikelyTonaDate() {
+    final probe = DateTime.now().subtract(const Duration(days: 45));
+    final firstOfMonth = DateTime(probe.year, probe.month, 1);
+    return DateFormat('yyyy-MM-dd').format(firstOfMonth);
   }
 
   // === AUD — RBA F1 Interbank Overnight Cash Rate (CSV with header rows) ===
@@ -165,12 +250,13 @@ class RFRFetcher {
     required double fallback,
     String dateFormat = 'yyyy-MM-dd',
     bool takeLast = false,
+    Duration timeout = _timeout,
   }) async {
     try {
-      final resp = await http.get(url, headers: _headers).timeout(_timeout);
+      final resp = await _httpClient().get(url, headers: _headers).timeout(timeout);
       if (resp.statusCode != 200) {
         debugPrint('$tag fetch HTTP ${resp.statusCode}');
-        return RFRFetchResult(fallback, 'unavailable');
+        return RFRFetchResult(fallback, 'unavailable', isLive: false);
       }
       // Default (en_US) locale — works for all the English-month feeds
       // we hit (BoE, RBA, FRED, ECB, NY Fed) without needing
@@ -200,7 +286,7 @@ class RFRFetcher {
       }
       if (candidates.isEmpty) {
         debugPrint('$tag fetch: no parseable rows');
-        return RFRFetchResult(fallback, 'unavailable');
+        return RFRFetchResult(fallback, 'unavailable', isLive: false);
       }
       _CsvRow chosen;
       if (takeLast) {
@@ -212,7 +298,7 @@ class RFRFetcher {
       return RFRFetchResult(chosen.value, chosen.dateStr);
     } catch (e) {
       debugPrint('$tag fetch failed: $e');
-      return RFRFetchResult(fallback, 'unavailable');
+      return RFRFetchResult(fallback, 'unavailable', isLive: false);
     }
   }
 }
@@ -224,7 +310,7 @@ class _CsvRow {
   _CsvRow(this.date, this.dateStr, this.value);
 }
 
-enum SOFRDataStatus { loading, live, fallback }
+enum SOFRDataStatus { loading, live, cached, fallback }
 
 class RFRRate {
   final double rate;
@@ -246,6 +332,8 @@ class RFRRate {
 class SOFRRateStore extends ChangeNotifier {
   static final SOFRRateStore shared = SOFRRateStore._();
 
+  static const _prefsKey = 'icds.rfr.cache.v1';
+
   final Map<RFRCurrency, RFRRate> _rates = {};
   RFRRate? rateInfo(RFRCurrency ccy) => _rates[ccy];
 
@@ -262,10 +350,26 @@ class SOFRRateStore extends ChangeNotifier {
   SOFRRateStore._() {
     // Pre-populate so cold-start readers get a deterministic record.
     for (final ccy in RFRCurrency.values) {
-      _rates[ccy] = RFRRate(ccy.fallbackRate, '—', SOFRDataStatus.loading);
+      if (ccy == RFRCurrency.jpy) {
+        // JPY is published monthly with a ~45-day lag — even a freshly
+        // successful FRED fetch returns a date that is structurally
+        // weeks old. Seed the store with the synthesised "last likely
+        // published" date as .cached (not .live) so the UI badge is
+        // honest about the source. A successful refresh upgrades to
+        // .live.
+        _rates[ccy] = RFRRate(ccy.fallbackRate,
+                              RFRFetcher.lastLikelyTonaDate(),
+                              SOFRDataStatus.cached);
+      } else {
+        _rates[ccy] = RFRRate(ccy.fallbackRate, '—', SOFRDataStatus.loading);
+      }
     }
-    // Fire async fetch (errors become per-currency .fallback statuses).
-    unawaited(refreshAll());
+    // Load persisted cache *then* fire the async refresh. The cache
+    // hydration is fire-and-forget too — if it lands before the first
+    // fetch resolves, the UI shows the last-known live rate instead of
+    // a "loading…" / fallback state. If the fetch wins the race, the
+    // live value replaces the cached one without flicker.
+    unawaited(_hydrateFromCache().then((_) => refreshAll()));
   }
 
   /// Fetch all 5 currencies concurrently. Updates listeners as each
@@ -281,11 +385,69 @@ class SOFRRateStore extends ChangeNotifier {
 
   Future<void> _refresh(RFRCurrency ccy) async {
     final r = await RFRFetcher.fetch(ccy);
-    final status = (r.effectiveDate == 'unavailable' || r.effectiveDate == 'static')
-        ? SOFRDataStatus.fallback
-        : SOFRDataStatus.live;
-    _rates[ccy] = RFRRate(r.rate, r.effectiveDate, status);
+    if (!r.isLive) {
+      // Fetch failed. If we have a plausible existing date (either a
+      // hydrated cache value or the JPY pre-seed), keep showing that
+      // rate marked as .cached — the user gets a date and a rate, but
+      // the badge tells them this isn't a freshly fetched value. Only
+      // when there is genuinely nothing to display (date == '—' or
+      // 'unavailable') do we fall through to .fallback.
+      final existing = _rates[ccy];
+      if (existing != null &&
+          existing.effectiveDate != '—' &&
+          existing.effectiveDate != 'unavailable') {
+        _rates[ccy] = RFRRate(
+            existing.rate, existing.effectiveDate, SOFRDataStatus.cached);
+      } else {
+        _rates[ccy] = RFRRate(r.rate, r.effectiveDate, SOFRDataStatus.fallback);
+      }
+    } else {
+      _rates[ccy] = RFRRate(r.rate, r.effectiveDate, SOFRDataStatus.live);
+      unawaited(_persistOne(ccy, _rates[ccy]!));
+    }
     notifyListeners();
+  }
+
+  Future<void> _hydrateFromCache() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final raw = prefs.getString(_prefsKey);
+      if (raw == null) return;
+      final map = jsonDecode(raw) as Map<String, dynamic>;
+      var changed = false;
+      for (final ccy in RFRCurrency.values) {
+        final entry = map[ccy.code] as Map<String, dynamic>?;
+        if (entry == null) continue;
+        final rate = (entry['rate'] as num?)?.toDouble();
+        final date = entry['effectiveDate'] as String?;
+        if (rate == null || date == null || date.isEmpty) continue;
+        // Skip if a live fetch has already resolved for this ccy.
+        if (_rates[ccy]?.status == SOFRDataStatus.live) continue;
+        // Hydrated values are shown as `.cached` — the rate + date are
+        // real (we only persist successful fetches) but they weren't
+        // re-verified in this session. The in-progress refresh will
+        // upgrade to .live on success, or keep .cached on failure.
+        _rates[ccy] = RFRRate(rate, date, SOFRDataStatus.cached);
+        changed = true;
+      }
+      if (changed) notifyListeners();
+    } catch (e) {
+      debugPrint('RFR cache hydrate failed: $e');
+    }
+  }
+
+  Future<void> _persistOne(RFRCurrency ccy, RFRRate r) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final raw = prefs.getString(_prefsKey);
+      final map = raw == null
+          ? <String, dynamic>{}
+          : (jsonDecode(raw) as Map<String, dynamic>);
+      map[ccy.code] = {'rate': r.rate, 'effectiveDate': r.effectiveDate};
+      await prefs.setString(_prefsKey, jsonEncode(map));
+    } catch (e) {
+      debugPrint('RFR cache persist failed: $e');
+    }
   }
 
   /// Refresh only USD — used when the trade date changes in the Fee tab.

@@ -5,6 +5,8 @@
 /// Run on iOS:    `flutter test integration_test -d "iPhone 17 Pro"`
 /// Run on Android: `flutter test integration_test -d emulator-5554`
 
+import 'dart:math' as math;
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 
@@ -103,11 +105,64 @@ void main() {
       expect((r.parSpreadBp - 150.0).abs(), lessThan(1.0));
     });
 
-    test('all SNAC tenors (1Y/5Y/7Y/10Y) succeed', () {
-      for (final t in [1, 5, 7, 10]) {
+    test('all SNAC tenors (1/2/3/4/5/7/10Y) succeed', () {
+      for (final t in [1, 2, 3, 4, 5, 7, 10]) {
         expect(calc(parSpread: 200, coupon: 100, tenor: t), isNotNull,
             reason: '${t}Y tenor');
       }
+    });
+
+    test('new short tenors (2/3/4Y) roll to the next IMM date', () {
+      // refDate = 15-Apr-2024 → +N years, then next IMM (20 Jun of that year,
+      // since Apr precedes the Jun-20 IMM). Parity with Swift
+      // testNewShortTenorsRollToNextIMM.
+      for (final tc in [(2, 2026), (3, 2027), (4, 2028)]) {
+        final r = calc(parSpread: 200, coupon: 100, tenor: tc.$1)!;
+        expect(r.endDate, DateTime(tc.$2, 6, 20), reason: '${tc.$1}Y maturity');
+      }
+    });
+
+    test('upfront increases monotonically across the SNAC tenor ladder', () {
+      // Spread above coupon → buyer pays; longer protection costs more.
+      // Parity with Swift testUpfrontMonotonicAcrossTenorLadder.
+      var prev = -double.infinity;
+      for (final t in [1, 2, 3, 4, 5, 7, 10]) {
+        final r = calc(parSpread: 300, coupon: 100, tenor: t)!;
+        expect(r.upfrontDollars, greaterThan(prev), reason: '${t}Y upfront');
+        prev = r.upfrontDollars;
+      }
+    });
+  });
+
+  group('First-order risk (bump-and-reprice)', () {
+    CdsRisk risk({bool isBuy = true, double notional = 10_000_000}) =>
+        CdsCalculator.riskMetrics(
+          tradeDate: refDate,
+          tenorYears: 5,
+          parSpreadBp: 300,
+          couponBp: 100,
+          recoveryRate: 0.40,
+          notional: notional,
+          isBuy: isBuy,
+        )!;
+
+    test('signs and notional scaling', () {
+      final rk = risk();
+      expect(rk.cs01, greaterThan(0), reason: 'CS01 > 0 for a buyer');
+      expect(rk.rec01, lessThan(0), reason: 'Rec01 < 0 (higher recovery)');
+      expect(rk.irDV01.isFinite, isTrue);
+      expect(rk.irDV01.abs(), lessThan(rk.cs01.abs()));
+      final half = risk(notional: 5_000_000);
+      expect((rk.cs01 - half.cs01 * 2.0).abs(),
+          lessThan((half.cs01.abs() * 0.02).clamp(1.0, double.infinity)));
+    });
+
+    test('buy/sell symmetry', () {
+      final b = risk(isBuy: true);
+      final s = risk(isBuy: false);
+      expect((b.cs01 + s.cs01).abs(), lessThan(1.0));
+      expect((b.rec01 + s.rec01).abs(), lessThan(1.0));
+      expect((b.irDV01 + s.irDV01).abs(), lessThan(1.0));
     });
   });
 
@@ -255,6 +310,46 @@ void main() {
           reason: '27/360 days expected. Off-by-one if it equals \$7222.22 (=26 days)');
     });
 
+    // At par the two displayed currency values must be structurally
+    // distinct: clean upfront ≈ $0 but accrued is meaningful ($7,500
+    // for the pinned refDate). Guards against a regression observed on
+    // the Android port where upfrontDollars silently contained accrued.
+    test('at par: upfront ≈ 0 AND accrued ≈ \$7,500 — fields are independent', () {
+      final r = calc(parSpread: 100, coupon: 100)!;
+      expect(r.upfrontDollars.abs(), lessThan(1.0),
+          reason: 'clean upfront must be ≈ 0 at par; non-zero means accrued bled into upfrontDollars');
+      expect(r.accruedDollars, greaterThan(1000),
+          reason: 'accrued must be a meaningful dollar amount, not 0');
+      expect(r.accruedDollars, lessThan(20000),
+          reason: 'accrued must not be absurdly large for 100bp/27d/\$10M');
+    });
+
+    // At par the "dirty upfront" (upfrontDollars + accrued) must equal
+    // accrued exactly (clean upfront is ~0). Catches a sign flip — if
+    // someone subtracted accrued instead of adding, dirty would become
+    // ≈ −accrued or 0 at par.
+    test('at par: dirty upfront equals accrued (no sign flip)', () {
+      final r = calc(parSpread: 100, coupon: 100)!;
+      final dirty = r.upfrontDollars + r.accruedDollars;
+      expect(dirty, greaterThan(100.0), reason: 'dirty at par must be ≈ accrued (positive)');
+      expect((dirty - r.accruedDollars).abs(), lessThan(1.0),
+          reason: 'at par: dirty = 0 + accrued. Any deviation means clean upfront leaked.');
+    });
+
+    // Off-par identity: dirty − clean = accrued exactly. Locks the
+    // composition rule so a future refactor of the "DIRTY UPFRONT"
+    // yellow card cannot quietly switch the formula.
+    test('off par: dirty upfront = clean + accrued (composition lock)', () {
+      final r = calc(parSpread: 250, coupon: 100)!;
+      final dirty = r.upfrontDollars + r.accruedDollars;
+      expect(r.upfrontDollars, greaterThan(1000),
+          reason: 'above-coupon spread should have positive clean upfront');
+      expect(dirty, greaterThan(r.upfrontDollars),
+          reason: 'dirty must exceed clean when accrued > 0');
+      expect((dirty - r.upfrontDollars - r.accruedDollars).abs(), lessThan(0.01),
+          reason: 'dirty − clean must equal accrued exactly');
+    });
+
     test('price stays in [50, 120] across spread sweep', () {
       for (final s in [50.0, 100.0, 200.0, 500.0, 1000.0]) {
         final r = calc(parSpread: s, coupon: 100)!;
@@ -309,6 +404,40 @@ void main() {
         region: CdsRegion.target,
       )!;
       expect(iso(r.valueDate), '2025-04-22');
+    });
+  });
+
+  // Parity port of icdsTests.swift's first-order risk section.
+  // Bump-and-reprice (+1 bp spread, +1 bp discount, +1 pt recovery).
+  group('First-order risk — CS01 / IR DV01 / Rec01', () {
+    CdsRisk? riskAt({double notional = 10_000_000, bool isBuy = true}) =>
+        CdsCalculator.riskMetrics(
+          tradeDate: refDate,
+          tenorYears: 5,
+          parSpreadBp: 300, couponBp: 100,
+          recoveryRate: 0.40, notional: notional, isBuy: isBuy,
+        );
+
+    test('signs and notional scaling', () {
+      final rk = riskAt()!;
+      // Buyer, spread above coupon: wider spread → buyer pays more.
+      expect(rk.cs01, greaterThan(0), reason: 'CS01 > 0 for a protection buyer');
+      // Higher recovery → less loss given default → smaller upfront.
+      expect(rk.rec01, lessThan(0), reason: 'Rec01 < 0 (higher recovery lowers upfront)');
+      // IR sensitivity is a second-order effect here: finite and small.
+      expect(rk.irDV01.isFinite, isTrue);
+      expect(rk.irDV01.abs(), lessThan(rk.cs01.abs()));
+      // Linear in notional.
+      final half = riskAt(notional: 5_000_000)!;
+      expect(rk.cs01, closeTo(half.cs01 * 2.0, math.max(1.0, half.cs01.abs() * 0.02)));
+    });
+
+    test('buy/sell symmetry', () {
+      final buy = riskAt(isBuy: true)!;
+      final sell = riskAt(isBuy: false)!;
+      expect(buy.cs01, closeTo(-sell.cs01, 1.0));
+      expect(buy.rec01, closeTo(-sell.rec01, 1.0));
+      expect(buy.irDV01, closeTo(-sell.irDV01, 1.0));
     });
   });
 }

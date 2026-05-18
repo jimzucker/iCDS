@@ -56,6 +56,67 @@ class icdsTests: XCTestCase {
         XCTAssertEqual(na.recoveryList[1].subordination, "SUB")
     }
 
+    // Modernized post-Big-Bang conventions: ensure the data file matches
+    // current ISDA standards (EM = T+1, SUB < SEN, etc.).
+    func testEMConventions() {
+        let em = ISDAContract.readFromPlist().first { $0.region == "EM" }!
+        XCTAssertEqual(em.settleDays, 1, "EM uses T+1 cash settlement (post-Big-Bang)")
+        let rates = Dictionary(uniqueKeysWithValues: em.recoveryList.map { ($0.subordination, $0.recovery) })
+        XCTAssertEqual(rates["SEN"], 25, "EM SEN recovery is 25% (sovereign convention)")
+        XCTAssertEqual(rates["SUB"], 15, "EM SUB recovery is 15% (must be lower than SEN)")
+    }
+
+    func testJapanConventions() {
+        let jp = ISDAContract.readFromPlist().first { $0.region == "Japan" }!
+        let rates = Dictionary(uniqueKeysWithValues: jp.recoveryList.map { ($0.subordination, $0.recovery) })
+        XCTAssertEqual(rates["SEN"], 35, "Japan SEN recovery is 35% (JPY corporate)")
+        XCTAssertEqual(rates["SUB"], 15, "Japan SUB recovery is 15% (must be lower than SEN)")
+        XCTAssertTrue(jp.coupons.contains(500), "Japan must include 500 bp coupon for distressed names")
+    }
+
+    func testAUSConventions() {
+        let aus = ISDAContract.readFromPlist().first { $0.region == "AUS" }!
+        XCTAssertTrue(aus.coupons.contains(100), "AUS must include 100 bp standard coupon")
+        XCTAssertTrue(aus.coupons.contains(500), "AUS must include 500 bp distressed coupon")
+        XCTAssertFalse(aus.coupons.contains(25), "AUS standard contract does not use 25 bp (EU/JPY territory)")
+    }
+
+    // Structural invariant: subordinated paper must have lower recovery
+    // than senior paper across every region. Catches a future data drift
+    // that would imply sub paper has higher loss-given-default than senior.
+    // Signed currency display: tiny near-zero values must never render
+    // with a leading minus. Guards against "−$0" on the Upfront Fee
+    // cell when par-spread = coupon makes upfrontDollars a tiny
+    // negative double (e.g., -0.001) from numerical noise.
+    func testSignedCurrencyTinyNegativeRendersAsUnsignedZero() {
+        XCTAssertEqual(FeeView.signedCurrencyString(-0.001, code: "USD"), "$0",
+                       "Near-zero negative must drop the minus")
+        XCTAssertEqual(FeeView.signedCurrencyString(-0.49, code: "USD"), "$0",
+                       "Anything that rounds to whole-dollar 0 must drop the minus")
+        XCTAssertEqual(FeeView.signedCurrencyString(0.0, code: "USD"), "$0",
+                       "Exact zero is unsigned")
+        XCTAssertEqual(FeeView.signedCurrencyString(0.001, code: "USD"), "$0",
+                       "Near-zero positive renders the same as zero")
+    }
+
+    func testSignedCurrencyMeaningfulMagnitudesKeepSign() {
+        XCTAssertEqual(FeeView.signedCurrencyString(-100.0, code: "USD"), "−$100",
+                       "$100 negative must keep the U+2212 minus")
+        XCTAssertEqual(FeeView.signedCurrencyString(100.0, code: "USD"), "$100",
+                       "$100 positive is unsigned")
+        XCTAssertEqual(FeeView.signedCurrencyString(-15833.0, code: "USD"), "−$15,833",
+                       "Comma grouping preserved with minus")
+    }
+
+    func testSubRecoveryAlwaysLowerOrEqualToSen() {
+        for c in ISDAContract.readFromPlist() {
+            let rates = Dictionary(uniqueKeysWithValues: c.recoveryList.map { ($0.subordination, $0.recovery) })
+            guard let sen = rates["SEN"], let sub = rates["SUB"] else { continue }
+            XCTAssertLessThan(sub, sen,
+                              "\(c.region): SUB (\(sub)) must be strictly lower than SEN (\(sen)) — sub paper takes more loss")
+        }
+    }
+
     // MARK: - Recovery Model
 
     func testRecoveryInit() {
@@ -214,12 +275,136 @@ class icdsTests: XCTestCase {
     }
 
     func testAllTenorsSucceed() {
-        for tenor in [1, 5, 7, 10] {
+        for tenor in [1, 2, 3, 4, 5, 7, 10] {
             let r = CDSCalculator.calculate(tradeDate: refDate, tenorYears: tenor,
                                             parSpreadBp: 200, couponBp: 100,
                                             recoveryRate: 0.40, notional: 10_000_000, isBuy: true)
             XCTAssertNotNil(r, "\(tenor)Y tenor should succeed")
         }
+    }
+
+    // MARK: - SNAC tenor grid (1/2/3/4/5/7/10Y)
+
+    /// The newly added short tenors (2Y/3Y/4Y) must roll to the next IMM
+    /// date just like the original grid does.
+    func testNewShortTenorsRollToNextIMM() {
+        // refDate = 15-Apr-2024 → +N years, then next IMM (20 Jun of that year,
+        // since Apr is before the Jun-20 IMM).
+        for (tenor, expectedYear) in [(2, 2026), (3, 2027), (4, 2028)] {
+            let r = CDSCalculator.calculate(tradeDate: refDate, tenorYears: tenor,
+                                            parSpreadBp: 200, couponBp: 100,
+                                            recoveryRate: 0.40, notional: 10_000_000, isBuy: true)
+            let r2 = try? XCTUnwrap(r, "\(tenor)Y should price")
+            guard let res = r2 else { continue }
+            var mdy = TMonthDayYear()
+            JpmcdsDateToMDY(res.endDate, &mdy)
+            XCTAssertEqual(Int(mdy.month), 6, "\(tenor)Y maturity should land on the Jun IMM")
+            XCTAssertEqual(Int(mdy.day), 20, "\(tenor)Y maturity day should be the 20th")
+            XCTAssertEqual(Int(mdy.year), expectedYear, "\(tenor)Y maturity year")
+        }
+    }
+
+    /// With spread above coupon the buyer pays upfront, and longer
+    /// protection costs strictly more — upfront must increase monotonically
+    /// across the full SNAC tenor ladder.
+    func testUpfrontMonotonicAcrossTenorLadder() {
+        var prev = -Double.greatestFiniteMagnitude
+        for tenor in [1, 2, 3, 4, 5, 7, 10] {
+            let r = CDSCalculator.calculate(tradeDate: refDate, tenorYears: tenor,
+                                            parSpreadBp: 300, couponBp: 100,
+                                            recoveryRate: 0.40, notional: 10_000_000, isBuy: true)!
+            XCTAssertGreaterThan(r.upfrontDollars, prev,
+                                 "\(tenor)Y upfront should exceed the shorter tenor's")
+            prev = r.upfrontDollars
+        }
+    }
+
+    /// Guards the default selection: 5Y must remain the default maturity
+    /// after expanding the grid (index 4), and the label/year arrays must
+    /// stay the same length and aligned.
+    @MainActor
+    func testFeeViewModelTenorGridAndDefault() {
+        let vm = FeeViewModel()
+        XCTAssertEqual(vm.tenorYears, [1, 2, 3, 4, 5, 7, 10])
+        XCTAssertEqual(vm.tenorLabels.count, vm.tenorYears.count)
+        XCTAssertEqual(vm.tenorLabels[vm.maturityIndex], "5Y",
+                       "5Y must remain the default maturity")
+        XCTAssertEqual(vm.tenorYears[vm.maturityIndex], 5)
+    }
+
+    // MARK: - Default-risk (flat-hazard cumulative default probability)
+
+    /// Closed-form values: λ = (150/1e4)/(1−0.40) = 0.025,
+    /// P(T) = 1 − e^(−0.025·T).
+    func testCumulativeDefaultProbClosedForm() {
+        func pd(_ t: Double) -> Double {
+            CDSCalculator.cumulativeDefaultProb(spreadBp: 150, recoveryRate: 0.40, years: t)
+        }
+        XCTAssertEqual(pd(1),  0.0246901, accuracy: 1e-6)
+        XCTAssertEqual(pd(2),  0.0487706, accuracy: 1e-6)
+        XCTAssertEqual(pd(5),  0.1175031, accuracy: 1e-6)
+        XCTAssertEqual(pd(10), 0.2211992, accuracy: 1e-6)
+    }
+
+    func testCumulativeDefaultProbProperties() {
+        // Monotonic increasing in maturity
+        var prev = 0.0
+        for t in [1.0, 2, 3, 4, 5, 7, 10] {
+            let p = CDSCalculator.cumulativeDefaultProb(spreadBp: 150, recoveryRate: 0.40, years: t)
+            XCTAssertGreaterThan(p, prev, "PD should increase with maturity")
+            XCTAssertLessThan(p, 1.0, "PD must stay below 1")
+            prev = p
+        }
+        // Monotonic increasing in spread
+        let pLow  = CDSCalculator.cumulativeDefaultProb(spreadBp: 100, recoveryRate: 0.40, years: 5)
+        let pHigh = CDSCalculator.cumulativeDefaultProb(spreadBp: 400, recoveryRate: 0.40, years: 5)
+        XCTAssertGreaterThan(pHigh, pLow, "Wider spread → higher implied default prob")
+        // Credit triangle λ = S/(1−R): for a fixed spread, higher recovery
+        // ⇒ smaller (1−R) ⇒ larger λ ⇒ higher implied default probability.
+        let pRec20 = CDSCalculator.cumulativeDefaultProb(spreadBp: 150, recoveryRate: 0.20, years: 5)
+        let pRec60 = CDSCalculator.cumulativeDefaultProb(spreadBp: 150, recoveryRate: 0.60, years: 5)
+        XCTAssertGreaterThan(pRec60, pRec20)
+        // Degenerate inputs return 0
+        XCTAssertEqual(CDSCalculator.cumulativeDefaultProb(spreadBp: 150, recoveryRate: 0.40, years: 0), 0)
+        XCTAssertEqual(CDSCalculator.cumulativeDefaultProb(spreadBp: 0,   recoveryRate: 0.40, years: 5), 0)
+        XCTAssertEqual(CDSCalculator.cumulativeDefaultProb(spreadBp: 150, recoveryRate: 1.0, years: 5), 0)
+    }
+
+    // MARK: - First-order risk (CS01 / IR DV01 / Rec01, bump-and-reprice)
+
+    func testRiskMetricsSignsAndNotionalScaling() {
+        let rk = CDSCalculator.riskMetrics(tradeDate: refDate, tenorYears: 5,
+                                           parSpreadBp: 300, couponBp: 100,
+                                           recoveryRate: 0.40, notional: 10_000_000,
+                                           isBuy: true)!
+        // Buyer, spread above coupon: wider spread → buyer pays more.
+        XCTAssertGreaterThan(rk.cs01, 0, "CS01 > 0 for a protection buyer")
+        // Higher recovery → less loss given default → smaller upfront.
+        XCTAssertLessThan(rk.rec01, 0, "Rec01 < 0 (higher recovery lowers upfront)")
+        // IR sensitivity is a second-order effect here: finite and small.
+        XCTAssertTrue(rk.irDV01.isFinite)
+        XCTAssertLessThan(abs(rk.irDV01), abs(rk.cs01))
+        // Linear in notional.
+        let half = CDSCalculator.riskMetrics(tradeDate: refDate, tenorYears: 5,
+                                             parSpreadBp: 300, couponBp: 100,
+                                             recoveryRate: 0.40, notional: 5_000_000,
+                                             isBuy: true)!
+        XCTAssertEqual(rk.cs01, half.cs01 * 2.0,
+                       accuracy: max(1.0, abs(half.cs01) * 0.02))
+    }
+
+    func testRiskMetricsBuySellSymmetry() {
+        let buy  = CDSCalculator.riskMetrics(tradeDate: refDate, tenorYears: 5,
+                                             parSpreadBp: 300, couponBp: 100,
+                                             recoveryRate: 0.40, notional: 10_000_000,
+                                             isBuy: true)!
+        let sell = CDSCalculator.riskMetrics(tradeDate: refDate, tenorYears: 5,
+                                             parSpreadBp: 300, couponBp: 100,
+                                             recoveryRate: 0.40, notional: 10_000_000,
+                                             isBuy: false)!
+        XCTAssertEqual(buy.cs01,   -sell.cs01,   accuracy: 1.0)
+        XCTAssertEqual(buy.rec01,  -sell.rec01,  accuracy: 1.0)
+        XCTAssertEqual(buy.irDV01, -sell.irDV01, accuracy: 1.0)
     }
 
     func testAllRegionRecoveryRatesProduceResults() {
@@ -473,6 +658,51 @@ class icdsTests: XCTestCase {
                        + "= 27/360 days for refDate. Off-by-one if it equals $7,222.22 (= 26 days, T-prevIMM).")
     }
 
+    /// At par the two displayed currency values must be structurally
+    /// distinct: clean upfront ≈ $0 but accrued is meaningful ($7,500 for
+    /// the pinned refDate). Catches a regression where upfrontDollars
+    /// would silently include accrued (which historically appeared on
+    /// the Android port and prompted this guard).
+    func testAtParUpfrontAndAccruedAreIndependent() {
+        let r = CDSCalculator.calculate(tradeDate: refDate, tenorYears: 5,
+                                        parSpreadBp: 100, couponBp: 100,
+                                        recoveryRate: 0.40, notional: 10_000_000, isBuy: true)!
+        XCTAssertLessThan(abs(r.upfrontDollars), 1.0,
+                          "Clean upfront must be ≈ 0 at par; non-zero means accrued bled into upfrontDollars")
+        XCTAssertGreaterThan(r.accrued, 1_000,
+                             "Accrued must be a meaningful dollar amount, not 0")
+        XCTAssertLessThan(r.accrued, 20_000,
+                          "Accrued must not be absurdly large — sanity bound for 100bp/27d/$10M")
+    }
+
+    /// At par the "dirty upfront" (upfrontDollars + accrued) must equal
+    /// accrued exactly (clean upfront is ~0). Catches a sign flip — if
+    /// someone subtracted accrued instead of adding, dirty would become
+    /// ≈ -accrued or 0 at par.
+    func testAtParDirtyUpfrontEqualsAccrued() {
+        let r = CDSCalculator.calculate(tradeDate: refDate, tenorYears: 5,
+                                        parSpreadBp: 100, couponBp: 100,
+                                        recoveryRate: 0.40, notional: 10_000_000, isBuy: true)!
+        let dirty = r.upfrontDollars + r.accrued
+        XCTAssertGreaterThan(dirty, 100.0, "Dirty upfront at par must be ≈ accrued (positive)")
+        XCTAssertEqual(dirty, r.accrued, accuracy: 1.0,
+                       "At par: dirty = 0 + accrued. Any deviation means clean upfront leaked.")
+    }
+
+    /// Off-par identity: dirty − clean = accrued exactly. Locks the
+    /// composition rule so a future refactor of the "DIRTY UPFRONT"
+    /// yellow card cannot quietly switch the formula.
+    func testDirtyUpfrontIsCleanPlusAccruedOffPar() {
+        let r = CDSCalculator.calculate(tradeDate: refDate, tenorYears: 5,
+                                        parSpreadBp: 250, couponBp: 100,
+                                        recoveryRate: 0.40, notional: 10_000_000, isBuy: true)!
+        let dirty = r.upfrontDollars + r.accrued
+        XCTAssertGreaterThan(r.upfrontDollars, 1_000, "Above-coupon spread should have positive clean upfront")
+        XCTAssertGreaterThan(dirty, r.upfrontDollars, "Dirty must exceed clean when accrued > 0")
+        XCTAssertEqual(dirty - r.upfrontDollars, r.accrued, accuracy: 0.01,
+                       "dirty − clean must equal accrued exactly")
+    }
+
     func testPriceRangeReasonable() {
         for spread in [50.0, 100.0, 200.0, 500.0, 1000.0] {
             let r = CDSCalculator.calculate(tradeDate: refDate, tenorYears: 5,
@@ -723,6 +953,17 @@ class icdsTests: XCTestCase {
                            "Weekend fetch should return a prior weekday SOFR date")
     }
 
+    func testRFRFetchEveryCurrencyReturnsRateOrFallback() async {
+        // Parity port of flutter sofr_fetcher_test.dart's multi-currency
+        // coverage. Each currency must return a positive rate (live) or
+        // fall back to the hardcoded value — never throw, never zero.
+        for ccy in RFRCurrency.allCases {
+            let (rate, _) = await RFRFetcher.fetch(ccy)
+            XCTAssertTrue(rate > 0.0 || rate == ccy.fallbackRate,
+                          "\(ccy.rawValue) rate should be > 0 or equal fallback")
+        }
+    }
+
     // MARK: - Helpers
 
     private func d(_ year: Int, _ month: Int, _ day: Int) -> Date {
@@ -754,8 +995,8 @@ class icdsTests: XCTestCase {
                        "2025-04-22", "T+1 TARGET settle should skip Good Friday and Easter Monday")
     }
 
-    func testSettleDateT3ForEM() {
-        // Mon Apr 14 2025 + T+3 nyFed → April 17 (Thu)
+    func testSettleDateT3NyFedCalendar() {
+        // Generic T+3 NY-calendar arithmetic check (Mon Apr 14 2025 → Thu Apr 17)
         XCTAssertEqual(isoDay(CDSCalculator.addBusinessDays(3, to: d(2025,4,14), calendarName: "nyFed")),
                        "2025-04-17")
     }

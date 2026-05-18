@@ -85,9 +85,15 @@ class _CurvesTabState extends State<CurvesTab> {
     );
   }
 
+  // Accent palette per status — used by currency button + rate card border.
+  // Cyan is deliberately distinct from green (live) and yellow (fallback)
+  // so the user can tell at a glance which of the three the data is in.
+  static const _cyan = Color(0xFF4DD0E1);
+
   Color _accent(SOFRDataStatus s) {
     switch (s) {
       case SOFRDataStatus.live:     return AppTheme.orange;
+      case SOFRDataStatus.cached:   return _cyan;
       case SOFRDataStatus.fallback: return Colors.yellow;
       case SOFRDataStatus.loading:  return const Color(0xFF808080);
     }
@@ -101,9 +107,7 @@ class _CurvesTabState extends State<CurvesTab> {
       child: SafeArea(
         child: Column(
           children: [
-            const SizedBox(height: 16),
-            // Title row: full-width so the refresh icon sits flush to the
-            // right edge instead of overlapping the centered title text.
+            const SizedBox(height: 4),
             SizedBox(
               width: double.infinity,
               child: Stack(
@@ -112,60 +116,57 @@ class _CurvesTabState extends State<CurvesTab> {
                   const Text(
                     'Reference Rates',
                     style: TextStyle(
-                      fontSize: 22,
+                      fontSize: 18,
                       fontWeight: FontWeight.bold,
                       color: AppTheme.orange,
                     ),
                   ),
                   Positioned(
-                    right: 16,
+                    right: 8,
                     child: IconButton(
                       tooltip: 'Refresh all currencies',
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
                       icon: _refreshing
                           ? const SizedBox(
-                              width: 18, height: 18,
+                              width: 16, height: 16,
                               child: CircularProgressIndicator(
                                 strokeWidth: 2, color: AppTheme.orange,
                               ),
                             )
-                          : const Icon(Icons.refresh, color: AppTheme.orange),
+                          : const Icon(Icons.refresh, color: AppTheme.orange, size: 20),
                       onPressed: _refreshing ? null : _refresh,
                     ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 4),
-            const Text(
-              'Live RFR overnight rates by currency',
-              style: TextStyle(fontSize: 12, color: Color(0xFF737373)),
-            ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 6),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: _currencyPicker(),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 4),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: _statusBanner(selStatus),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 4),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: _overnightBanner(selStatus),
             ),
             if (_allFallback()) ...[
-              const SizedBox(height: 8),
+              const SizedBox(height: 4),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: _offlineBanner(),
               ),
             ],
-            const SizedBox(height: 12),
+            const SizedBox(height: 6),
             const Divider(color: Color(0xFF333333), height: 1),
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+              padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -191,14 +192,14 @@ class _CurvesTabState extends State<CurvesTab> {
                   final p = ReferenceCurves.forCurrency(_selected)[i];
                   return Container(
                     color: Colors.black,
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 3),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
                           p.tenor,
                           style: const TextStyle(
-                            fontSize: 15,
+                            fontSize: 13,
                             fontFamily: 'Menlo',
                             color: AppTheme.dimText,
                           ),
@@ -206,7 +207,7 @@ class _CurvesTabState extends State<CurvesTab> {
                         Text(
                           '${(p.rate * 100).toStringAsFixed(4)}%',
                           style: const TextStyle(
-                            fontSize: 15,
+                            fontSize: 13,
                             fontFamily: 'Menlo',
                             fontWeight: FontWeight.w600,
                             color: AppTheme.orange,
@@ -256,6 +257,13 @@ class _CurvesTabState extends State<CurvesTab> {
         border = Colors.transparent;
         borderW = 0;
         break;
+      case SOFRDataStatus.cached:
+        bg = selected ? _cyan.withValues(alpha: 0.30)
+                      : _cyan.withValues(alpha: 0.10);
+        fg = _cyan;
+        border = _cyan;
+        borderW = 1.5;
+        break;
       case SOFRDataStatus.live:
         bg = selected ? AppTheme.orange.withValues(alpha: 0.30)
                       : const Color(0xFF262626);
@@ -268,7 +276,7 @@ class _CurvesTabState extends State<CurvesTab> {
       onTap: () => setState(() => _selected = ccy),
       borderRadius: BorderRadius.circular(6),
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 8),
+        padding: const EdgeInsets.symmetric(vertical: 6),
         decoration: BoxDecoration(
           color: bg,
           borderRadius: BorderRadius.circular(6),
@@ -277,7 +285,7 @@ class _CurvesTabState extends State<CurvesTab> {
         alignment: Alignment.center,
         child: Text(
           ccy.code,
-          style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: fg),
+          style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: fg),
         ),
       ),
     );
@@ -301,6 +309,12 @@ class _CurvesTabState extends State<CurvesTab> {
         fg = Colors.green;
         bg = Colors.green.withValues(alpha: 0.08);
         break;
+      case SOFRDataStatus.cached:
+        icon = const _Dot(color: _cyan);
+        text = 'CACHED  ·  ${_selected.sourceLabel}';
+        fg = _cyan;
+        bg = _cyan.withValues(alpha: 0.08);
+        break;
       case SOFRDataStatus.fallback:
         icon = const Icon(Icons.warning_rounded, size: 14, color: Colors.yellow);
         text = 'Reference rate — ${_selected.sourceLabel}';
@@ -309,13 +323,13 @@ class _CurvesTabState extends State<CurvesTab> {
         break;
     }
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(6)),
       child: Row(
         children: [
           icon,
           const SizedBox(width: 6),
-          Text(text, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: fg)),
+          Text(text, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: fg)),
         ],
       ),
     );
@@ -326,7 +340,7 @@ class _CurvesTabState extends State<CurvesTab> {
     final date = formatIsoDate(_store.effectiveDateFor(_selected));
     final accent = _accent(s);
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
         color: const Color(0xFF141414),
         borderRadius: BorderRadius.circular(8),
@@ -346,7 +360,7 @@ class _CurvesTabState extends State<CurvesTab> {
                     ? 'loading…'
                     : '${(rate * 100).toStringAsFixed(4)}%',
                 style: TextStyle(
-                  fontSize: 28,
+                  fontSize: 22,
                   fontWeight: FontWeight.bold,
                   fontFamily: 'Menlo',
                   color: accent,
@@ -362,7 +376,7 @@ class _CurvesTabState extends State<CurvesTab> {
               Text(
                 date.isEmpty ? '—' : date,
                 style: TextStyle(
-                  fontSize: 13,
+                  fontSize: 12,
                   fontFamily: 'Menlo',
                   color: s == SOFRDataStatus.fallback ? Colors.red : const Color(0xFFB3B3B3),
                 ),
