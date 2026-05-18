@@ -35,9 +35,11 @@ class icdsUITests: XCTestCase {
     }
 
     /// Capture App Store screenshots in 6 states.
-    /// Run with:
-    ///   xcodebuild ... -only-testing:icdsUITests/icdsUITests/testCaptureAppStoreScreenshots
-    /// Then extract PNGs from the xcresult bundle via xcresulttool.
+    ///
+    /// **Preferred entry point:** `icds/store_screenshots/refresh.sh` — runs
+    /// this test, extracts the attachments, drops them into
+    /// `icds/store_screenshots/`, and re-encodes 01_calc_par as the README
+    /// hero JPEG. Single command, no manual extraction.
     func testCaptureAppStoreScreenshots() {
         let app = XCUIApplication()
         // app was launched in setUp()
