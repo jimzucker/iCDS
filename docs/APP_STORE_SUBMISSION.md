@@ -1,4 +1,4 @@
-# App Store Submission — iCDS 3.2.1
+# App Store Submission — iCDS 3.3.0
 
 Each section below is the field's content as plain text, ready to copy-paste into App Store Connect.
 
@@ -46,8 +46,14 @@ Source code: Apache 2.0. Pricing engine: ISDA CDS Standard Model Public License 
 
 ---
 
-## What's New in This Version (3.2.x)
+## What's New in This Version (3.3.0)
 
+• Universal Apple build — same iCDS now runs natively on iPhone, iPad, and Mac (via Mac Catalyst), all from one App Store purchase
+• iPad layout — content rendered as a centered phone-width column with proper side margins; Split View / Slide Over supported in landscape and portrait
+• Mac window — honors system Light/Dark appearance; Help menu now exposes Documentation & Source, Privacy Policy, and Report an Issue
+• Apache 2.0 license-consistency test suite — every CI build verifies the in-app license attribution matches the canonical source
+
+(Previous 3.2.x notes — kept for reference)
 • 7 SNAC tenors selectable from one segmented row (1Y / 2Y / 3Y / 4Y / 5Y / 7Y / 10Y)
 • Default-risk-by-maturity chart — cumulative default probability implied by the quoted spread at each tenor; tap a bar to switch maturity
 • First-order risk row — CS01, IR DV01, Rec01 via bump-and-reprice

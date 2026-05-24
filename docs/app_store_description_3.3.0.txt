@@ -1,0 +1,37 @@
+iCDS is a free Credit Default Swap upfront fee calculator built on the official ISDA CDS Standard Model — the same pricing engine used across institutional fixed-income desks. One universal build runs natively on iPhone, iPad, and Mac.
+
+Enter a quoted spread, coupon, recovery, notional, and tenor. iCDS computes the SNAC (Standard North American CDS) upfront charge live as you change inputs, with the dirty upfront, accrued, par spread, and first-order risk metrics visible alongside.
+
+WHAT'S INSIDE
+• ISDA CDS Standard Model (v1.8.3) compiled directly into the app
+• Seven SNAC maturities in one segmented row: 1Y / 2Y / 3Y / 4Y / 5Y / 7Y / 10Y
+• DIRTY UPFRONT card — total cash to settle (upfront fee + accrued), with components shown alongside
+• Default-risk-by-maturity chart — implied cumulative default probability at each tenor; tap a bar to price it
+• First-order risk metrics on every trade — CS01, IR DV01, Rec01 (bump-and-reprice)
+• Live overnight reference-rate curves from five central banks:
+  – USD SOFR (Federal Reserve Bank of New York)
+  – EUR €STR (European Central Bank)
+  – GBP SONIA (Bank of England)
+  – JPY TONA proxy (FRED / St. Louis Fed)
+  – AUD AONIA (Reserve Bank of Australia)
+• Six regional contracts: NA, EM, EU, Asia, Japan, AUS
+• Spread input via preset chips and a numeric keypad; cap raised to 10,000 bp for distressed credits
+• ISDA RFR test-grid validation across all five currencies
+• In-app Diagnostics tab — deterministic self-tests for the pricing engine, IMM helpers, regional holiday calendars, and live overnight-rate fetchers
+
+NEW IN 3.3.0
+• Universal Apple build — runs natively on iPhone, iPad, and Mac
+• iPad: phone-width centered column with proper margins; Split View / Slide Over supported
+• Mac: Help menu with Documentation, Privacy Policy, and Report an Issue; system Light/Dark appearance honored
+
+WHO IT'S FOR
+Quantitative finance students, fixed-income professionals, and developers exploring CDS pricing. Source is open under Apache 2.0.
+
+NOT FOR
+Booking, settlement, trading, or any decision with real money behind it. iCDS produces indicative pricing only — not financial, investment, or trading advice. Rates may be delayed; calculations use a flat overnight-rate discount curve, a standard simplification.
+
+PRIVACY
+No data collection. No tracking. No accounts. Reference rates are fetched live from public central-bank endpoints.
+
+LICENSE
+Source code: Apache 2.0. Pricing engine: ISDA CDS Standard Model Public License (© 2009 JPMorgan Chase Bank, N.A., developed with Markit). Not affiliated with, endorsed by, or sponsored by ISDA, Markit, JPMorgan Chase, or any rate provider.

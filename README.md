@@ -24,6 +24,12 @@ For support please create a ticket at: https://github.com/jimzucker/iCDS/issues
 
 # Release Notes
 
+## 3.3
+- **Universal Apple build** — iCDS now ships as one universal binary across iPhone, iPad, and Mac (via Mac Catalyst). One App Store record, one set of release notes.
+- **iPad layout** — content centered as a phone-width column on iPad with proper margins; Split View / Slide Over supported.
+- **Mac menu bar** — Help menu picks up Documentation & Source, Privacy Policy, and Report an Issue items. Mac window honors system Light/Dark appearance (iPhone + iPad still locked dark).
+- **License-consistency test suite** — Apache 2.0 attribution is now verified on every CI run on both Swift and Dart sides.
+
 ## 3.1.x
 - **Now on Android** — full Flutter / Dart-FFI port with bit-identical numerical results to the iOS app. Available on Google Play.
 - **Default-risk-by-maturity chart** — cumulative default probability implied by the quoted spread at each tenor; tap a bar to switch maturity.
