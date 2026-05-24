@@ -17,4 +17,41 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         return true
     }
+
+    #if targetEnvironment(macCatalyst)
+    override func buildMenu(with builder: UIMenuBuilder) {
+        super.buildMenu(with: builder)
+
+        let privacyItem = UICommand(
+            title: "Privacy Policy",
+            action: #selector(openPrivacy)
+        )
+        let docsItem = UICommand(
+            title: "Documentation & Source",
+            action: #selector(openDocs)
+        )
+        let issuesItem = UICommand(
+            title: "Report an Issue",
+            action: #selector(openIssues)
+        )
+        let helpLinks = UIMenu(
+            identifier: UIMenu.Identifier("com.ijaz.icds.help.links"),
+            options: .displayInline,
+            children: [docsItem, privacyItem, issuesItem]
+        )
+        builder.insertChild(helpLinks, atStartOfMenu: .help)
+    }
+
+    @objc func openPrivacy() {
+        UIApplication.shared.open(URL(string: "https://jimzucker.github.io/iCDS/PRIVACY")!)
+    }
+
+    @objc func openDocs() {
+        UIApplication.shared.open(URL(string: "https://jimzucker.github.io/iCDS/")!)
+    }
+
+    @objc func openIssues() {
+        UIApplication.shared.open(URL(string: "https://github.com/jimzucker/iCDS/issues")!)
+    }
+    #endif
 }

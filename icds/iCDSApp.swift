@@ -12,8 +12,14 @@ import SwiftUI
 struct iCDSApp: App {
     var body: some Scene {
         WindowGroup {
+            // iPhone + iPad: force dark — the orange/yellow palette was
+            // designed for a black background. Mac Catalyst: honor system
+            // appearance so the window blends with the user's desktop.
+            #if targetEnvironment(macCatalyst)
             ContentView()
-                .preferredColorScheme(.dark)
+            #else
+            ContentView().preferredColorScheme(.dark)
+            #endif
         }
     }
 }
