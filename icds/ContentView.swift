@@ -28,17 +28,47 @@ struct ContentView: View {
     }
 }
 
-/// Caps each tab's content at ~480pt and centers it. No-op on iPhone (every
-/// device is narrower than 480pt) so iPhone rendering is unchanged. On iPad
-/// and Mac Catalyst this prevents content from stretching edge-to-edge.
+/// Caps each tab's content at ~480pt and centers it. On iPad and Mac
+/// Catalyst the content is *also* scaled up by `iPadScale` so the same
+/// phone-width column renders at a more readable size. No-op on iPhone
+/// (every device is narrower than 480pt and `horizontalSizeClass` is
+/// `.compact`) — iPhone rendering is unchanged.
 private struct IPadContentCap: ViewModifier {
+    @Environment(\.horizontalSizeClass) private var hSizeClass
+
+    /// Visual zoom for tab content on iPad / Mac. 1.3× boosts every
+    /// `.font(.system(size:))` site without rewriting them. Bump if you
+    /// want even larger text.
+    private static let iPadScale: CGFloat = 1.3
+
+    private var shouldScale: Bool {
+        #if targetEnvironment(macCatalyst)
+        return true
+        #else
+        return hSizeClass == .regular
+        #endif
+    }
+
     func body(content: Content) -> some View {
-        HStack(spacing: 0) {
-            Spacer(minLength: 0)
-            content.frame(maxWidth: 480)
-            Spacer(minLength: 0)
+        let columnWidth: CGFloat = 480
+        if shouldScale {
+            HStack(spacing: 0) {
+                Spacer(minLength: 0)
+                content
+                    .frame(width: columnWidth)
+                    .scaleEffect(Self.iPadScale, anchor: .top)
+                    // Reserve room for the scaled column so the surrounding
+                    // Spacers don't squeeze it back.
+                    .frame(width: columnWidth * Self.iPadScale)
+                Spacer(minLength: 0)
+            }
+            .background(Color.black)
+        } else {
+            // iPhone path: leave layout alone (cap as maxWidth so narrow
+            // devices stay full-width instead of getting a forced 480pt
+            // frame that overflows on small phones).
+            content.frame(maxWidth: columnWidth)
         }
-        .background(Color.black)
     }
 }
 
