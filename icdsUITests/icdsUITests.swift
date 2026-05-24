@@ -51,34 +51,64 @@ class icdsUITests: XCTestCase {
         // 03 — Spread picker open at distressed value (1100 bp). Tap the QUOTED SPREAD card.
         let spreadCard = app.buttons.matching(NSPredicate(format: "label CONTAINS 'QUOTED SPREAD'")).firstMatch
         XCTAssertTrue(spreadCard.waitForExistence(timeout: 3), "QUOTED SPREAD card not found")
-        spreadCard.tap()
+        // iOS 26 reports the centered card as "not hittable" via the standard
+        // .tap() path on iPad (XCTest's hit-test gate is stricter under the
+        // new floating tab bar layout). Coordinate-based taps bypass the
+        // gate and work identically on iPhone, so use them everywhere.
+        forceTap(spreadCard)
 
         // Tap "Coupon +1,000" chip (sets spread = coupon + 1000 = 1100 bp)
         let chip = app.buttons["Coupon +1,000"]
         XCTAssertTrue(chip.waitForExistence(timeout: 3), "Coupon +1,000 chip not found")
-        chip.tap()
+        forceTap(chip)
         sleep(1)
         capture(named: "03_spread_picker")
 
         // 02 — Calc tab distressed: tap Done, capture
-        app.buttons["Done"].tap()
+        forceTap(app.buttons["Done"])
         sleep(1)
         capture(named: "02_calc_distressed")
 
         // 04 — Curves tab (USD selected by default, shows LIVE)
-        app.tabBars.buttons["Curves"].tap()
+        tapTab(in: app, named: "Curves")
         sleep(2) // RFR rates may finish fetching
         capture(named: "04_curves")
 
         // 05 — Info tab
-        app.tabBars.buttons["Info"].tap()
+        tapTab(in: app, named: "Info")
         sleep(1)
         capture(named: "05_info")
 
         // 06 — Diag tab
-        app.tabBars.buttons["Diag"].tap()
+        tapTab(in: app, named: "Diag")
         sleep(2) // let any diag tests render
         capture(named: "06_diag")
+    }
+
+    /// Tap a TabView item by label. iOS 26 introduced `_UIFloatingTabBarItemView`
+    /// for iPad which XCTest exposes with element type `.other`, so the legacy
+    /// `app.tabBars.buttons[name]` query returns nothing on iPad. Walk both
+    /// surfaces — legacy bottom bar first, then any element with the matching
+    /// label — so the same test runs on iPhone and iPad.
+    private func tapTab(in app: XCUIApplication, named name: String) {
+        let legacy = app.tabBars.buttons[name]
+        if legacy.exists {
+            forceTap(legacy)
+            return
+        }
+        let floating = app.descendants(matching: .any)
+            .matching(NSPredicate(format: "label == %@", name))
+            .firstMatch
+        XCTAssertTrue(floating.waitForExistence(timeout: 3),
+                      "Tab item '\(name)' not found (neither legacy nor floating)")
+        forceTap(floating)
+    }
+
+    /// Tap the centre of an element via its coordinate space. Bypasses
+    /// XCTest's hittability gate, which under iOS 26 sometimes refuses a
+    /// .tap() on visually unobstructed iPad elements.
+    private func forceTap(_ element: XCUIElement) {
+        element.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
     }
 
     private func capture(named name: String) {
