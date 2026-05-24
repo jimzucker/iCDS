@@ -12,15 +12,39 @@ struct ContentView: View {
     var body: some View {
         TabView {
             FeeView()
+                .iPadContentCap()
                 .tabItem { Label("Calc", image: "CalcTabbarIcon") }
             LiborView()
+                .iPadContentCap()
                 .tabItem { Label("Curves", systemImage: "chart.line.uptrend.xyaxis") }
             InfoView()
+                .iPadContentCap()
                 .tabItem { Label("Info", systemImage: "info.circle") }
             DiagnosticsView()
+                .iPadContentCap()
                 .tabItem { Label("Diag", systemImage: "testtube.2") }
         }
         .accentColor(.orange)
+    }
+}
+
+/// Caps each tab's content at ~480pt and centers it. No-op on iPhone (every
+/// device is narrower than 480pt) so iPhone rendering is unchanged. On iPad
+/// and Mac Catalyst this prevents content from stretching edge-to-edge.
+private struct IPadContentCap: ViewModifier {
+    func body(content: Content) -> some View {
+        HStack(spacing: 0) {
+            Spacer(minLength: 0)
+            content.frame(maxWidth: 480)
+            Spacer(minLength: 0)
+        }
+        .background(Color.black)
+    }
+}
+
+extension View {
+    fileprivate func iPadContentCap() -> some View {
+        modifier(IPadContentCap())
     }
 }
 
