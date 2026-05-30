@@ -1,3 +1,11 @@
+//
+//  icds_spike_bindings_generated.dart
+//  icds
+//
+//  Copyright © 2016-2026 James A. Zucker.
+//  Licensed under the Apache License, Version 2.0 — see LICENSE in project root.
+//
+
 // Hand-written FFI binding for the spike. Real plugin would use ffigen
 // against the full ISDA header set; for spike validation a manual binding
 // is faster to read.

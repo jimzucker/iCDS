@@ -26,6 +26,7 @@ exclude:
   - Gemfile
   - Gemfile.lock
   - LICENSE
+  - NOTICES.md
   - CLAUDE.md
   - APP_STORE_SUBMISSION.md
   - PLAY_STORE_SUBMISSION.md

@@ -1,3 +1,11 @@
+//
+//  cds_reference_test.dart
+//  icds
+//
+//  Copyright © 2016-2026 James A. Zucker.
+//  Licensed under the Apache License, Version 2.0 — see LICENSE in project root.
+//
+
 /// Integration-test parity port of `iCDS/icdsTests/CDSReferenceTests.swift`.
 /// Validates the Dart-side ISDA C wrapper against the same QuantLib /
 /// ISDA RFR reference values the iOS suite anchors on. All cases use

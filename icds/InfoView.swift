@@ -16,6 +16,7 @@ struct InfoView: View {
     private let apacheURL = URL(string: "https://www.apache.org/licenses/LICENSE-2.0")!
     private let isdaURL = URL(string: "https://www.cdsmodel.com")!
     private let docsURL = URL(string: "https://jimzucker.github.io/iCDS/")!
+    private let licensesURL = URL(string: "https://jimzucker.github.io/iCDS/licenses")!
 
     var body: some View {
         ScrollView {
@@ -75,9 +76,9 @@ struct InfoView: View {
             attributionBlock(
                 title: "Pricing engine",
                 lines: [
-                    "ISDA CDS Standard Model",
+                    "This application is based on the ISDA CDS Standard Model (version 1.8.3), developed and supported in collaboration with Markit Group Ltd.",
                     "© 2009 JPMorgan Chase Bank, N.A.",
-                    "Licensed under the ISDA CDS Standard Model Public License"
+                    "Licensed under the ISDA CDS Standard Model Public Licence 1.0"
                 ],
                 link: ("www.cdsmodel.com", isdaURL)
             )
@@ -125,6 +126,11 @@ struct InfoView: View {
             Link("apache.org/licenses/LICENSE-2.0", destination: apacheURL)
                 .font(.caption2)
                 .foregroundColor(orange)
+
+            Link("Licenses & Acknowledgements", destination: licensesURL)
+                .font(.caption.weight(.semibold))
+                .foregroundColor(orange)
+                .padding(.top, 6)
         }
     }
 

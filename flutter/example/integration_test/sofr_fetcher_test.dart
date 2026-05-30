@@ -1,3 +1,11 @@
+//
+//  sofr_fetcher_test.dart
+//  icds
+//
+//  Copyright © 2016-2026 James A. Zucker.
+//  Licensed under the Apache License, Version 2.0 — see LICENSE in project root.
+//
+
 /// Integration-test parity port of the SOFR network section of
 /// `icdsTests.swift`. All assertions skip-if-offline (mirroring the
 /// Swift `guard date != "unavailable" else { return }` pattern) so the

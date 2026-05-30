@@ -1,3 +1,11 @@
+//
+//  icds_spike.dart
+//  icds
+//
+//  Copyright © 2016-2026 James A. Zucker.
+//  Licensed under the Apache License, Version 2.0 — see LICENSE in project root.
+//
+
 import 'dart:ffi';
 import 'dart:io';
 

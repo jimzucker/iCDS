@@ -1,3 +1,11 @@
+//
+//  cds_calculator_test.dart
+//  icds
+//
+//  Copyright © 2016-2026 James A. Zucker.
+//  Licensed under the Apache License, Version 2.0 — see LICENSE in project root.
+//
+
 /// Integration-test parity port of `icdsTests.swift`'s pricing-property
 /// section. Runs on iOS simulator / Android emulator — the FFI native
 /// library is loaded by the plugin at startup.

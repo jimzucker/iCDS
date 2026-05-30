@@ -1,6 +1,15 @@
+//
+//  reference_curves.dart
+//  icds
+//
+//  Copyright © 2016-2026 James A. Zucker.
+//  Licensed under the Apache License, Version 2.0 — see LICENSE in project root.
+//
+
 /// ISDA RFR test grid · 2021-04-26 snapshot — the per-currency reference
 /// swap curves displayed by the Curves tab. Direct port of the static
 /// arrays in `iCDS/icds/LiborView.swift`.
+library;
 
 import 'sofr_fetcher.dart';
 

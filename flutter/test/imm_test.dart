@@ -1,5 +1,14 @@
+//
+//  imm_test.dart
+//  icds
+//
+//  Copyright © 2016-2026 James A. Zucker.
+//  Licensed under the Apache License, Version 2.0 — see LICENSE in project root.
+//
+
 /// Pure-Dart parity port of `icdsTests.swift`'s IMM Date Helpers section.
 /// Run with: `flutter test test/imm_test.dart`
+library;
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:icds_spike/cds_calculator.dart';

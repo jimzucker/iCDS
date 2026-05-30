@@ -1,7 +1,16 @@
+//
+//  signed_currency_test.dart
+//  icds
+//
+//  Copyright © 2016-2026 James A. Zucker.
+//  Licensed under the Apache License, Version 2.0 — see LICENSE in project root.
+//
+
 /// Regression tests for formatSignedCurrency in theme.dart.
 /// Guards against re-introducing "−$0" on the Fee tab when par-spread
 /// = coupon makes upfrontDollars a tiny negative double from numerical
 /// noise. Pure Dart — no FFI, no device.
+library;
 
 import 'package:flutter_test/flutter_test.dart';
 

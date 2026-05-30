@@ -1,5 +1,14 @@
+//
+//  contract.dart
+//  icds
+//
+//  Copyright © 2016-2026 James A. Zucker.
+//  Licensed under the Apache License, Version 2.0 — see LICENSE in project root.
+//
+
 /// SNAC contract metadata loaded from contracts.json (the JSON-converted
 /// form of iCDS/icds/contracts.plist). Mirrors `ISDAContract.swift`.
+library;
 
 import 'dart:convert';
 

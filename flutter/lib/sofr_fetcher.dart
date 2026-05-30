@@ -1,3 +1,11 @@
+//
+//  sofr_fetcher.dart
+//  icds
+//
+//  Copyright © 2016-2026 James A. Zucker.
+//  Licensed under the Apache License, Version 2.0 — see LICENSE in project root.
+//
+
 /// Multi-currency RFR (Risk-Free Rate) fetcher, ported from
 /// `iCDS/icds/SOFRFetcher.swift`. Despite the file name, covers SOFR,
 /// €STR, SONIA, TONA, AONIA. Mirrors the Swift module's public surface:

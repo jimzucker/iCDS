@@ -1,0 +1,8 @@
+iCDS is licensed under the Apache License, Version 2.0.
+
+The canonical LICENSE file lives at the repository root: ../LICENSE
+or online: https://www.apache.org/licenses/LICENSE-2.0
+
+The ISDA CDS Standard Model C library bundled under icds/isdamodel/
+is distributed under the ISDA CDS Standard Model Public Licence 1.0;
+see icds/isdamodel/LICENSE for the full text.

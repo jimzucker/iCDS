@@ -1,3 +1,11 @@
+//
+//  info_tab_links_test.dart
+//  icds
+//
+//  Copyright © 2016-2026 James A. Zucker.
+//  Licensed under the Apache License, Version 2.0 — see LICENSE in project root.
+//
+
 /// Widget test: every Info-tab link calls launchUrl with the right URI.
 ///
 /// Why this test exists: in 3.1.0 the Android Info-tab links silently
@@ -6,6 +14,7 @@
 /// entry, and (b) we had no test exercising the launch path. This
 /// covers (b). The complementary lint for the AndroidManifest itself
 /// lives in `test/android_manifest_lint_test.dart`.
+library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';

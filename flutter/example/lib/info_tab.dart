@@ -1,3 +1,11 @@
+//
+//  info_tab.dart
+//  icds
+//
+//  Copyright © 2016-2026 James A. Zucker.
+//  Licensed under the Apache License, Version 2.0 — see LICENSE in project root.
+//
+
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -8,10 +16,11 @@ class InfoTab extends StatelessWidget {
   const InfoTab({super.key, this.version = '3.2.1'});
   final String version;
 
-  static final _apacheURL  = Uri.parse('https://www.apache.org/licenses/LICENSE-2.0');
-  static final _isdaURL    = Uri.parse('https://www.cdsmodel.com');
-  static final _docsURL    = Uri.parse('https://jimzucker.github.io/iCDS/');
-  static final _privacyURL = Uri.parse('https://jimzucker.github.io/iCDS/PRIVACY');
+  static final _apacheURL   = Uri.parse('https://www.apache.org/licenses/LICENSE-2.0');
+  static final _isdaURL     = Uri.parse('https://www.cdsmodel.com');
+  static final _docsURL     = Uri.parse('https://jimzucker.github.io/iCDS/');
+  static final _licensesURL = Uri.parse('https://jimzucker.github.io/iCDS/licenses');
+  static final _privacyURL  = Uri.parse('https://jimzucker.github.io/iCDS/PRIVACY');
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +37,7 @@ class InfoTab extends StatelessWidget {
               const _DividerLine(),
               _disclaimersSection(),
               const _DividerLine(),
-              _legalSection(),
+              _legalSection(context),
             ],
           ),
         ),
@@ -85,9 +94,9 @@ class InfoTab extends StatelessWidget {
         _AttributionBlock(
           title: 'Pricing engine',
           lines: const [
-            'ISDA CDS Standard Model',
+            'This application is based on the ISDA CDS Standard Model (version 1.8.3), developed and supported in collaboration with Markit Group Ltd.',
             '© 2009 JPMorgan Chase Bank, N.A.',
-            'Licensed under the ISDA CDS Standard Model Public License',
+            'Licensed under the ISDA CDS Standard Model Public Licence 1.0',
           ],
           link: ('www.cdsmodel.com', _isdaURL),
         ),
@@ -121,7 +130,7 @@ class InfoTab extends StatelessWidget {
     );
   }
 
-  Widget _legalSection() {
+  Widget _legalSection(BuildContext context) {
     return Column(
       children: [
         const Text(
@@ -136,6 +145,26 @@ class InfoTab extends StatelessWidget {
           onTap: () => _open(_apacheURL),
           child: const Text(
             'apache.org/licenses/LICENSE-2.0',
+            style: TextStyle(fontSize: 11, color: AppTheme.orange),
+          ),
+        ),
+        const SizedBox(height: 8),
+        InkWell(
+          onTap: () => _open(_licensesURL),
+          child: const Text(
+            'Licenses & Acknowledgements',
+            style: TextStyle(fontSize: 13, color: AppTheme.orange, fontWeight: FontWeight.w600),
+          ),
+        ),
+        const SizedBox(height: 4),
+        InkWell(
+          onTap: () => showLicensePage(
+            context: context,
+            applicationName: 'iCDS',
+            applicationLegalese: '© 2016-2026 James A. Zucker. Apache License 2.0.',
+          ),
+          child: const Text(
+            'Open-source licenses (offline)',
             style: TextStyle(fontSize: 11, color: AppTheme.orange),
           ),
         ),

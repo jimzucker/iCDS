@@ -1,3 +1,11 @@
+//
+//  cds_holiday_calendar.dart
+//  icds
+//
+//  Copyright © 2016-2026 James A. Zucker.
+//  Licensed under the Apache License, Version 2.0 — see LICENSE in project root.
+//
+
 /// Regional holiday calendars for CDS settlement-date arithmetic, ported
 /// from `iCDS/icds/CDSCalculator.swift` (`CDSHolidayCalendar`). Used for
 /// trade-date defaulting and T+N business-day settle calculation; the

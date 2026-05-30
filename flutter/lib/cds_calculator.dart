@@ -1,7 +1,16 @@
+//
+//  cds_calculator.dart
+//  icds
+//
+//  Copyright © 2016-2026 James A. Zucker.
+//  Licensed under the Apache License, Version 2.0 — see LICENSE in project root.
+//
+
 /// Dart-side helpers that mirror `iCDS/icds/CDSCalculator.swift`'s pre-call
 /// date logic and result struct: prev/next IMM dates, region-aware
 /// business-day adder, and a CdsResult that carries the same set of
 /// outputs as the Swift app's CDSResult.
+library;
 
 import 'dart:math' as math;
 

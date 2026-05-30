@@ -1,7 +1,16 @@
+//
+//  fee_view_model.dart
+//  icds
+//
+//  Copyright © 2016-2026 James A. Zucker.
+//  Licensed under the Apache License, Version 2.0 — see LICENSE in project root.
+//
+
 /// Reactive state for the Fee tab. Mirrors `FeeViewModel.swift`'s public
 /// surface (region/buy-sell/notional/maturity/coupon/recovery/spread/
 /// trade-date inputs, and result/discountRate/discountRateStatus
 /// outputs) using `ChangeNotifier` instead of Combine `@Published`.
+library;
 
 import 'dart:async' show unawaited;
 

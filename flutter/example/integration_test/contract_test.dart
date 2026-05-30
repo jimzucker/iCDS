@@ -1,3 +1,11 @@
+//
+//  contract_test.dart
+//  icds
+//
+//  Copyright © 2016-2026 James A. Zucker.
+//  Licensed under the Apache License, Version 2.0 — see LICENSE in project root.
+//
+
 /// Integration-test parity port of `icdsTests.swift`'s ISDAContract /
 /// plist-loading section. Uses rootBundle so it must run on a device
 /// (sim/emulator).
