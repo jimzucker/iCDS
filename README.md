@@ -10,13 +10,6 @@ It recalculates the upfront fee and intermediate results live as you change inpu
 
 ## Background
 
-<style>
-.bg-screenshot { float: right; max-width: 292px; height: auto; margin: 0 0 1em 1.5em; }
-@media (max-width: 720px) {
-  .bg-screenshot { float: none; display: block; margin: 1em auto; max-width: 70%; }
-}
-</style>
-
 <img class="bg-screenshot" src="images/JPEG_iCDSWikiScreenShoot.jpg" width="292">
 
 I started this project when as a 'former' Mac developer I was swept up by the excitement of the iPhone App phenomenon. This led me to a drive to get a non-trivial application into the App Store. I convinced my family to buy me a MacBookPro for my birthday in Sept, 2009 and about 20 hours of effort latter I had my first GUI prototype running on the simulator.
@@ -48,12 +41,13 @@ For support please create a ticket at: https://github.com/jimzucker/iCDS/issues
 - SNAC (Standard North American CDS) upfront fee calculator using the ISDA Standard CDS Model
 
 ## License
-Copyright © 2016-2026 James A. Zucker.
+Copyright © 2010-2026 James A. Zucker.
 
 iCDS application source code is licensed under the **Apache License, Version 2.0** — see [LICENSE](LICENSE) or <https://www.apache.org/licenses/LICENSE-2.0>.
 
 ### Third-party components
 - **ISDA CDS Standard Model** (C library, `icds/isdamodel/`) — © 2009 International Swaps and Derivatives Association, Inc. Licensed under the ISDA CDS Standard Model Public License — see [Licenses/ISDA_CDS_Standard_Model_Public_Licence_1.0.txt](Licenses/ISDA_CDS_Standard_Model_Public_Licence_1.0.txt). Available at <https://www.cdsmodel.com>.
+- **Flutter / Android pub dependencies** (`shared_preferences`, `http`, `intl`, `ffi`, `plugin_platform_interface`, `url_launcher`, `cronet_http`, `in_app_review`, `cupertino_icons`) ship under BSD-3-Clause or MIT. See [NOTICES.md](NOTICES.md) for the bundled-components inventory, or the hosted [Licenses & Acknowledgements](https://jimzucker.github.io/iCDS/licenses) page for the full verbatim notices.
 - **Reference rates** are fetched live from public central-bank endpoints (NY Fed, ECB, BoE, FRED/St. Louis Fed, RBA) and used for indicative pricing only.
 
 ### Disclaimer

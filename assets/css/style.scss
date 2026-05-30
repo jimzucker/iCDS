@@ -1,0 +1,24 @@
+---
+---
+
+@import "{{ site.theme }}";
+
+// README "Background" section screenshot — floats right on desktop, stacks
+// centered on phones. Previously inlined as a <style> block at the top of
+// README.md, but cayman/kramdown's HTML-block passthrough wasn't reliable
+// mid-document and rendered the CSS as visible text on the Pages site.
+.bg-screenshot {
+  float: right;
+  max-width: 292px;
+  height: auto;
+  margin: 0 0 1em 1.5em;
+}
+
+@media (max-width: 720px) {
+  .bg-screenshot {
+    float: none;
+    display: block;
+    margin: 1em auto;
+    max-width: 70%;
+  }
+}

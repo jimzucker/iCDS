@@ -3,7 +3,7 @@
 //  icds
 //
 //  Created by Jim Zucker on 5/10/16.
-//  Copyright © 2016-2026 James A. Zucker.
+//  Copyright © 2010-2026 James A. Zucker.
 //  Licensed under the Apache License, Version 2.0 — see LICENSE in project root.
 //
 // NOTE: Entry point is iCDSApp.swift (@main SwiftUI App struct).

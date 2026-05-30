@@ -2,7 +2,7 @@
 //  info_tab.dart
 //  icds
 //
-//  Copyright © 2016-2026 James A. Zucker.
+//  Copyright © 2010-2026 James A. Zucker.
 //  Licensed under the Apache License, Version 2.0 — see LICENSE in project root.
 //
 
@@ -134,7 +134,7 @@ class InfoTab extends StatelessWidget {
     return Column(
       children: [
         const Text(
-          '© 2016-2026 James A. Zucker',
+          '© 2010-2026 James A. Zucker',
           style: TextStyle(fontSize: 12, color: AppTheme.captionText),
         ),
         const Text(
@@ -161,7 +161,7 @@ class InfoTab extends StatelessWidget {
           onTap: () => showLicensePage(
             context: context,
             applicationName: 'iCDS',
-            applicationLegalese: '© 2016-2026 James A. Zucker. Apache License 2.0.',
+            applicationLegalese: '© 2010-2026 James A. Zucker. Apache License 2.0.',
           ),
           child: const Text(
             'Open-source licenses (offline)',

@@ -16,7 +16,7 @@ tree, see [NOTICES.md](https://github.com/jimzucker/iCDS/blob/master/NOTICES.md)
 
 ## 1. iCDS app
 
-Copyright © 2016–2026 James A. Zucker.
+Copyright © 2010–2026 James A. Zucker.
 Licensed under the **Apache License, Version 2.0**.
 
 Full text: [LICENSE](https://github.com/jimzucker/iCDS/blob/master/LICENSE)

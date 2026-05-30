@@ -6,7 +6,7 @@
 //  this module now covers SOFR, €STR, SONIA, TONA, AONIA.
 //  File kept named SOFRFetcher.swift for project.pbxproj stability.
 //
-//  Copyright © 2016-2026 James A. Zucker.
+//  Copyright © 2010-2026 James A. Zucker.
 //  Licensed under the Apache License, Version 2.0 — see LICENSE in project root.
 //
 

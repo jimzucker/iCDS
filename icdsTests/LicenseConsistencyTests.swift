@@ -2,7 +2,7 @@
 //  LicenseConsistencyTests.swift
 //  icdsTests
 //
-//  Copyright © 2016-2026 James A. Zucker.
+//  Copyright © 2010-2026 James A. Zucker.
 //  Licensed under the Apache License, Version 2.0 — see LICENSE in project root.
 //
 //  Locks in Apache 2.0 as the canonical iCDS source license and enforces the

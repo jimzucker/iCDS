@@ -6,7 +6,7 @@
 //  Reference: QuantLib test-suite/creditdefaultswap.cpp :: testIsdaEngine
 //  Trade date: May 21 2009 — same IR curve, same CDS params, same expected NPV values
 //
-//  Copyright © 2016-2026 James A. Zucker.
+//  Copyright © 2010-2026 James A. Zucker.
 //  Licensed under the Apache License, Version 2.0 — see LICENSE in project root.
 //
 
